@@ -3,7 +3,8 @@
   "builds": [
     {
       "src": "package.json",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": { "packageManager": "npm" }
     },
     {
       "src": "tsconfig.json",
@@ -12,8 +13,12 @@
   ],
   "routes": [
     {
+      "src": "/presentation/(.*)",
+      "dest": "dist/presentation/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "dist/presentation/index.js"
+      "dest": "/$1"
     }
   ]
 }
