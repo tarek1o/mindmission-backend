@@ -1,3 +1,4 @@
+/dist
 /.env
 /access.log
 /node_modules
