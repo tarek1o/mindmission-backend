@@ -6,13 +6,20 @@
   "scripts": {
     "postinstall": "prisma generate",
     "start": "node dist/presentation/index.js",
-    "build": "npx prisma generate && mkdir dist && npx tsc",
+    "build": "rimraf dist && tsc",
+    "ts.check": "tsc --project tsconfig.json",
+    "add-build": "git add dist",
     "dev": "nodemon src/presentation/index.ts",
     "migrate": "prisma db push",
     "generate": "prisma generate",
     "studio": "prisma studio"
   },
   "keywords": [],
+  "pre-commit": [
+    "ts.check",
+    "build",
+    "add-build"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -43,7 +50,9 @@
     "@types/nodemailer": "^6.4.13",
     "@types/qrcode": "^1.5.4",
     "nodemon": "^3.0.1",
+    "pre-commit": "^1.2.2",
     "prisma": "^5.3.0",
+    "rimraf": "^5.0.5",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   }
