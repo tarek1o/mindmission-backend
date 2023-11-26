@@ -14,11 +14,6 @@
     "generate": "prisma generate",
     "studio": "prisma studio"
   },
-  "pre-commit": [
-    "ts.check",
-    "build",
-    "add-build"
-  ],
   "keywords": [],
   "author": "",
   "license": "ISC",
