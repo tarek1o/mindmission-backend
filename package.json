@@ -6,7 +6,7 @@
   "scripts": {
     "postinstall": "prisma generate",
     "start": "node dist/presentation/index.js",
-    "build": "rimraf dist && tsc",
+    "build": "npx prisma generate && mkdir dist && npx tsc",
     "dev": "nodemon src/presentation/index.ts",
     "migrate": "prisma db push",
     "generate": "prisma generate",
@@ -31,7 +31,6 @@
     "qrcode": "^1.5.3",
     "qrcode-terminal": "^0.12.0",
     "reflect-metadata": "^0.1.13",
-    "rimraf": "^5.0.5",
     "slugify": "^1.6.6"
   },
   "devDependencies": {
