@@ -15,11 +15,6 @@
     "studio": "prisma studio"
   },
   "keywords": [],
-  "pre-commit": [
-    "ts.check",
-    "build",
-    "add-build"
-  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
