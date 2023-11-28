@@ -22,21 +22,7 @@ export class InstructorService implements IInstructorService {
 	};
 
 	async update(args: Prisma.InstructorUpdateArgs): Promise<ExtendedInstructor> {
-		const {skills, ratings} = args.data;
-		// if( avgOfRatings) {
-		// 	const instructor = await this.findUnique({
-		// 		where: args.where,
-		// 		select: {
-		// 			noOfRatings: true,
-		// 			avgOfRatings: true
-		// 		}
-		// 	});
-		// 	if(instructor) {
-		// 		const newAvg = (instructor.avgOfRatings + (avgOfRatings as number)) / (instructor.noOfRatings + 1);
-		// 		args.data.noOfRatings = avgOfRatings ? instructor.noOfRatings + 1 : undefined;
-		// 		args.data.avgOfRatings = avgOfRatings ? newAvg : undefined;
-		// 	}
-		// }
+		const {skills} = args.data;
 		if(skills) {
 			args.data.skills = {
 				upsert: (skills as any).map((skill: {name: string}) => {
