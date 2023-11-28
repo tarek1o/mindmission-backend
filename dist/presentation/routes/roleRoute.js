@@ -10,12 +10,15 @@ const roleValidator_1 = require("../middlewares/express-validator/roleValidator"
 const { isAuthenticated, isAuthorized } = DI_1.default.get('Authorization');
 const { getAllRoles, getRoleById, createRole, updateRole, deleteRole } = DI_1.default.get('RoleController');
 const roleRouter = express_1.default.Router();
-roleRouter.route("/")
-    .put(isAuthenticated, isAuthorized('Role'), getAllRoles)
-    .post(isAuthenticated, isAuthorized('Role'), roleValidator_1.addRoleValidation, createRole);
-roleRouter.route("/:id")
-    .put(idValidation_1.idValidation, isAuthenticated, isAuthorized('Role'), getRoleById)
-    .patch(idValidation_1.idValidation, isAuthenticated, isAuthorized('Role'), roleValidator_1.updateRoleValidation, updateRole)
-    .delete(idValidation_1.idValidation, isAuthenticated, isAuthorized('Role'), deleteRole);
+roleRouter.route("/get")
+    .post(isAuthenticated, isAuthorized('Role', 'GET'), getAllRoles);
+roleRouter.route("/get/:id")
+    .post(idValidation_1.idValidation, isAuthenticated, isAuthorized('Role', 'GET'), getRoleById);
+roleRouter.route("/add")
+    .post(isAuthenticated, isAuthorized('Role', 'POST'), roleValidator_1.addRoleValidation, createRole);
+roleRouter.route("/update/:id")
+    .post(idValidation_1.idValidation, isAuthenticated, isAuthorized('Role', 'PATCH'), roleValidator_1.updateRoleValidation, updateRole);
+roleRouter.route("/delete/:id")
+    .post(idValidation_1.idValidation, isAuthenticated, isAuthorized('Role', 'DELETE'), deleteRole);
 exports.default = roleRouter;
 //# sourceMappingURL=roleRoute.js.map

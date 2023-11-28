@@ -7,7 +7,7 @@ const {isAuthenticated, isAuthorized} = container.get<Authorization>('Authorizat
 const {getAllModelPermissions} = new ModelPermissionController();
 const roleRouter = express.Router();
 
-roleRouter.route("/")
-	.put(isAuthenticated, isAuthorized('Role'), getAllModelPermissions)
+roleRouter.route("/get")
+	.post(isAuthenticated, isAuthorized('Role', 'GET'), getAllModelPermissions)
 
 export default roleRouter;

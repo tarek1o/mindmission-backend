@@ -60,17 +60,17 @@ export class UserService implements IUserService {
 			}
 			if(isRoleExist.slug === 'student') {
 				args.data.student = {
-					create: {}
+					create: args.data.student?.create
 				}
 			}
 			else if(isRoleExist.slug === 'instructor') {
 				args.data.instructor = {
-					create: {}
+					create: args.data.instructor?.create
 				}
 			}
 			else {
 				args.data.admin = {
-					create: {}
+					create: args.data.admin?.create
 				}
 			}
 		}
@@ -100,6 +100,23 @@ export class UserService implements IUserService {
 			});
 			if(isEmailExist && isEmailExist.id !== args.where.id) {
 				throw new APIError('This email already exists', HttpStatusCode.BadRequest);
+			}
+		}
+		
+		if(args.data.personalLinks) {
+			const currentUser = await this.findUnique({
+				where: args.where,
+				select: {
+					role: {
+						select: {
+							slug: true
+						}
+					}
+				}
+			}); 
+
+			if(currentUser && currentUser.role?.slug !== 'student' && currentUser.role?.slug !== 'instructor') {
+				throw new APIError('Only students and instructors that can have personal links', HttpStatusCode.BadRequest);
 			}
 		}
 
@@ -139,7 +156,7 @@ export class UserService implements IUserService {
 				const previousRole = (slug !== 'instructor' && slug !== 'student') ? 'admin' : slug; 
 				throw new APIError(`The ${previousRole} role cannot be changed to ${currentRole} role because each one has different profile settings`, HttpStatusCode.BadRequest);
 			}
-		} 
+		}
 
 		return this.userRepository.update(args);
 	}

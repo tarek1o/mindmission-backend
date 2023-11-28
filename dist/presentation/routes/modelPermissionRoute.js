@@ -9,7 +9,7 @@ const ModelPermissionController_1 = require("../controllers/ModelPermissionContr
 const { isAuthenticated, isAuthorized } = DI_1.default.get('Authorization');
 const { getAllModelPermissions } = new ModelPermissionController_1.ModelPermissionController();
 const roleRouter = express_1.default.Router();
-roleRouter.route("/")
-    .put(isAuthenticated, isAuthorized('Role'), getAllModelPermissions);
+roleRouter.route("/get")
+    .post(isAuthenticated, isAuthorized('Role', 'GET'), getAllModelPermissions);
 exports.default = roleRouter;
 //# sourceMappingURL=modelPermissionRoute.js.map

@@ -7,5 +7,6 @@ require("./classes/authenticationDI");
 require("./classes/authorizationDI");
 require("./classes/logDI");
 require("./classes/categoryDI");
+require("./classes/instructorDI");
 exports.default = DIContainer_1.container;
 //# sourceMappingURL=DI.js.map

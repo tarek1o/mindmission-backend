@@ -1,4 +1,5 @@
-export type AllowedModel = "User" | "Role" | "Instructor" | "Student" | "Log" | "Category" | "Course" | "Review" | "Chapter" | "Lesson" | "Assignment" | "Comment";
+export type AllowedModel = "User" | "Role" | "Instructor" | "Student" | "Log" | "Category" | "Course" | "Rating" | "Chapter" | "Lesson" | "Assignment" | "Comment";
+export type AllowedMethod = "GET" | "POST" | "PATCH" | "DELETE";
 
 export const AllowedModels = {
   Users: 'user',
@@ -8,7 +9,7 @@ export const AllowedModels = {
   Logs: "log",
   Categories: 'category',
   Courses: 'course',
-  Reviews: 'review',
+  Ratings: 'rating',
   Chapters: 'chapter',
   Lessons: 'lesson',
   Assignments: 'Assignment',
@@ -16,7 +17,7 @@ export const AllowedModels = {
 }
 
 export const Permissions = {
-  Read: 'put',
+  Read: 'get',
   Create: 'post',
   Update: 'patch',
   Delete: 'delete'

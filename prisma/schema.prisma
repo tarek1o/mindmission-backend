@@ -44,33 +44,9 @@ model User {
   instructor            Instructor?
   admin                 Admin?
   logs                  Log[]
+  personalLinks         PersonalLink[]
   createdAt             DateTime    @default(now())
   updatedAt             DateTime? 
-}
-
-model Student {
-  id                  Int                @id @default(autoincrement())
-  enrolledCourses     Course[]           @relation("enrolled")
-  wishlistCourses     Course[]           @relation("wishlist")
-  reviews             Review[]
-  userId              Int                @unique
-  user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt           DateTime           @default(now())
-  updatedAt           DateTime? 
-}
-
-model Instructor {
-  id             Int          @id @default(autoincrement())
-  specialization String?
-  bref           String?
-  noOfRatings    Int          @default(0)
-  avgRatings     Float        @default(0)
-  skills         Skill[]
-  courses        Course[]
-  userId         Int          @unique
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime? 
 }
 
 model Admin {
@@ -81,13 +57,98 @@ model Admin {
   updatedAt       DateTime? 
 }
 
+model Student {
+  id                  Int                @id @default(autoincrement())
+  enrolledCourses     Course[]           @relation("enrolled")
+  wishlistCourses     Course[]           @relation("wishlist")
+  ratings             Rating[]
+  userId              Int                @unique
+  user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime? 
+}
+
+model Instructor {
+  id              Int          @id @default(autoincrement())
+  specialization  String
+  bref            String?
+  teachingType    TeachingType
+  videoProAcademy VideoProAcademy 
+  haveAudience    HaveAudience
+  skills          Skill[]
+  courses         Course[]
+  ratings         Rating[]
+  userId          Int          @unique
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime? 
+}
+
+enum TeachingType {
+  ONLINE
+  OFFLINE
+  BOTH
+  OTHER
+}
+
+enum VideoProAcademy {
+  BEGINNER
+  SOME_KNOLEFGE
+  EXPERIENCE
+  HAVE_VIDEOS
+}
+
+enum HaveAudience {
+  NO
+  SMALL
+  SIZEABLE
+}
+
+model Rating {
+  id                    Int          @id @default(autoincrement())
+  courseRate            Float?
+  instructorRate        Float?
+  commentForCourse      String?
+  commentForInstructor  String?
+  studentId             Int
+  student               Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  courseId              Int?
+  course                Course?      @relation(fields: [courseId], references: [id], onDelete: Cascade)    
+  instructorId          Int?
+  instructor            Instructor?  @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime? 
+  @@unique([studentId, courseId, instructorId])
+}
+
 model Skill {
   id              Int            @id @default(autoincrement())
-  content         String
+  name            String
+  slug            String
   instructorId    Int
   instructor      Instructor     @relation(fields: [instructorId], references: [id], onDelete: Cascade)
   createdAt       DateTime       @default(now())
   updatedAt       DateTime? 
+  @@unique([slug, instructorId])
+}
+
+model PersonalLink {
+  id              Int            @id @default(autoincrement())
+  platform        Platform
+  link            String
+  userId          Int
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime? 
+  @@unique([userId, platform])
+}
+
+enum Platform {
+  X
+  LINKEDIN
+  FACEBOOK
+  YOUTUBE
+  WEBSITE
 }
 
 model Category {
@@ -115,11 +176,12 @@ model Course {
   title             String
   description       String
   price             Float
+  language          Language
   dicountPercentage Float          @default(0)
   isApproved        Boolean        @default(false)
   publishedAt       DateTime?
   hours             Float
-  reviews           Review[]       
+  ratings           Rating[]       
   enrolledStudents  Student[]      @relation("enrolled")
   wishlistStudents  Student[]      @relation("wishlist")
   instructorId      Int
@@ -131,16 +193,9 @@ model Course {
   updatedAt         DateTime? 
 }
 
-model Review {
-  id              Int            @id @default(autoincrement())
-  rating          Float?            
-  comment         String         
-  reviewerId      Int?
-  reviewer        Student?       @relation(fields: [reviewerId], references: [id], onDelete: SetNull)        
-  courseId        Int
-  course          Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime? 
+enum Language {
+  AR
+  EN
 }
 
 model Chapter {

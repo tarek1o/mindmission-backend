@@ -5,5 +5,6 @@ import './classes/authenticationDI';
 import './classes/authorizationDI';
 import './classes/logDI';
 import './classes/categoryDI';
+import './classes/instructorDI';
 
 export default container;

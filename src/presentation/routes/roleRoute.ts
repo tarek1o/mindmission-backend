@@ -10,13 +10,19 @@ const {getAllRoles, getRoleById, createRole, updateRole, deleteRole} = container
 
 const roleRouter = express.Router();
 
-roleRouter.route("/")
-	.put(isAuthenticated, isAuthorized('Role'), getAllRoles)
-	.post(isAuthenticated, isAuthorized('Role'), addRoleValidation, createRole);
+roleRouter.route("/get")
+	.post(isAuthenticated, isAuthorized('Role', 'GET'), getAllRoles);
 
-roleRouter.route("/:id")
-	.put(idValidation, isAuthenticated, isAuthorized('Role'), getRoleById)
-	.patch(idValidation, isAuthenticated, isAuthorized('Role'), updateRoleValidation, updateRole)
-	.delete(idValidation, isAuthenticated, isAuthorized('Role'), deleteRole)
+roleRouter.route("/get/:id")
+	.post(idValidation, isAuthenticated, isAuthorized('Role', 'GET'), getRoleById);
+
+roleRouter.route("/add")
+	.post(isAuthenticated, isAuthorized('Role', 'POST'), addRoleValidation, createRole);
+
+roleRouter.route("/update/:id")
+  .post(idValidation, isAuthenticated, isAuthorized('Role', 'PATCH'), updateRoleValidation, updateRole);
+
+roleRouter.route("/delete/:id")
+	.post(idValidation, isAuthenticated, isAuthorized('Role', 'DELETE'), deleteRole);
 
 export default roleRouter;

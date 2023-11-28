@@ -10,19 +10,25 @@ const {getAllUsers, getUserById, createUser, restrictedPropertiesForAdminOnly, u
 
 const userRouter = express.Router();
 
-userRouter.route("/")
-	.put(isAuthenticated, isAuthorized('User'), isCurrentUserRoleInBlackList('instructor', 'student'), getAllUsers)
-	.post(isAuthenticated, isAuthorized('User'), addUserValidation, createUser);
+userRouter.route("/get")
+	.post(isAuthenticated, isAuthorized('User', 'GET'), isCurrentUserRoleInBlackList('instructor', 'student'), getAllUsers);
 
-userRouter.route("/:id")
-	.put(idValidation, isAuthenticated, isAuthorized('User'), getUserById)
-	.patch(idValidation, isAuthenticated, isAuthorized('User'), isParamIdEqualCurrentUserId(), restrictedUpdateForAdminOnly(restrictedPropertiesForAdminOnly), updateUserValidation, updateUser)
-	.delete(idValidation, isAuthenticated, isAuthorized('User'), isParamIdEqualCurrentUserId(), deleteUser);
+userRouter.route("/get/:id")
+	.post(idValidation, isAuthenticated, isAuthorized('User', 'GET'), getUserById)
 
-userRouter.route("/:id/update/email")
-	.patch(isAuthenticated, isAuthorized('User'), isParamIdEqualCurrentUserId(), updateUserEmailValidation, updateUserEmail);
+userRouter.route("/add")
+	.post(isAuthenticated, isAuthorized('User', 'POST'), addUserValidation, createUser);
 
-userRouter.route("/:id/update/password")
-	.patch(isAuthenticated, isAuthorized('User'), isParamIdEqualCurrentUserId(), updateUserPasswordValidation, updateUserPassword);
+userRouter.route("/update/:id")
+	.post(idValidation, isAuthenticated, isAuthorized('User', 'PATCH'), isParamIdEqualCurrentUserId(), restrictedUpdateForAdminOnly(restrictedPropertiesForAdminOnly), updateUserValidation, updateUser);
+
+userRouter.route("/delete/:id")
+	.post(idValidation, isAuthenticated, isAuthorized('User', 'DELETE'), isParamIdEqualCurrentUserId(), deleteUser);
+
+userRouter.route("/update/:id/email")
+	.post(isAuthenticated, isAuthorized('User', 'PATCH'), isParamIdEqualCurrentUserId(), updateUserEmailValidation, updateUserEmail);
+
+userRouter.route("/update/:id/password")
+	.post(isAuthenticated, isAuthorized('User', 'PATCH'), isParamIdEqualCurrentUserId(), updateUserPasswordValidation, updateUserPassword);
 
 export default userRouter;

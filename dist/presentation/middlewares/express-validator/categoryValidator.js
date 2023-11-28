@@ -20,10 +20,9 @@ exports.addCategoryValidation = [
     (0, express_validator_1.body)("input.type")
         .notEmpty().withMessage("Type property is required")
         .isString().withMessage("Type must be a string")
-        .customSanitizer(value => value.toString().toUpperCase())
+        .toUpperCase()
         .custom((value) => {
-        const upperCasedValue = value.toUpperCase();
-        if (!client_1.CategoryType[upperCasedValue]) {
+        if (!client_1.CategoryType[value]) {
             const allowedTypes = Object.values(client_1.CategoryType).map(value => value.toLowerCase()).toString();
             throw new Error(`The type cannot be ${allowedTypes} only`);
         }
@@ -47,14 +46,12 @@ exports.updateCategoryValidation = [
     (0, express_validator_1.body)("input.type")
         .optional()
         .isString().withMessage("Type must be a string")
-        .customSanitizer(value => value.toString().toUpperCase())
-        .custom((value, { req }) => {
-        const upperCasedValue = value.toUpperCase();
-        if (!client_1.CategoryType[upperCasedValue]) {
+        .toUpperCase()
+        .custom((value) => {
+        if (!client_1.CategoryType[value]) {
             const allowedTypes = Object.values(client_1.CategoryType).map(value => value.toLowerCase()).toString();
-            throw new Error(`The type cannot be ${allowedTypes} only`);
+            throw new Error(`The type can be ${allowedTypes} only`);
         }
-        req.body.input.type = upperCasedValue;
         return true;
     }),
     (0, express_validator_1.body)("input.parentId")

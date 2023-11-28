@@ -35,7 +35,7 @@ let UserService = class UserService {
         return this.userRepository.findFirst(args);
     }
     async create(args) {
-        var _a, _b, _c, _d;
+        var _a, _b, _c, _d, _e, _f, _g;
         args.data.password = bcrypt_1.default.hashSync(args.data.password, 10);
         const isEmailExist = await this.findFirst({
             where: {
@@ -67,24 +67,24 @@ let UserService = class UserService {
             }
             if (isRoleExist.slug === 'student') {
                 args.data.student = {
-                    create: {}
+                    create: (_e = args.data.student) === null || _e === void 0 ? void 0 : _e.create
                 };
             }
             else if (isRoleExist.slug === 'instructor') {
                 args.data.instructor = {
-                    create: {}
+                    create: (_f = args.data.instructor) === null || _f === void 0 ? void 0 : _f.create
                 };
             }
             else {
                 args.data.admin = {
-                    create: {}
+                    create: (_g = args.data.admin) === null || _g === void 0 ? void 0 : _g.create
                 };
             }
         }
         return this.userRepository.create(args);
     }
     async update(args) {
-        var _a, _b, _c, _d;
+        var _a, _b, _c, _d, _e, _f;
         if (args.data.password) {
             args.data.password = bcrypt_1.default.hashSync(args.data.password.toString(), 10);
         }
@@ -107,10 +107,25 @@ let UserService = class UserService {
                 throw new APIError_1.default('This email already exists', HTTPStatusCode_1.default.BadRequest);
             }
         }
-        if ((_b = (_a = args.data.role) === null || _a === void 0 ? void 0 : _a.connect) === null || _b === void 0 ? void 0 : _b.id) {
+        if (args.data.personalLinks) {
+            const currentUser = await this.findUnique({
+                where: args.where,
+                select: {
+                    role: {
+                        select: {
+                            slug: true
+                        }
+                    }
+                }
+            });
+            if (currentUser && ((_a = currentUser.role) === null || _a === void 0 ? void 0 : _a.slug) !== 'student' && ((_b = currentUser.role) === null || _b === void 0 ? void 0 : _b.slug) !== 'instructor') {
+                throw new APIError_1.default('Only students and instructors that can have personal links', HTTPStatusCode_1.default.BadRequest);
+            }
+        }
+        if ((_d = (_c = args.data.role) === null || _c === void 0 ? void 0 : _c.connect) === null || _d === void 0 ? void 0 : _d.id) {
             const isRoleExist = await this.roleService.findUnique({
                 where: {
-                    id: (_d = (_c = args.data.role) === null || _c === void 0 ? void 0 : _c.connect) === null || _d === void 0 ? void 0 : _d.id
+                    id: (_f = (_e = args.data.role) === null || _e === void 0 ? void 0 : _e.connect) === null || _f === void 0 ? void 0 : _f.id
                 },
                 select: {
                     id: true,

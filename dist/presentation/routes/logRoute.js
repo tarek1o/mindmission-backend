@@ -9,9 +9,9 @@ const idValidation_1 = require("../middlewares/express-validator/idValidation");
 const { isAuthenticated, isAuthorized } = DI_1.default.get('Authorization');
 const { getAllLogs, getLogById } = DI_1.default.get('LogController');
 const roleRouter = express_1.default.Router();
-roleRouter.route("/")
-    .put(isAuthenticated, isAuthorized('Log'), getAllLogs);
-roleRouter.route("/:id")
-    .put(idValidation_1.idValidation, isAuthenticated, isAuthorized('Log'), getLogById);
+roleRouter.route("/get")
+    .post(isAuthenticated, isAuthorized('Log', 'GET'), getAllLogs);
+roleRouter.route("/get/:id")
+    .post(idValidation_1.idValidation, isAuthenticated, isAuthorized('Log', 'GET'), getLogById);
 exports.default = roleRouter;
 //# sourceMappingURL=logRoute.js.map

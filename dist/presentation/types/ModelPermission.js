@@ -9,14 +9,14 @@ exports.AllowedModels = {
     Logs: "log",
     Categories: 'category',
     Courses: 'course',
-    Reviews: 'review',
+    Ratings: 'rating',
     Chapters: 'chapter',
     Lessons: 'lesson',
     Assignments: 'Assignment',
     Comments: 'comment',
 };
 exports.Permissions = {
-    Read: 'put',
+    Read: 'get',
     Create: 'post',
     Update: 'patch',
     Delete: 'delete'
