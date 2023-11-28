@@ -28,9 +28,10 @@ export class AuthenticationController {
     return false;
   }
 
-	signup = asyncHandler(async(request: Request, response: Response, next: NextFunction) => {
-		const {firstName, lastName, email, password, mobilePhone, whatsAppNumber, bio, picture} = request.body.input;
+  signup = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
+    const {firstName, lastName, email, password, mobilePhone, whatsAppNumber, bio, picture, specialization, teachingType, videoProAcademy, haveAudience} = request.body.input;
 		const {select, include} = RequestManager.findOptionsWrapper(request);
+    const slug = (specialization && teachingType && videoProAcademy && haveAudience) ? 'instructor' : 'student';
     const createdUser = await this.userService.create({
       data: {
         firstName,
@@ -44,12 +45,20 @@ export class AuthenticationController {
         refreshToken: JWTGenerator.generateRefreshToken({firstName, lastName, email, picture} as User),
         role: {
           connect: {
-            slug: 'student'
+            slug
           }
         },
-        student: {
+        instructor: slug === 'instructor' ? {
+          create: {
+            specialization,
+            teachingType,
+            videoProAcademy,
+            haveAudience,
+          }
+        } : undefined,
+        student: slug === 'student' ? {
           create: {}
-        }
+        } : undefined,
       },
       select,
       include,
@@ -59,7 +68,7 @@ export class AuthenticationController {
         user: UserMapper.map([createdUser])[0], 
         token: JWTGenerator.generateAccessToken(createdUser),
     }]));
-	});
+  })
 
   login = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
     const {email, password} = request.body.input;

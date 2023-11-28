@@ -38,8 +38,9 @@ let AuthenticationController = class AuthenticationController {
             return false;
         };
         this.signup = (0, express_async_handler_1.default)(async (request, response, next) => {
-            const { firstName, lastName, email, password, mobilePhone, whatsAppNumber, bio, picture } = request.body.input;
+            const { firstName, lastName, email, password, mobilePhone, whatsAppNumber, bio, picture, specialization, teachingType, videoProAcademy, haveAudience } = request.body.input;
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
+            const slug = (specialization && teachingType && videoProAcademy && haveAudience) ? 'instructor' : 'student';
             const createdUser = await this.userService.create({
                 data: {
                     firstName,
@@ -53,12 +54,20 @@ let AuthenticationController = class AuthenticationController {
                     refreshToken: JWTGenerator_1.JWTGenerator.generateRefreshToken({ firstName, lastName, email, picture }),
                     role: {
                         connect: {
-                            slug: 'student'
+                            slug
                         }
                     },
-                    student: {
+                    instructor: slug === 'instructor' ? {
+                        create: {
+                            specialization,
+                            teachingType,
+                            videoProAcademy,
+                            haveAudience,
+                        }
+                    } : undefined,
+                    student: slug === 'student' ? {
                         create: {}
-                    }
+                    } : undefined,
                 },
                 select,
                 include,

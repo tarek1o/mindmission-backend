@@ -58,9 +58,9 @@ let Authorization = class Authorization {
             }
             throw new APIError_1.default("Unauthorized, try to login again", HTTPStatusCode_1.default.Unauthorized);
         });
-        this.isAuthorized = (modelName) => (0, express_async_handler_1.default)(async (request, response, next) => {
+        this.isAuthorized = (modelName, method) => (0, express_async_handler_1.default)(async (request, response, next) => {
             var _a, _b, _c;
-            let permission = request.method.toLowerCase();
+            let permission = method.toLowerCase();
             if ((_b = (_a = request.user) === null || _a === void 0 ? void 0 : _a.role) === null || _b === void 0 ? void 0 : _b.allowedModels) {
                 for (const allowedModel of (_c = request.user) === null || _c === void 0 ? void 0 : _c.role.allowedModels) {
                     if (allowedModel.modelName.toLowerCase() === modelName.toLowerCase() && allowedModel.permissions.includes(permission)) {

@@ -10,6 +10,7 @@ const authenticationRoute_1 = __importDefault(require("./routes/authenticationRo
 const modelPermissionRoute_1 = __importDefault(require("./routes/modelPermissionRoute"));
 const logRoute_1 = __importDefault(require("./routes/logRoute"));
 const categoryRoute_1 = __importDefault(require("./routes/categoryRoute"));
+const instructorRoute_1 = __importDefault(require("./routes/instructorRoute"));
 const routeMounting = (app) => {
     app.use(`${process.env.apiVersion}/auth`, authenticationRoute_1.default);
     app.use(`${process.env.apiVersion}/users`, userRoute_1.default);
@@ -17,6 +18,7 @@ const routeMounting = (app) => {
     app.use(`${process.env.apiVersion}/logs`, logRoute_1.default);
     app.use(`${process.env.apiVersion}/permissions`, modelPermissionRoute_1.default);
     app.use(`${process.env.apiVersion}/categories`, categoryRoute_1.default);
+    app.use(`${process.env.apiVersion}/instructors`, instructorRoute_1.default);
     // app.use(`${process.env.apiVersion}/whatsApp`, whatsAppRoute);
 };
 exports.routeMounting = routeMounting;

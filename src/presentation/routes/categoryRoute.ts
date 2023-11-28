@@ -10,13 +10,19 @@ const {getAllCategories, getCategoryById, createCategory, updateCategory, delete
 
 const categoryRouter = express.Router();
 
-categoryRouter.route("/")
-	.put(isAuthenticated, isAuthorized('Category'), getAllCategories)
-	.post(isAuthenticated, isAuthorized('Category'), addCategoryValidation, createCategory);
+categoryRouter.route("/get")
+	.post(isAuthenticated, isAuthorized('Category', 'GET'), getAllCategories);
 
-categoryRouter.route("/:id")
-	.put(idValidation, isAuthenticated, isAuthorized('Category'), getCategoryById)
-	.patch(idValidation, isAuthenticated, isAuthorized('Category'), updateCategoryValidation, updateCategory)
-	.delete(idValidation, isAuthenticated, isAuthorized('Category'), deleteCategory)
+categoryRouter.route("/get/:id")
+	.post(idValidation, isAuthenticated, isAuthorized('Category', 'GET'), getCategoryById);
+
+categoryRouter.route("/add")
+	.post(isAuthenticated, isAuthorized('Category', 'POST'), addCategoryValidation, createCategory);
+
+categoryRouter.route("/update/:id")
+	.post(idValidation, isAuthenticated, isAuthorized('Category', 'PATCH'), updateCategoryValidation, updateCategory);
+
+categoryRouter.route("/delete/:id")
+	.delete(idValidation, isAuthenticated, isAuthorized('Category', 'DELETE'), deleteCategory);
 
 export default categoryRouter;

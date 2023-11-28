@@ -4,7 +4,7 @@ import {inject, injectable} from "inversify";
 import { ExtendedRequest } from "../../types/ExtendedRequest";
 import APIError from "../../errorHandlers/APIError";
 import {IUserService} from "../../../application/interfaces/IServices/IUserService";
-import { AllowedModel, AllowedModels } from "../../types/ModelPermission";
+import { AllowedMethod, AllowedModel, AllowedModels } from "../../types/ModelPermission";
 import HttpStatusCode from "../../enums/HTTPStatusCode";
 import { MainRoles } from "../../types/MainRoles";
 import { JWTGenerator } from "../../services/JWTGenerator";
@@ -52,8 +52,8 @@ export class Authorization {
     throw new APIError("Unauthorized, try to login again", HttpStatusCode.Unauthorized);
   });
   
-  isAuthorized = (modelName: AllowedModel) => asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => { 
-    let permission = request.method.toLowerCase();
+  isAuthorized = (modelName: AllowedModel, method: AllowedMethod) => asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => { 
+    let permission = method.toLowerCase();
     if(request.user?.role?.allowedModels) {
       for(const allowedModel of request.user?.role.allowedModels) {
         if(allowedModel.modelName.toLowerCase() === modelName.toLowerCase() && allowedModel.permissions.includes(permission)) {

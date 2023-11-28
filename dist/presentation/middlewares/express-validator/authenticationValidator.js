@@ -79,9 +79,11 @@ exports.resetPasswordValidation = [
 ];
 exports.refreshTokenValidation = [
     (0, express_validator_1.body)("input.accessToken")
-        .notEmpty().withMessage("Access token is required"),
+        .notEmpty().withMessage("Access token is required")
+        .isJWT().withMessage("Invalid access token"),
     (0, express_validator_1.body)("input.refreshToken")
-        .notEmpty().withMessage("Refresh token is required"),
+        .notEmpty().withMessage("Refresh token is required")
+        .isJWT().withMessage("Invalid access token"),
     ErrorExpressValidatorHandler_1.default.catchExpressValidatorErrors
 ];
 //# sourceMappingURL=authenticationValidator.js.map

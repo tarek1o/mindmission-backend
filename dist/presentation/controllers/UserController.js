@@ -94,7 +94,7 @@ let UserController = class UserController {
             response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The user is created successfully', mappedUserResults));
         });
         this.updateUser = (0, express_async_handler_1.default)(async (request, response, next) => {
-            const { firstName, lastName, bio, picture, mobilePhone, whatsAppNumber, isActive, isBlocked, isDeleted, roleId } = request.body.input;
+            const { firstName, lastName, bio, picture, mobilePhone, whatsAppNumber, isActive, isBlocked, isDeleted, roleId, personalLinks } = request.body.input;
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
             const updatedUser = await this.userService.update({
                 where: {
@@ -114,6 +114,25 @@ let UserController = class UserController {
                         connect: {
                             id: roleId
                         }
+                    } : undefined,
+                    personalLinks: personalLinks ? {
+                        upsert: personalLinks.map((link) => {
+                            return {
+                                where: {
+                                    userId_platform: {
+                                        userId: +request.params.id,
+                                        platform: link.platform.toUpperCase(),
+                                    }
+                                },
+                                update: {
+                                    link: link.link
+                                },
+                                create: {
+                                    platform: link.platform.toUpperCase(),
+                                    link: link.link
+                                }
+                            };
+                        })
                     } : undefined
                 },
                 select,

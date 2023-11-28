@@ -93,7 +93,7 @@ export class UserController {
 	});
 
 	updateUser = asyncHandler(async(request: ExtendedRequest, response: Response, next: NextFunction) => {
-		const {firstName, lastName, bio, picture, mobilePhone, whatsAppNumber, isActive, isBlocked, isDeleted, roleId} = request.body.input;
+		const {firstName, lastName, bio, picture, mobilePhone, whatsAppNumber, isActive, isBlocked, isDeleted, roleId, personalLinks} = request.body.input;
 		const {select, include} = RequestManager.findOptionsWrapper(request);
 		const updatedUser = await this.userService.update({
 			where: {
@@ -113,6 +113,25 @@ export class UserController {
 					connect: {
 						id: roleId
 					}
+				} : undefined,
+				personalLinks: personalLinks ? {
+					upsert: personalLinks.map((link: {platform: string, link: string}) => {
+						return {
+							where : {
+								userId_platform: {
+									userId: +request.params.id,
+									platform: link.platform.toUpperCase(),
+								}
+							},
+							update: {
+								link: link.link
+							},
+							create: {
+								platform: link.platform.toUpperCase(),
+								link: link.link
+							}
+						}
+					})
 				} : undefined
 			},
 			select,

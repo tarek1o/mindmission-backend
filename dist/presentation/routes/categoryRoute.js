@@ -10,12 +10,15 @@ const categoryValidator_1 = require("../middlewares/express-validator/categoryVa
 const { isAuthenticated, isAuthorized } = DI_1.default.get('Authorization');
 const { getAllCategories, getCategoryById, createCategory, updateCategory, deleteCategory } = DI_1.default.get('CategoryController');
 const categoryRouter = express_1.default.Router();
-categoryRouter.route("/")
-    .put(isAuthenticated, isAuthorized('Category'), getAllCategories)
-    .post(isAuthenticated, isAuthorized('Category'), categoryValidator_1.addCategoryValidation, createCategory);
-categoryRouter.route("/:id")
-    .put(idValidation_1.idValidation, isAuthenticated, isAuthorized('Category'), getCategoryById)
-    .patch(idValidation_1.idValidation, isAuthenticated, isAuthorized('Category'), categoryValidator_1.updateCategoryValidation, updateCategory)
-    .delete(idValidation_1.idValidation, isAuthenticated, isAuthorized('Category'), deleteCategory);
+categoryRouter.route("/get")
+    .post(isAuthenticated, isAuthorized('Category', 'GET'), getAllCategories);
+categoryRouter.route("/get/:id")
+    .post(idValidation_1.idValidation, isAuthenticated, isAuthorized('Category', 'GET'), getCategoryById);
+categoryRouter.route("/add")
+    .post(isAuthenticated, isAuthorized('Category', 'POST'), categoryValidator_1.addCategoryValidation, createCategory);
+categoryRouter.route("/update/:id")
+    .post(idValidation_1.idValidation, isAuthenticated, isAuthorized('Category', 'PATCH'), categoryValidator_1.updateCategoryValidation, updateCategory);
+categoryRouter.route("/delete/:id")
+    .delete(idValidation_1.idValidation, isAuthenticated, isAuthorized('Category', 'DELETE'), deleteCategory);
 exports.default = categoryRouter;
 //# sourceMappingURL=categoryRoute.js.map

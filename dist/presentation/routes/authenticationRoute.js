@@ -6,10 +6,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const DI_1 = __importDefault(require("../dependencyInjection/DI"));
 const authenticationValidator_1 = require("../middlewares/express-validator/authenticationValidator");
+const instructorValidator_1 = require("../middlewares/express-validator/instructorValidator");
 const { signup, login, forgetPassword, verifyResetPasswordCode, resetPassword, refreshToken } = DI_1.default.get('AuthenticationController');
 const authRouter = express_1.default.Router();
-authRouter.route("/signup")
+authRouter.route("/signup/student")
     .post(authenticationValidator_1.signupValidation, signup);
+authRouter.route("/signup/instructor")
+    .post(authenticationValidator_1.signupValidation, instructorValidator_1.addInstructorValidation, signup);
 authRouter.route("/login")
     .post(authenticationValidator_1.loginValidation, login);
 authRouter.route("/password/forget")

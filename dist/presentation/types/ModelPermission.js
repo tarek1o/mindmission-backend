@@ -16,7 +16,7 @@ exports.AllowedModels = {
     Comments: 'comment',
 };
 exports.Permissions = {
-    Read: 'put',
+    Read: 'get',
     Create: 'post',
     Update: 'patch',
     Delete: 'delete'
