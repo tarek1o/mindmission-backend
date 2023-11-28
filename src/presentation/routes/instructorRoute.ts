@@ -14,9 +14,9 @@ roleRouter.route("/get")
 	.post(isAuthenticated, isAuthorized('Instructor', 'GET'), getAllInstructors);
 
 roleRouter.route("/get/:id")
-	.post(idValidation, isAuthenticated, isAuthorized('Instructor', 'GET'), getInstructorById)
+	.post(idValidation, isAuthenticated, isAuthorized('Instructor', 'GET'), getInstructorById);
 
 roleRouter.route("/update/:id")
-	.post(idValidation, isAuthenticated, isAuthorized('Instructor', 'PATCH'), updateInstructorValidation, updateInstructor)
+	.post(idValidation, isAuthenticated, isAuthorized('Instructor', 'PATCH'), updateInstructorValidation, updateInstructor);
 
 export default roleRouter;
