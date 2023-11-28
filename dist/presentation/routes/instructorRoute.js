@@ -15,6 +15,6 @@ roleRouter.route("/get")
 roleRouter.route("/get/:id")
     .post(idValidation_1.idValidation, isAuthenticated, isAuthorized('Instructor', 'GET'), getInstructorById);
 roleRouter.route("/update/:id")
-    .post(idValidation_1.idValidation, isAuthenticated, isAuthorized('Instructor', 'GET'), instructorValidator_1.updateInstructorValidation, updateInstructor);
+    .post(idValidation_1.idValidation, isAuthenticated, isAuthorized('Instructor', 'PATCH'), instructorValidator_1.updateInstructorValidation, updateInstructor);
 exports.default = roleRouter;
 //# sourceMappingURL=instructorRoute.js.map

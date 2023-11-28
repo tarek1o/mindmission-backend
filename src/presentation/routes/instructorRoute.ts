@@ -17,6 +17,6 @@ roleRouter.route("/get/:id")
 	.post(idValidation, isAuthenticated, isAuthorized('Instructor', 'GET'), getInstructorById)
 
 roleRouter.route("/update/:id")
-	.post(idValidation, isAuthenticated, isAuthorized('Instructor', 'GET'), updateInstructorValidation, updateInstructor)
+	.post(idValidation, isAuthenticated, isAuthorized('Instructor', 'PATCH'), updateInstructorValidation, updateInstructor)
 
 export default roleRouter;
