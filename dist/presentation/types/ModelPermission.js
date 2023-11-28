@@ -9,7 +9,7 @@ exports.AllowedModels = {
     Logs: "log",
     Categories: 'category',
     Courses: 'course',
-    Reviews: 'review',
+    Ratings: 'rating',
     Chapters: 'chapter',
     Lessons: 'lesson',
     Assignments: 'Assignment',
