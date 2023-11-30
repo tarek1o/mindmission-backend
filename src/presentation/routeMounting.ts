@@ -6,6 +6,7 @@ import modelPermissionRoutes from "./routes/modelPermissionRoute";
 import logRoutes from "./routes/logRoute";
 import categoryRoutes from "./routes/categoryRoute";
 import instructorRoutes from "./routes/instructorRoute";
+import courseRoutes from "./routes/courseRoute";
 import whatsAppRoute from "./routes/whatsAppRoute"
 
 export const routeMounting = (app: Application) => {
@@ -16,5 +17,6 @@ export const routeMounting = (app: Application) => {
   app.use(`${process.env.apiVersion}/permissions`, modelPermissionRoutes);
   app.use(`${process.env.apiVersion}/categories`, categoryRoutes);
   app.use(`${process.env.apiVersion}/instructors`, instructorRoutes);
+  app.use(`${process.env.apiVersion}/courses`, courseRoutes);
   // app.use(`${process.env.apiVersion}/whatsApp`, whatsAppRoute);
 }

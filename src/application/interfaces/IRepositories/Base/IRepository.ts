@@ -1,8 +1,7 @@
-export interface IRepository<T> {
-  count(args: any): Promise<number>;
-  findMany(args: any): Promise<T[]>;
-  findUnique(args: any): Promise<T | null>;
-  create(args: any): Promise<T>;
-  update(args: any): Promise<T>;
-  delete(id: number): Promise<T>;
+import { ICreateBaseRepository } from "./ICreateBaseRepository";
+import { IDeleteBaseRepository } from "./IDeleteBaseRepository";
+import { IFindBaseRepository } from "./IFindBaseRepository";
+import { IUpdateBaseRepository } from "./IUpdateBaseRepository";
+
+export interface IRepository<T> extends IFindBaseRepository<T>, ICreateBaseRepository<T>, IUpdateBaseRepository<T>, IDeleteBaseRepository<T> {
 }

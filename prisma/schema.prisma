@@ -49,6 +49,26 @@ model User {
   updatedAt             DateTime? 
 }
 
+model PersonalLink {
+  id              Int            @id @default(autoincrement())
+  platform        Platform
+  link            String
+  userId          Int
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime? 
+  @@unique([userId, platform])
+}
+
+enum Platform {
+  X
+  LINKEDIN
+  FACEBOOK
+  YOUTUBE
+  WEBSITE
+}
+
+
 model Admin {
   id              Int            @id @default(autoincrement())
   userId          Int            @unique
@@ -104,23 +124,6 @@ enum HaveAudience {
   SIZEABLE
 }
 
-model Rating {
-  id                    Int          @id @default(autoincrement())
-  courseRate            Float?
-  instructorRate        Float?
-  commentForCourse      String?
-  commentForInstructor  String?
-  studentId             Int
-  student               Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  courseId              Int?
-  course                Course?      @relation(fields: [courseId], references: [id], onDelete: Cascade)    
-  instructorId          Int?
-  instructor            Instructor?  @relation(fields: [instructorId], references: [id], onDelete: Cascade)
-  createdAt             DateTime     @default(now())
-  updatedAt             DateTime? 
-  @@unique([studentId, courseId, instructorId])
-}
-
 model Skill {
   id              Int            @id @default(autoincrement())
   name            String
@@ -132,25 +135,22 @@ model Skill {
   @@unique([slug, instructorId])
 }
 
-model PersonalLink {
-  id              Int            @id @default(autoincrement())
-  platform        Platform
-  link            String
-  userId          Int
-  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime? 
-  @@unique([userId, platform])
+model Rating {
+  id                    Int          @id @default(autoincrement())
+  courseRate            Float?
+  instructorRate        Float?
+  commentForCourse      String?
+  commentForInstructor  String?
+  studentId             Int
+  student               Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  courseId              Int
+  course                Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)    
+  instructorId          Int
+  instructor            Instructor   @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime? 
+  @@unique([studentId, courseId, instructorId])
 }
-
-enum Platform {
-  X
-  LINKEDIN
-  FACEBOOK
-  YOUTUBE
-  WEBSITE
-}
-
 model Category {
   id              Int              @id @default(autoincrement())
   name            String
@@ -172,25 +172,30 @@ enum CategoryType {
 }
 
 model Course {
-  id                Int            @id @default(autoincrement())
-  title             String
-  description       String
-  price             Float
-  language          Language
-  dicountPercentage Float          @default(0)
-  isApproved        Boolean        @default(false)
-  publishedAt       DateTime?
-  hours             Float
-  ratings           Rating[]       
-  enrolledStudents  Student[]      @relation("enrolled")
-  wishlistStudents  Student[]      @relation("wishlist")
-  instructorId      Int
-  instructor        Instructor     @relation(fields: [instructorId], references: [id], onDelete: Cascade)
-  categoryId        Int
-  category          Category?      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  chapters          Chapter[]
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime? 
+  id                 Int            @id @default(autoincrement())
+  title              String
+  slug               String
+  shortDescription   String
+  description        String
+  language           Language
+  level              CourseLevel
+  imageCover         String
+  requirements       String[]
+  courseTeachings    String[]
+  price              Float
+  discountPercentage Float          @default(0)
+  isApproved         Boolean        @default(false)
+  publishedAt        DateTime?
+  chapters           Chapter[]
+  ratings            Rating[]       
+  enrolledStudents   Student[]      @relation("enrolled")
+  wishlistStudents   Student[]      @relation("wishlist")
+  instructorId       Int
+  instructor         Instructor     @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  topicId            Int
+  topic              Category       @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime? 
 }
 
 enum Language {
@@ -198,24 +203,33 @@ enum Language {
   EN
 }
 
+enum CourseLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
 model Chapter {
   id                Int            @id @default(autoincrement())
   title             String
+  slug              String
   lessons           Lesson[]
   courseId          Int
   course            Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
   createdAt         DateTime       @default(now())
-  updatedAt         DateTime? 
+  updatedAt         DateTime?
 }
 
 model Lesson {
   id                Int            @id @default(autoincrement())
   title             String
-  hours             Float
+  slug              String
+  isFree            Boolean        @default(false)
+  attachment        String?
   lessonType        LessonType
   video             Video?
   article           Article?
-  assignment        Assignment?
+  quiz              Quiz?
   chapterId         Int
   chapter           Chapter        @relation(fields: [chapterId], references: [id], onDelete: Cascade)
   comments          Comment[]
@@ -226,12 +240,13 @@ model Lesson {
 enum LessonType {
   VIDEO
   ARTICLE
-  ASSIGNMENT
+  Quiz
 }
 
 model Video {
   id              Int            @id @default(autoincrement())
   title           String
+  slug            String
   description     String?
   url             String
   lessonId        Int            @unique
@@ -242,17 +257,34 @@ model Video {
 
 model Article {
   id              Int            @id @default(autoincrement())
-  content         Json
+  title           String
+  slug            String
+  content         String
   lessonId        Int            @unique
   lesson          Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   createdAt       DateTime       @default(now())
   updatedAt       DateTime? 
 }
 
-model Assignment {
+model Quiz {
   id              Int            @id @default(autoincrement())
   lessonId        Int            @unique
+  questions       Question[]
   lesson          Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime? 
+}
+
+model Question {
+  id              Int            @id @default(autoincrement())
+  questionText    String
+  choiceA         String
+  choiceB         String
+  choiceC         String?
+  choiceD         String?
+  correctAnswer   String
+  quizId          Int
+  quiz            Quiz           @relation(fields: [quizId], references: [id], onDelete: Cascade)
   createdAt       DateTime       @default(now())
   updatedAt       DateTime? 
 }

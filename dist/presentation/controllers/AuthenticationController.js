@@ -146,7 +146,7 @@ let AuthenticationController = class AuthenticationController {
                     data: {
                         resetPasswordCode: {
                             code: resetCode,
-                            expirationTime: Date.now() + 5 * 60 * 1000,
+                            expirationTime: Date.now() + 5 * 60 * 1000, // 5 minutes from the time of reset code generation
                             isVerified: false
                         }
                     },
