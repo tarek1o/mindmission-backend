@@ -17,7 +17,7 @@ model Role {
   isDeleted      Boolean     @default(false)
   users          User[]
   createdAt      DateTime    @default(now())
-  updatedAt      DateTime?  
+  updatedAt      DateTime?   @updatedAt
 }
 
 model User {
@@ -46,7 +46,7 @@ model User {
   logs                  Log[]
   personalLinks         PersonalLink[]
   createdAt             DateTime    @default(now())
-  updatedAt             DateTime? 
+  updatedAt             DateTime?   @updatedAt
 }
 
 model PersonalLink {
@@ -56,7 +56,7 @@ model PersonalLink {
   userId          Int
   user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt       DateTime       @default(now())
-  updatedAt       DateTime? 
+  updatedAt       DateTime?      @updatedAt
   @@unique([userId, platform])
 }
 
@@ -74,7 +74,7 @@ model Admin {
   userId          Int            @unique
   user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt       DateTime       @default(now())
-  updatedAt       DateTime? 
+  updatedAt       DateTime?      @updatedAt
 }
 
 model Student {
@@ -85,7 +85,7 @@ model Student {
   userId              Int                @unique
   user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt           DateTime           @default(now())
-  updatedAt           DateTime? 
+  updatedAt           DateTime?          @updatedAt
 }
 
 model Instructor {
@@ -101,7 +101,7 @@ model Instructor {
   userId          Int          @unique
   user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt       DateTime     @default(now())
-  updatedAt       DateTime? 
+  updatedAt       DateTime?    @updatedAt
 }
 
 enum TeachingType {
@@ -131,7 +131,7 @@ model Skill {
   instructorId    Int
   instructor      Instructor     @relation(fields: [instructorId], references: [id], onDelete: Cascade)
   createdAt       DateTime       @default(now())
-  updatedAt       DateTime? 
+  updatedAt       DateTime?      @updatedAt
   @@unique([slug, instructorId])
 }
 
@@ -148,7 +148,7 @@ model Rating {
   instructorId          Int
   instructor            Instructor   @relation(fields: [instructorId], references: [id], onDelete: Cascade)
   createdAt             DateTime     @default(now())
-  updatedAt             DateTime? 
+  updatedAt             DateTime?    @updatedAt
   @@unique([studentId, courseId, instructorId])
 }
 model Category {
@@ -162,7 +162,7 @@ model Category {
   childern        Category[]       @relation("self")
   courses         Course[]
   createdAt       DateTime         @default(now())
-  updatedAt       DateTime? 
+  updatedAt       DateTime?        @updatedAt
 }
 
 enum CategoryType {
@@ -185,6 +185,7 @@ model Course {
   price              Float
   discountPercentage Float          @default(0)
   isApproved         Boolean        @default(false)
+  isDraft            Boolean        @default(true)
   publishedAt        DateTime?
   chapters           Chapter[]
   ratings            Rating[]       
@@ -195,7 +196,7 @@ model Course {
   topicId            Int
   topic              Category       @relation(fields: [topicId], references: [id], onDelete: Cascade)
   createdAt          DateTime       @default(now())
-  updatedAt          DateTime? 
+  updatedAt          DateTime?      @updatedAt
 }
 
 enum Language {
@@ -212,12 +213,14 @@ enum CourseLevel {
 model Chapter {
   id                Int            @id @default(autoincrement())
   title             String
+  description       String?
+  order             Int
   slug              String
   lessons           Lesson[]
   courseId          Int
   course            Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
   createdAt         DateTime       @default(now())
-  updatedAt         DateTime?
+  updatedAt         DateTime?      @updatedAt
 }
 
 model Lesson {
@@ -226,6 +229,7 @@ model Lesson {
   slug              String
   isFree            Boolean        @default(false)
   attachment        String?
+  order             Int
   lessonType        LessonType
   video             Video?
   article           Article?
@@ -234,45 +238,46 @@ model Lesson {
   chapter           Chapter        @relation(fields: [chapterId], references: [id], onDelete: Cascade)
   comments          Comment[]
   createdAt         DateTime       @default(now())
-  updatedAt         DateTime? 
+  updatedAt         DateTime?      @updatedAt
 }
 
 enum LessonType {
   VIDEO
   ARTICLE
-  Quiz
+  QUIZ
 }
 
 model Video {
   id              Int            @id @default(autoincrement())
   title           String
-  slug            String
   description     String?
   url             String
   lessonId        Int            @unique
   lesson          Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   createdAt       DateTime       @default(now())
-  updatedAt       DateTime? 
+  updatedAt       DateTime?      @updatedAt
 }
 
 model Article {
   id              Int            @id @default(autoincrement())
   title           String
-  slug            String
   content         String
   lessonId        Int            @unique
   lesson          Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   createdAt       DateTime       @default(now())
-  updatedAt       DateTime? 
+  updatedAt       DateTime?      @updatedAt
 }
 
 model Quiz {
   id              Int            @id @default(autoincrement())
+  title           String
+  description     String?
+  requiredTime    Float
   lessonId        Int            @unique
   questions       Question[]
   lesson          Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   createdAt       DateTime       @default(now())
-  updatedAt       DateTime? 
+  updatedAt       DateTime?      @updatedAt
 }
 
 model Question {
@@ -282,11 +287,28 @@ model Question {
   choiceB         String
   choiceC         String?
   choiceD         String?
-  correctAnswer   String
+  correctAnswer   CorrectAnswer
+  order           Int
+  level           QuestionLevel
   quizId          Int
   quiz            Quiz           @relation(fields: [quizId], references: [id], onDelete: Cascade)
   createdAt       DateTime       @default(now())
-  updatedAt       DateTime? 
+  updatedAt       DateTime?      @updatedAt
+  @@unique([quizId, order])
+}
+
+enum CorrectAnswer {
+  choiceA
+  choiceB
+  choiceC
+  choiceD
+}
+
+enum QuestionLevel {
+  EAZY
+  MEDIUM
+  HARD
+  ADVANCED
 }
 
 model Comment {
@@ -298,7 +320,7 @@ model Comment {
   lessonId          Int
   lesson            Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   createdAt         DateTime       @default(now())
-  updatedAt         DateTime?
+  updatedAt         DateTime?      @updatedAt
 }
 
 model Log {

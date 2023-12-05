@@ -1,7 +1,5 @@
 import { Video } from "@prisma/client";
-import { IFindBaseRepository } from "./Base/IFindBaseRepository";
-import { IUpdateBaseRepository } from "./Base/IUpdateBaseRepository";
-import { IDeleteBaseRepository } from "./Base/IDeleteBaseRepository";
+import { IRepository } from "./Base/IRepository";
 
-export interface IVideoRepository extends IFindBaseRepository<Video>, IUpdateBaseRepository<Video>, IDeleteBaseRepository<Video> {
+export interface IVideoRepository extends IRepository<Video> {
 }

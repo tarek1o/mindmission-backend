@@ -13,83 +13,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CourseService = void 0;
-const client_1 = require("@prisma/client");
 const inversify_1 = require("inversify");
 const slugify_1 = __importDefault(require("slugify"));
+const APIError_1 = __importDefault(require("../../presentation/errorHandlers/APIError"));
+const HTTPStatusCode_1 = __importDefault(require("../../presentation/enums/HTTPStatusCode"));
 let CourseService = class CourseService {
-    constructor(courseRepository) {
+    constructor(courseRepository, categoryService, chapterService) {
         this.courseRepository = courseRepository;
+        this.categoryService = categoryService;
+        this.chapterService = chapterService;
     }
-    createQuestions(questions) {
-        return questions.map((question) => {
-            return {
-                questionText: question.questionText,
-                choiceA: question.choiceA,
-                choiceB: question.choiceB,
-                choiceC: question.choiceC,
-                choiceD: question.choiceD,
-                correctAnswer: question.correctAnswer
-            };
-        });
-    }
-    ;
-    createQuiz(quiz) {
-        return {
-            questions: {
-                create: this.createQuestions(quiz.questions)
+    async isTrueTopic(id) {
+        const topic = await this.categoryService.findUnique({
+            where: {
+                id
+            },
+            select: {
+                type: true
             }
-        };
-    }
-    ;
-    createArticle(article) {
-        return {
-            title: article.title,
-            slug: (0, slugify_1.default)(article.title, { lower: true, trim: true }),
-            content: article.content,
-        };
-    }
-    ;
-    createVideo(video) {
-        return {
-            title: video.title,
-            slug: (0, slugify_1.default)(video.title, { lower: true, trim: true }),
-            description: video.description,
-            url: video.url,
-        };
-    }
-    ;
-    createLessons(lessons) {
-        return lessons.map((lesson) => {
-            return {
-                title: lesson.title,
-                slug: (0, slugify_1.default)(lesson.title, { lower: true, trim: true }),
-                isFree: lesson.isFree,
-                lessonType: lesson.lessonType,
-                video: lesson.lessonType === client_1.LessonType.VIDEO ? {
-                    create: this.createVideo(lesson.video)
-                } : undefined,
-                article: lesson.lessonType === client_1.LessonType.ARTICLE ? {
-                    create: this.createArticle(lesson.article)
-                } : undefined,
-                quiz: lesson.lessonType === client_1.LessonType.Quiz ? {
-                    create: this.createQuiz(lesson.quiz)
-                } : undefined
-            };
         });
+        if (!topic) {
+            throw new APIError_1.default("This topic is not exist", HTTPStatusCode_1.default.BadRequest);
+        }
+        if (topic.type !== 'TOPIC') {
+            throw new APIError_1.default(`Any course must belongs to topic not ${topic.type.toLowerCase()}`, HTTPStatusCode_1.default.BadRequest);
+        }
     }
-    ;
-    createChapters(chapters) {
-        return chapters.map((chapter) => {
-            return {
-                title: chapter.title,
-                slug: (0, slugify_1.default)(chapter.title, { lower: true, trim: true }),
-                lessons: {
-                    create: this.createLessons(chapter.lessons)
-                }
-            };
-        });
-    }
-    ;
     count(args) {
         return this.courseRepository.count(args);
     }
@@ -103,16 +52,29 @@ let CourseService = class CourseService {
     }
     ;
     async create(args) {
+        var _a, _b;
         args.data.slug = (0, slugify_1.default)(args.data.title, { lower: true, trim: true });
-        args.data.chapters = {
-            create: this.createChapters(args.data.chapters)
-        };
+        await this.isTrueTopic((_b = (_a = args.data.topic) === null || _a === void 0 ? void 0 : _a.connect) === null || _b === void 0 ? void 0 : _b.id);
         return this.courseRepository.create(args);
     }
     ;
     async update(args) {
+        var _a, _b;
         if (args.data.title) {
             args.data.slug = (0, slugify_1.default)(args.data.title.toString(), { lower: true, trim: true });
+        }
+        if ((_b = (_a = args.data.topic) === null || _a === void 0 ? void 0 : _a.connect) === null || _b === void 0 ? void 0 : _b.id) {
+            await this.isTrueTopic(args.data.topic.connect.id);
+        }
+        if (args.data.chapters) {
+            const count = await this.chapterService.count({
+                where: {
+                    courseId: args.where.id
+                },
+            });
+            if (count !== args.data.chapters.update.length) {
+                throw new APIError_1.default("You should send all course's chapters during update the order of chapters", HTTPStatusCode_1.default.BadRequest);
+            }
         }
         return this.courseRepository.update(args);
     }
@@ -125,6 +87,8 @@ let CourseService = class CourseService {
 exports.CourseService = CourseService;
 exports.CourseService = CourseService = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)('ICourseRepository'))
+    __param(0, (0, inversify_1.inject)('ICourseRepository')),
+    __param(1, (0, inversify_1.inject)('ICategoryService')),
+    __param(2, (0, inversify_1.inject)('IChapterService'))
 ], CourseService);
 //# sourceMappingURL=CourseService.js.map

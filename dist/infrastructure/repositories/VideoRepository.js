@@ -23,6 +23,9 @@ let VideoRepository = class VideoRepository {
     findUnique(args) {
         return db_1.default.video.findUnique(args);
     }
+    create(args) {
+        return db_1.default.video.create(args);
+    }
     update(args) {
         return db_1.default.video.update(args);
     }

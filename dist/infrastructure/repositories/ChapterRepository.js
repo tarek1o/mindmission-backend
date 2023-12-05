@@ -23,6 +23,12 @@ let ChapterRepository = class ChapterRepository {
     findUnique(args) {
         return db_1.default.chapter.findUnique(args);
     }
+    findFirst(args) {
+        return db_1.default.chapter.findFirst(args);
+    }
+    create(args) {
+        return db_1.default.chapter.create(args);
+    }
     update(args) {
         return db_1.default.chapter.update(args);
     }

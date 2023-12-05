@@ -1,4 +1,4 @@
-import { Prisma, Lesson } from "@prisma/client";
+import { Prisma, Lesson, $Enums } from "@prisma/client";
 import { injectable } from "inversify";
 import { ILessonRepository } from "../../application/interfaces/IRepositories/ILessonRepository";
 import prisma from "../../domain/db";
@@ -17,6 +17,14 @@ export class LessonRepository implements ILessonRepository {
 
   findUnique(args: Prisma.LessonFindUniqueArgs): Promise<Lesson | null> {
     return prisma.lesson.findUnique(args);
+  }
+
+  findFirst(args: Prisma.LessonFindFirstArgs): Promise<Lesson | null> {
+    return prisma.lesson.findFirst(args);
+  }
+
+  create(args: Prisma.LessonCreateArgs): Promise<Lesson> {
+    return prisma.lesson.create(args);
   }
 
   update(args: Prisma.LessonUpdateArgs): Promise<Lesson> {

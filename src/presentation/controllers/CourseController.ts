@@ -33,14 +33,14 @@ export class CourseController {
 			include
 		});
 		if(!Course) {
-			throw new APIError('This Course does not exist', HttpStatusCode.BadRequest);
+			throw new APIError('This course does not exist', HttpStatusCode.BadRequest);
 		}
-		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The Course is retrieved successfully', [Course]));
+		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The course is retrieved successfully', [Course]));
 	});
 
 	createCourse = asyncHandler(async(request: ExtendedRequest, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const {title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, topicId, chapters} = request.body.input;
+		const {title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, topicId} = request.body.input;
 		const createdCourse = await this.courseService.create({
 			data: {
 				title,
@@ -55,7 +55,7 @@ export class CourseController {
         price,
         discountPercentage,
         isApproved: false,
-        chapters,
+				isDraft: true,
         topic: {
           connect: {
             id: topicId
@@ -63,19 +63,19 @@ export class CourseController {
         },
         instructor: {
           connect: {
-            id: request.user?.id
+						userId: request.user?.id
           }
         }
 			},
 			select,
 			include,
 		});
-		response.status(HttpStatusCode.Created).json(ResponseFormatter.formate(true, 'The Course is created successfully', [createdCourse]));
+		response.status(HttpStatusCode.Created).json(ResponseFormatter.formate(true, 'The course is created successfully', [createdCourse]));
   });
 
 	updateCourse = asyncHandler(async(request: ExtendedRequest, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const {title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, isApproved, topicId} = request.body.input;
+		const {title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, isApproved, isDraft, chapters, topicId} = request.body.input;
 		const updatedCourse = await this.courseService.update({
 			where: {
 				id: +request.params.id
@@ -93,6 +93,19 @@ export class CourseController {
         price: price || undefined,
         discountPercentage: discountPercentage || undefined,
         isApproved: isApproved || undefined,
+				isDraft: isDraft || undefined,
+				chapters: chapters ? {
+					update: chapters.map((chapters: {id: number, order: number}) => {
+						return {
+							where: {
+								id: chapters.id
+							},
+							data: {
+								order: chapters.order
+							}
+						}
+					})
+				} : undefined,
         topic: topicId ? {
           connect: {
             id: topicId
@@ -102,11 +115,11 @@ export class CourseController {
 			select,
 			include
 		});
-		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The Course is updated successfully', [updatedCourse]));
+		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The course is updated successfully', [updatedCourse]));
 	});
 
 	deleteCourse = asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => {
-		const deletedCourse = await this.courseService.delete(+request.params.id);
+		await this.courseService.delete(+request.params.id);
 		response.status(HttpStatusCode.NoContent).json();
 	});
 }

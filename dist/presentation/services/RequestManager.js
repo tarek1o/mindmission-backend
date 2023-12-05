@@ -7,7 +7,7 @@ class RequestManager {
 exports.RequestManager = RequestManager;
 _a = RequestManager;
 RequestManager.skipItems = 0;
-RequestManager.takeItems = 2;
+RequestManager.takeItems = 10;
 RequestManager.select = (request) => {
     const { select } = request.body;
     return select;

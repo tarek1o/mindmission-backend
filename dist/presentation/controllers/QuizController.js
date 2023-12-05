@@ -40,9 +40,99 @@ let QuizController = class QuizController {
                 include
             });
             if (!quiz) {
-                throw new APIError_1.default('This Quiz does not exist', HTTPStatusCode_1.default.BadRequest);
+                throw new APIError_1.default('This quiz does not exist', HTTPStatusCode_1.default.BadRequest);
             }
-            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The Quiz is retrieved successfully', [quiz]));
+            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The quiz is retrieved successfully', [quiz]));
+        });
+        this.createQuiz = (0, express_async_handler_1.default)(async (request, response, next) => {
+            const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
+            const { title, requiredTime, description, questions, lessonId } = request.body.input;
+            const createdQuiz = await this.quizService.create({
+                data: {
+                    title,
+                    requiredTime,
+                    description,
+                    questions: {
+                        createMany: {
+                            data: questions.map((question, index) => {
+                                return {
+                                    questionText: question.questionText,
+                                    choiceA: question.choiceA,
+                                    choiceB: question.choiceB,
+                                    choiceC: question.choiceC,
+                                    choiceD: question.choiceD,
+                                    correctAnswer: question.correctAnswer,
+                                    order: question.order || index + 1,
+                                    level: question.level
+                                };
+                            })
+                        }
+                    },
+                    lesson: {
+                        connect: {
+                            id: lessonId
+                        }
+                    }
+                },
+                select,
+                include,
+            });
+            response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The quiz is created successfully', [createdQuiz]));
+        });
+        this.updateQuiz = (0, express_async_handler_1.default)(async (request, response, next) => {
+            const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
+            const { title, requiredTime, description, questions, lessonId } = request.body.input;
+            const updatedQuiz = await this.quizService.update({
+                where: {
+                    id: +request.params.id,
+                },
+                data: {
+                    title: title || undefined,
+                    requiredTime: requiredTime || undefined,
+                    description: description || undefined,
+                    questions: questions && questions.length > 0 ? {
+                        upsert: questions.map((question, index) => {
+                            return {
+                                where: {
+                                    id: question.id || 0
+                                },
+                                update: {
+                                    questionText: question.questionText || undefined,
+                                    choiceA: question.choiceA || undefined,
+                                    choiceB: question.choiceB || undefined,
+                                    choiceC: question.choiceC || undefined,
+                                    choiceD: question.choiceD || undefined,
+                                    correctAnswer: question.correctAnswer || undefined,
+                                    order: question.order || undefined,
+                                    level: question.level || undefined,
+                                },
+                                create: {
+                                    questionText: question.questionText,
+                                    choiceA: question.choiceA,
+                                    choiceB: question.choiceB,
+                                    choiceC: question.choiceC,
+                                    choiceD: question.choiceD,
+                                    correctAnswer: question.correctAnswer,
+                                    order: question.order || index + 1,
+                                    level: question.level
+                                }
+                            };
+                        })
+                    } : undefined,
+                    lesson: lessonId ? {
+                        connect: {
+                            id: lessonId
+                        }
+                    } : undefined
+                },
+                select,
+                include,
+            });
+            response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The quiz is updated successfully', [updatedQuiz]));
+        });
+        this.deleteQuiz = (0, express_async_handler_1.default)(async (request, response, next) => {
+            await this.quizService.delete(+request.params.id);
+            response.status(HTTPStatusCode_1.default.NoContent).json();
         });
     }
 };

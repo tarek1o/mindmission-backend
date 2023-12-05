@@ -19,6 +19,10 @@ export class VideoRepository implements IVideoRepository {
     return prisma.video.findUnique(args);
   }
 
+  create(args: Prisma.VideoCreateArgs): Promise<Video> {
+    return prisma.video.create(args);
+  }
+
   update(args: Prisma.VideoUpdateArgs): Promise<Video> {
     return prisma.video.update(args);
   }

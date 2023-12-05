@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LessonService = void 0;
 const inversify_1 = require("inversify");
 const slugify_1 = __importDefault(require("slugify"));
+const APIError_1 = __importDefault(require("../../presentation/errorHandlers/APIError"));
+const HTTPStatusCode_1 = __importDefault(require("../../presentation/enums/HTTPStatusCode"));
 let LessonService = class LessonService {
     constructor(lessonRepository) {
         this.lessonRepository = lessonRepository;
@@ -31,6 +33,22 @@ let LessonService = class LessonService {
         return this.lessonRepository.findUnique(args);
     }
     ;
+    async create(args) {
+        args.data.slug = (0, slugify_1.default)(args.data.title.toString(), { lower: true, trim: true });
+        const isOrderIsFound = await this.lessonRepository.findFirst({
+            where: {
+                order: args.data.order,
+                chapterId: args.data.chapterId
+            },
+            select: {
+                id: true
+            }
+        });
+        if (isOrderIsFound) {
+            throw new APIError_1.default("There is another lesson with the same order ", HTTPStatusCode_1.default.BadRequest);
+        }
+        return this.lessonRepository.create(args);
+    }
     async update(args) {
         if (args.data.title) {
             args.data.slug = (0, slugify_1.default)(args.data.title.toString(), { lower: true, trim: true });

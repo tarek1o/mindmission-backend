@@ -19,6 +19,14 @@ export class ChapterRepository implements IChapterRepository {
     return prisma.chapter.findUnique(args);
   }
 
+  findFirst(args: Prisma.ChapterFindFirstArgs): Promise<Chapter | null> {
+    return prisma.chapter.findFirst(args);
+  }
+
+  create(args: Prisma.ChapterCreateArgs): Promise<Chapter> {
+    return prisma.chapter.create(args);
+  }
+
   update(args: Prisma.ChapterUpdateArgs): Promise<Chapter> {
     return prisma.chapter.update(args);
   }

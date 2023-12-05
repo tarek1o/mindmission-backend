@@ -44,6 +44,49 @@ let ArticleController = class ArticleController {
             }
             response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The Article is retrieved successfully', [article]));
         });
+        this.createArticle = (0, express_async_handler_1.default)(async (request, response, next) => {
+            const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
+            const { title, content, lessonId } = request.body.input;
+            const createdArticle = await this.articleService.create({
+                data: {
+                    title,
+                    content,
+                    lesson: {
+                        connect: {
+                            id: lessonId
+                        }
+                    }
+                },
+                select,
+                include,
+            });
+            response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The article is created successfully', [createdArticle]));
+        });
+        this.updateArticle = (0, express_async_handler_1.default)(async (request, response, next) => {
+            const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
+            const { title, content, lessonId } = request.body.input;
+            const updatedArticle = await this.articleService.update({
+                where: {
+                    id: +request.params.id,
+                },
+                data: {
+                    title: title || undefined,
+                    content: content || undefined,
+                    lesson: lessonId ? {
+                        connect: {
+                            id: lessonId
+                        }
+                    } : undefined
+                },
+                select,
+                include,
+            });
+            response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The article is updated successfully', [updatedArticle]));
+        });
+        this.deleteArticle = (0, express_async_handler_1.default)(async (request, response, next) => {
+            await this.articleService.delete(+request.params.id);
+            response.status(HTTPStatusCode_1.default.NoContent).json();
+        });
     }
 };
 exports.ArticleController = ArticleController;

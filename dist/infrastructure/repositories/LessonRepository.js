@@ -23,6 +23,12 @@ let LessonRepository = class LessonRepository {
     findUnique(args) {
         return db_1.default.lesson.findUnique(args);
     }
+    findFirst(args) {
+        return db_1.default.lesson.findFirst(args);
+    }
+    create(args) {
+        return db_1.default.lesson.create(args);
+    }
     update(args) {
         return db_1.default.lesson.update(args);
     }

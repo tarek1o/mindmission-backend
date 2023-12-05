@@ -13,11 +13,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VideoService = void 0;
+const client_1 = require("@prisma/client");
 const inversify_1 = require("inversify");
-const slugify_1 = __importDefault(require("slugify"));
+const APIError_1 = __importDefault(require("../../presentation/errorHandlers/APIError"));
+const HTTPStatusCode_1 = __importDefault(require("../../presentation/enums/HTTPStatusCode"));
 let VideoService = class VideoService {
-    constructor(videoRepository) {
+    constructor(videoRepository, lessonService) {
         this.videoRepository = videoRepository;
+        this.lessonService = lessonService;
+    }
+    async isLessonTypeIsVideo(lessonId) {
+        const lesson = await this.lessonService.findUnique({
+            where: {
+                id: lessonId
+            },
+            select: {
+                lessonType: true
+            }
+        });
+        if (!lesson) {
+            throw new APIError_1.default('This lesson is not exist', HTTPStatusCode_1.default.BadRequest);
+        }
+        if (lesson.lessonType !== client_1.LessonType.VIDEO) {
+            throw new APIError_1.default('The type of this lesson is not video', HTTPStatusCode_1.default.BadRequest);
+        }
     }
     count(args) {
         return this.videoRepository.count(args);
@@ -31,9 +50,15 @@ let VideoService = class VideoService {
         return this.videoRepository.findUnique(args);
     }
     ;
+    async create(args) {
+        var _a, _b;
+        await this.isLessonTypeIsVideo((_b = (_a = args.data.lesson) === null || _a === void 0 ? void 0 : _a.connect) === null || _b === void 0 ? void 0 : _b.id);
+        return this.videoRepository.create(args);
+    }
     async update(args) {
-        if (args.data.title) {
-            args.data.slug = (0, slugify_1.default)(args.data.title.toString(), { lower: true, trim: true });
+        var _a, _b;
+        if ((_b = (_a = args.data.lesson) === null || _a === void 0 ? void 0 : _a.connect) === null || _b === void 0 ? void 0 : _b.id) {
+            await this.isLessonTypeIsVideo(args.data.lesson.connect.id);
         }
         return this.videoRepository.update(args);
     }
@@ -45,6 +70,7 @@ let VideoService = class VideoService {
 exports.VideoService = VideoService;
 exports.VideoService = VideoService = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)('IVideoRepository'))
+    __param(0, (0, inversify_1.inject)('IVideoRepository')),
+    __param(1, (0, inversify_1.inject)('ILessonService'))
 ], VideoService);
 //# sourceMappingURL=VideoService.js.map

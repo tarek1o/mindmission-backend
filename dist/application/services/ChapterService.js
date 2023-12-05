@@ -15,9 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChapterService = void 0;
 const inversify_1 = require("inversify");
 const slugify_1 = __importDefault(require("slugify"));
+const APIError_1 = __importDefault(require("../../presentation/errorHandlers/APIError"));
+const HTTPStatusCode_1 = __importDefault(require("../../presentation/enums/HTTPStatusCode"));
 let ChapterService = class ChapterService {
-    constructor(chapterRepository) {
+    constructor(chapterRepository, lessonService) {
         this.chapterRepository = chapterRepository;
+        this.lessonService = lessonService;
     }
     count(args) {
         return this.chapterRepository.count(args);
@@ -31,9 +34,39 @@ let ChapterService = class ChapterService {
         return this.chapterRepository.findUnique(args);
     }
     ;
+    findFirst(args) {
+        return this.chapterRepository.findFirst(args);
+    }
+    ;
+    async create(args) {
+        var _a, _b;
+        const isOrderExist = await this.findFirst({
+            where: {
+                courseId: (_b = (_a = args.data.course) === null || _a === void 0 ? void 0 : _a.connect) === null || _b === void 0 ? void 0 : _b.id,
+                order: args.data.order
+            },
+            select: {
+                id: true
+            }
+        });
+        if (isOrderExist) {
+            throw new APIError_1.default('There is already chapter with the same order', HTTPStatusCode_1.default.BadRequest);
+        }
+        return this.chapterRepository.create(args);
+    }
     async update(args) {
         if (args.data.title) {
             args.data.slug = (0, slugify_1.default)(args.data.title.toString(), { lower: true, trim: true });
+        }
+        if (args.data.lessons) {
+            const count = await this.lessonService.count({
+                where: {
+                    chapterId: args.where.id
+                },
+            });
+            if (count !== args.data.lessons.update.length) {
+                throw new APIError_1.default("You should send all chapter's lessons during update the order of lessons", HTTPStatusCode_1.default.BadRequest);
+            }
         }
         return this.chapterRepository.update(args);
     }
@@ -45,6 +78,7 @@ let ChapterService = class ChapterService {
 exports.ChapterService = ChapterService;
 exports.ChapterService = ChapterService = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)('IChapterRepository'))
+    __param(0, (0, inversify_1.inject)('IChapterRepository')),
+    __param(1, (0, inversify_1.inject)('ILessonService'))
 ], ChapterService);
 //# sourceMappingURL=ChapterService.js.map

@@ -40,9 +40,62 @@ let ChapterController = class ChapterController {
                 include
             });
             if (!chapter) {
-                throw new APIError_1.default('This Chapter does not exist', HTTPStatusCode_1.default.BadRequest);
+                throw new APIError_1.default('This chapter does not exist', HTTPStatusCode_1.default.BadRequest);
             }
-            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The Chapter is retrieved successfully', [chapter]));
+            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The chapter is retrieved successfully', [chapter]));
+        });
+        this.createChapter = (0, express_async_handler_1.default)(async (request, response, next) => {
+            const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
+            const { title, description, order, courseId } = request.body.input;
+            const createdChapter = await this.chapterService.create({
+                data: {
+                    title,
+                    slug: title,
+                    description,
+                    order,
+                    course: {
+                        connect: {
+                            id: courseId
+                        }
+                    }
+                },
+                select,
+                include,
+            });
+            response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The chapter is created successfully', [createdChapter]));
+        });
+        this.updateChapter = (0, express_async_handler_1.default)(async (request, response, next) => {
+            const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
+            const { title, description, lessons } = request.body.input;
+            const updatedLesson = await this.chapterService.update({
+                where: {
+                    id: +request.params.id
+                },
+                data: {
+                    title: title || undefined,
+                    slug: title || undefined,
+                    description: description || undefined,
+                    lessons: lessons && lessons.length > 0 ? {
+                        update: lessons.map((lesson) => {
+                            return {
+                                where: {
+                                    id: lesson.id,
+                                },
+                                data: {
+                                    order: lesson.order
+                                }
+                            };
+                        })
+                    } : undefined
+                },
+                select,
+                include,
+            });
+            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The chapter is updated successfully', [updatedLesson]));
+        });
+        this.deleteChapter = (0, express_async_handler_1.default)(async (request, response, next) => {
+            await this.chapterService.delete(+request.params.id);
+            response.status(HTTPStatusCode_1.default.NoContent).json();
         });
     }
 };

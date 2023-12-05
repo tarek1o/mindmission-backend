@@ -19,6 +19,10 @@ export class QuizRepository implements IQuizRepository {
     return prisma.quiz.findUnique(args);
   }
 
+  create(args: Prisma.QuizCreateArgs): Promise<Quiz> {
+    return prisma.quiz.create(args);
+  }
+
   update(args: Prisma.QuizUpdateArgs): Promise<Quiz> {
     return prisma.quiz.update(args);
   }

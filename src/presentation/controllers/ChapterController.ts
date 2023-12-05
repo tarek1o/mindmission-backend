@@ -32,8 +32,64 @@ export class ChapterController {
 			include
 		});
 		if(!chapter) {
-			throw new APIError('This Chapter does not exist', HttpStatusCode.BadRequest);
+			throw new APIError('This chapter does not exist', HttpStatusCode.BadRequest);
 		}
-		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The Chapter is retrieved successfully', [chapter]));
+		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The chapter is retrieved successfully', [chapter]));
+	});
+
+	createChapter = asyncHandler(async(request: ExtendedRequest, response: Response, next: NextFunction) => {
+		const {select, include} = RequestManager.findOptionsWrapper(request);
+		const {title, description, order, courseId} = request.body.input;
+		const createdChapter = await this.chapterService.create({
+			data: {
+				title,
+				slug: title,
+				description,
+				order,
+				course: {
+					connect: {
+						id: courseId
+					}
+				}
+			},
+			select,
+			include,
+		});
+		response.status(HttpStatusCode.Created).json(ResponseFormatter.formate(true, 'The chapter is created successfully', [createdChapter]));
+  });
+
+	updateChapter = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
+		const {select, include} = RequestManager.findOptionsWrapper(request);
+		const {title, description, lessons} = request.body.input;
+		const updatedLesson = await this.chapterService.update({
+			where: {
+				id: +request.params.id
+			},
+			data: {
+				title: title || undefined,
+				slug: title || undefined,
+				description: description || undefined,
+				lessons: lessons && lessons.length > 0 ? {
+					update: lessons.map((lesson: {id: number, order: number}) => {
+						return {
+							where: {
+								id: lesson.id,
+							},
+							data: {
+								order: lesson.order
+							}
+						}
+					})
+				} : undefined
+			},
+			select,
+			include,
+		});
+		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The chapter is updated successfully', [updatedLesson]));
+	});
+
+	deleteChapter = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
+		await this.chapterService.delete(+request.params.id);
+		response.status(HttpStatusCode.NoContent).json();
 	});
 }

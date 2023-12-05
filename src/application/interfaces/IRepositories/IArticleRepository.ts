@@ -1,7 +1,5 @@
 import { Article } from "@prisma/client";
-import { IFindBaseRepository } from "./Base/IFindBaseRepository";
-import { IUpdateBaseRepository } from "./Base/IUpdateBaseRepository";
-import { IDeleteBaseRepository } from "./Base/IDeleteBaseRepository";
+import { IRepository } from "./Base/IRepository";
 
-export interface IArticleRepository extends IFindBaseRepository<Article>, IUpdateBaseRepository<Article>, IDeleteBaseRepository<Article> {
+export interface IArticleRepository extends IRepository<Article> {
 }

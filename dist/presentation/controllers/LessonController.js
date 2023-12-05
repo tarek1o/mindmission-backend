@@ -44,6 +44,51 @@ let LessonController = class LessonController {
             }
             response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The Lesson is retrieved successfully', [lesson]));
         });
+        this.createLesson = (0, express_async_handler_1.default)(async (request, response, next) => {
+            const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
+            const { title, isFree, attachment, order, lessonType, chapterId } = request.body.input;
+            const createdLesson = await this.lessonService.create({
+                data: {
+                    title,
+                    slug: title,
+                    isFree,
+                    attachment,
+                    order,
+                    lessonType,
+                    chapter: {
+                        connect: {
+                            id: chapterId
+                        }
+                    }
+                },
+                select,
+                include,
+            });
+            response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The lesson is created successfully', [createdLesson]));
+        });
+        this.updateLesson = (0, express_async_handler_1.default)(async (request, response, next) => {
+            const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
+            const { title, isFree, attachment, order, lessonType, chapterId } = request.body.input;
+            const updatedLesson = await this.lessonService.update({
+                where: {
+                    id: +request.params.id
+                },
+                data: {
+                    title: title || undefined,
+                    slug: title,
+                    isFree: isFree || undefined,
+                    attachment: attachment || undefined,
+                    lessonType: lessonType || undefined,
+                },
+                select,
+                include,
+            });
+            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The lesson is updated successfully', [updatedLesson]));
+        });
+        this.deleteLesson = (0, express_async_handler_1.default)(async (request, response, next) => {
+            await this.lessonService.delete(+request.params.id);
+            response.status(HTTPStatusCode_1.default.NoContent).json();
+        });
     }
 };
 exports.LessonController = LessonController;

@@ -19,6 +19,10 @@ export class ArticleRepository implements IArticleRepository {
     return prisma.article.findUnique(args);
   }
 
+  create(args: Prisma.ArticleCreateArgs): Promise<Article> {
+    return prisma.article.create(args);
+  }
+
   update(args: Prisma.ArticleUpdateArgs): Promise<Article> {
     return prisma.article.update(args);
   }

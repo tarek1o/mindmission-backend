@@ -1,84 +1,35 @@
 import { Prisma, Course, LessonType } from "@prisma/client";
 import {inject, injectable } from "inversify";
 import slugify from "slugify";
-import { ICourseService } from "../interfaces/IServices/ICourseService";
 import { ICourseRepository } from "../interfaces/IRepositories/ICourseRepository";
+import { ICourseService } from "../interfaces/IServices/ICourseService";
+import { ICategoryService } from "../interfaces/IServices/ICategoryService";
+import { IChapterService } from "../interfaces/IServices/IChapterService";
 import APIError from "../../presentation/errorHandlers/APIError";
 import HttpStatusCode from "../../presentation/enums/HTTPStatusCode";
 
 @injectable()
 export class CourseService implements ICourseService {
-	constructor(@inject('ICourseRepository') private courseRepository: ICourseRepository) {}
+	constructor(@inject('ICourseRepository') private courseRepository: ICourseRepository, @inject('ICategoryService') private categoryService: ICategoryService, @inject('IChapterService') private chapterService: IChapterService) {}
 
-	private createQuestions(questions: any) {
-		return questions.map((question: any) => {
-			return {
-				questionText: question.questionText,
-				choiceA: question.choiceA,
-				choiceB: question.choiceB,
-				choiceC: question.choiceC,
-				choiceD: question.choiceD,
-				correctAnswer: question.correctAnswer
+	async isTrueTopic(id: number) {
+		const topic = await this.categoryService.findUnique({
+			where: {
+				id
+			},
+			select: {
+				type: true
 			}
 		})
-	};
-	
-	private createQuiz(quiz: any) {
-		return {
-			questions: {
-				create: this.createQuestions(quiz.questions)
-			}
+
+		if(!topic) {
+			throw new APIError("This topic is not exist", HttpStatusCode.BadRequest);
 		}
-	};
 
-	private createArticle(article: any) {
-		return {
-			title: article.title,
-			slug: slugify(article.title, {lower: true, trim: true}),
-			content: article.content,
+		if(topic.type !== 'TOPIC') {
+			throw new APIError(`Any course must belongs to topic not ${topic.type.toLowerCase()}`, HttpStatusCode.BadRequest);
 		}
-	};
-
-	private createVideo(video: any) {
-		return {
-			title: video.title,
-			slug: slugify(video.title, {lower: true, trim: true}),
-			description: video.description,
-			url: video.url,
-		}
-	};
-
-	private createLessons(lessons: any) {
-		return lessons.map((lesson: any) => {
-			return {
-				title: lesson.title,
-				slug: slugify(lesson.title, {lower: true, trim: true}),
-				isFree: lesson.isFree,
-				lessonType: lesson.lessonType,
-				video: lesson.lessonType === LessonType.VIDEO ? {
-					create: this.createVideo(lesson.video)
-				} : undefined,
-				article: lesson.lessonType === LessonType.ARTICLE ? {
-					create: this.createArticle(lesson.article)
-				} : undefined,
-				quiz: lesson.lessonType === LessonType.Quiz ? {
-					create: this.createQuiz(lesson.quiz)
-				} : undefined
-			}
-		})
-	};
-
-	private createChapters(chapters: any) {
-		return chapters.map((chapter: any) => {
-			return {
-				title: chapter.title,
-				slug: slugify(chapter.title, {lower: true, trim: true}),
-				lessons: {
-					create: this.createLessons(chapter.lessons)
-				}
-			}
-		})
-	};
+	}
 
 	count(args: Prisma.CourseCountArgs): Promise<number> {
 		return this.courseRepository.count(args);
@@ -94,9 +45,7 @@ export class CourseService implements ICourseService {
 
 	async create(args: Prisma.CourseCreateArgs): Promise<Course> {
     args.data.slug = slugify(args.data.title, {lower: true, trim: true});
-		args.data.chapters = {
-			create: this.createChapters(args.data.chapters)
-		}
+		await this.isTrueTopic(args.data.topic?.connect?.id as number);
 		return this.courseRepository.create(args);
 	};
 
@@ -104,6 +53,23 @@ export class CourseService implements ICourseService {
     if(args.data.title) {
       args.data.slug = slugify(args.data.title.toString(), {lower: true, trim: true});
     }
+
+		if(args.data.topic?.connect?.id) {
+			await this.isTrueTopic(args.data.topic.connect.id);
+		}
+
+		if(args.data.chapters) {
+			const count = await this.chapterService.count({
+				where: {
+					courseId: args.where.id
+				},
+			});
+
+			if(count !== (args.data.chapters.update as any).length) {
+				throw new APIError("You should send all course's chapters during update the order of chapters", HttpStatusCode.BadRequest);
+			}
+		}
+
 		return this.courseRepository.update(args);
 	};
 

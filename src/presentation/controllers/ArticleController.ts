@@ -6,7 +6,6 @@ import {IArticleService} from "../../application/interfaces/IServices/IArticleSe
 import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
 import APIError from "../errorHandlers/APIError";
 import { RequestManager } from "../services/RequestManager";
-import { ExtendedRequest } from "../types/ExtendedRequest";
 
 @injectable()
 export class ArticleController {
@@ -35,5 +34,51 @@ export class ArticleController {
 			throw new APIError('This Article does not exist', HttpStatusCode.BadRequest);
 		}
 		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The Article is retrieved successfully', [article]));
+	});
+
+	createArticle = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
+		const {select, include} = RequestManager.findOptionsWrapper(request);
+		const {title, content, lessonId} = request.body.input;
+		const createdArticle = await this.articleService.create({
+			data: {
+				title,
+				content,
+				lesson: {
+					connect: {
+						id: lessonId
+					}
+				}
+			},
+			select,
+			include,
+		});
+		response.status(HttpStatusCode.Created).json(ResponseFormatter.formate(true, 'The article is created successfully', [createdArticle]));
+	});
+
+	updateArticle = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
+		const {select, include} = RequestManager.findOptionsWrapper(request);
+		const {title, content, lessonId} = request.body.input;
+		const updatedArticle = await this.articleService.update({
+			where: {
+				id: +request.params.id,
+			},
+			data: {
+				title: title || undefined,
+				content: content || undefined,
+				lesson: lessonId ? {
+					connect: {
+						id: lessonId
+					}
+				} : undefined
+			},
+			select,
+			include,
+		});
+		response.status(HttpStatusCode.Created).json(ResponseFormatter.formate(true, 'The article is updated successfully', [updatedArticle]));
+	});
+
+	deleteArticle = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
+		await this.articleService.delete(+request.params.id);
+		response.status(HttpStatusCode.NoContent).json();
 	});
 }

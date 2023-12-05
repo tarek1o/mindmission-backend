@@ -41,14 +41,14 @@ let CourseController = class CourseController {
                 include
             });
             if (!Course) {
-                throw new APIError_1.default('This Course does not exist', HTTPStatusCode_1.default.BadRequest);
+                throw new APIError_1.default('This course does not exist', HTTPStatusCode_1.default.BadRequest);
             }
-            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The Course is retrieved successfully', [Course]));
+            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The course is retrieved successfully', [Course]));
         });
         this.createCourse = (0, express_async_handler_1.default)(async (request, response, next) => {
             var _a;
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
-            const { title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, topicId, chapters } = request.body.input;
+            const { title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, topicId } = request.body.input;
             const createdCourse = await this.courseService.create({
                 data: {
                     title,
@@ -63,7 +63,7 @@ let CourseController = class CourseController {
                     price,
                     discountPercentage,
                     isApproved: false,
-                    chapters,
+                    isDraft: true,
                     topic: {
                         connect: {
                             id: topicId
@@ -71,18 +71,18 @@ let CourseController = class CourseController {
                     },
                     instructor: {
                         connect: {
-                            id: (_a = request.user) === null || _a === void 0 ? void 0 : _a.id
+                            userId: (_a = request.user) === null || _a === void 0 ? void 0 : _a.id
                         }
                     }
                 },
                 select,
                 include,
             });
-            response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The Course is created successfully', [createdCourse]));
+            response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The course is created successfully', [createdCourse]));
         });
         this.updateCourse = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
-            const { title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, isApproved, topicId } = request.body.input;
+            const { title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, isApproved, isDraft, chapters, topicId } = request.body.input;
             const updatedCourse = await this.courseService.update({
                 where: {
                     id: +request.params.id
@@ -100,6 +100,19 @@ let CourseController = class CourseController {
                     price: price || undefined,
                     discountPercentage: discountPercentage || undefined,
                     isApproved: isApproved || undefined,
+                    isDraft: isDraft || undefined,
+                    chapters: chapters ? {
+                        update: chapters.map((chapters) => {
+                            return {
+                                where: {
+                                    id: chapters.id
+                                },
+                                data: {
+                                    order: chapters.order
+                                }
+                            };
+                        })
+                    } : undefined,
                     topic: topicId ? {
                         connect: {
                             id: topicId
@@ -109,10 +122,10 @@ let CourseController = class CourseController {
                 select,
                 include
             });
-            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The Course is updated successfully', [updatedCourse]));
+            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The course is updated successfully', [updatedCourse]));
         });
         this.deleteCourse = (0, express_async_handler_1.default)(async (request, response, next) => {
-            const deletedCourse = await this.courseService.delete(+request.params.id);
+            await this.courseService.delete(+request.params.id);
             response.status(HTTPStatusCode_1.default.NoContent).json();
         });
     }

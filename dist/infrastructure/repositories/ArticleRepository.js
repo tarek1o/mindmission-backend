@@ -23,6 +23,9 @@ let ArticleRepository = class ArticleRepository {
     findUnique(args) {
         return db_1.default.article.findUnique(args);
     }
+    create(args) {
+        return db_1.default.article.create(args);
+    }
     update(args) {
         return db_1.default.article.update(args);
     }

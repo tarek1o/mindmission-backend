@@ -35,7 +35,15 @@ export const upsertMainItemsIntoDB = async () => {
       permissions: [Permissions.Read, Permissions.Create, Permissions.Update, Permissions.Delete]
     },
     {
-      modelName: AllowedModels.Assignments,
+      modelName: AllowedModels.Videos,
+      permissions: [Permissions.Read, Permissions.Create, Permissions.Update, Permissions.Delete]
+    },
+    {
+      modelName: AllowedModels.Articles,
+      permissions: [Permissions.Read, Permissions.Create, Permissions.Update, Permissions.Delete]
+    },
+    {
+      modelName: AllowedModels.Quizzes,
       permissions: [Permissions.Read, Permissions.Create, Permissions.Update, Permissions.Delete]
     },
     {
@@ -78,10 +86,6 @@ export const upsertMainItemsIntoDB = async () => {
       permissions: [Permissions.Read]
     },
     {
-      modelName: AllowedModels.Assignments,
-      permissions: [Permissions.Read]
-    },
-    {
       modelName: AllowedModels.Comments,
       permissions: [Permissions.Read, Permissions.Create, Permissions.Update, Permissions.Delete]
     },
@@ -118,27 +122,23 @@ export const upsertMainItemsIntoDB = async () => {
     },
     {
       modelName: AllowedModels.Courses,
-      permissions: [Permissions.Read, Permissions.Create, Permissions.Update, Permissions.Delete]
+      permissions: [Permissions.Read, Permissions.Update, Permissions.Delete]
     },
     {
       modelName: AllowedModels.Chapters,
-      permissions: [Permissions.Read, Permissions.Create, Permissions.Update, Permissions.Delete]
+      permissions: [Permissions.Read, Permissions.Update, Permissions.Delete]
     },
     {
       modelName: AllowedModels.Lessons,
-      permissions: [Permissions.Read, Permissions.Create, Permissions.Update, Permissions.Delete]
-    },
-    {
-      modelName: AllowedModels.Assignments,
-      permissions: [Permissions.Read, Permissions.Create, Permissions.Update, Permissions.Delete]
+      permissions: [Permissions.Read, Permissions.Update, Permissions.Delete]
     },
     {
       modelName: AllowedModels.Ratings,
-      permissions: [Permissions.Read, Permissions.Create, Permissions.Update, Permissions.Delete]
+      permissions: [Permissions.Read, Permissions.Update, Permissions.Delete]
     },
     {
       modelName: AllowedModels.Comments,
-      permissions: [Permissions.Read, Permissions.Create, Permissions.Update, Permissions.Delete]
+      permissions: [Permissions.Read, Permissions.Update, Permissions.Delete]
     },
   ];
 

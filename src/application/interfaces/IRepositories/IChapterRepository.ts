@@ -1,7 +1,6 @@
-import { Chapter } from "@prisma/client";
-import { IFindBaseRepository } from "./Base/IFindBaseRepository";
-import { IUpdateBaseRepository } from "./Base/IUpdateBaseRepository";
-import { IDeleteBaseRepository } from "./Base/IDeleteBaseRepository";
+import { Prisma, Chapter } from "@prisma/client";
+import { IRepository } from "./Base/IRepository";
 
-export interface IChapterRepository extends IFindBaseRepository<Chapter>, IUpdateBaseRepository<Chapter>, IDeleteBaseRepository<Chapter> {
+export interface IChapterRepository extends IRepository<Chapter> {
+  findFirst(args: Prisma.ChapterFindFirstArgs): Promise<Chapter | null>;
 }

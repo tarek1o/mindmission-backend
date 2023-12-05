@@ -8,12 +8,35 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ArticleService = void 0;
+const client_1 = require("@prisma/client");
 const inversify_1 = require("inversify");
+const APIError_1 = __importDefault(require("../../presentation/errorHandlers/APIError"));
+const HTTPStatusCode_1 = __importDefault(require("../../presentation/enums/HTTPStatusCode"));
 let ArticleService = class ArticleService {
-    constructor(articleRepository) {
+    constructor(articleRepository, lessonService) {
         this.articleRepository = articleRepository;
+        this.lessonService = lessonService;
+    }
+    async isLessonTypeIsArticle(lessonId) {
+        const lesson = await this.lessonService.findUnique({
+            where: {
+                id: lessonId
+            },
+            select: {
+                lessonType: true
+            }
+        });
+        if (!lesson) {
+            throw new APIError_1.default('This lesson is not exist', HTTPStatusCode_1.default.BadRequest);
+        }
+        if (lesson.lessonType !== client_1.LessonType.ARTICLE) {
+            throw new APIError_1.default('The type of this lesson is not article', HTTPStatusCode_1.default.BadRequest);
+        }
     }
     count(args) {
         return this.articleRepository.count(args);
@@ -27,7 +50,16 @@ let ArticleService = class ArticleService {
         return this.articleRepository.findUnique(args);
     }
     ;
+    async create(args) {
+        var _a, _b;
+        await this.isLessonTypeIsArticle((_b = (_a = args.data.lesson) === null || _a === void 0 ? void 0 : _a.connect) === null || _b === void 0 ? void 0 : _b.id);
+        return this.articleRepository.create(args);
+    }
     async update(args) {
+        var _a, _b;
+        if ((_b = (_a = args.data.lesson) === null || _a === void 0 ? void 0 : _a.connect) === null || _b === void 0 ? void 0 : _b.id) {
+            await this.isLessonTypeIsArticle(args.data.lesson.connect.id);
+        }
         return this.articleRepository.update(args);
     }
     delete(id) {
@@ -38,6 +70,7 @@ let ArticleService = class ArticleService {
 exports.ArticleService = ArticleService;
 exports.ArticleService = ArticleService = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)('IArticleRepository'))
+    __param(0, (0, inversify_1.inject)('IArticleRepository')),
+    __param(1, (0, inversify_1.inject)('ILessonService'))
 ], ArticleService);
 //# sourceMappingURL=ArticleService.js.map

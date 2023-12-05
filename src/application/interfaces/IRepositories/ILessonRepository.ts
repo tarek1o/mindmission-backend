@@ -1,7 +1,6 @@
-import { Lesson } from "@prisma/client";
-import { IFindBaseRepository } from "./Base/IFindBaseRepository";
-import { IUpdateBaseRepository } from "./Base/IUpdateBaseRepository";
-import { IDeleteBaseRepository } from "./Base/IDeleteBaseRepository";
+import { Prisma, Lesson } from "@prisma/client";
+import { IRepository } from "./Base/IRepository";
 
-export interface ILessonRepository extends IFindBaseRepository<Lesson>, IUpdateBaseRepository<Lesson>, IDeleteBaseRepository<Lesson> {
+export interface ILessonRepository extends IRepository<Lesson> {
+  findFirst(args: Prisma.LessonFindFirstArgs): Promise<Lesson | null>
 }

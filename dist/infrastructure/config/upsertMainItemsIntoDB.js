@@ -39,7 +39,15 @@ const upsertMainItemsIntoDB = async () => {
             permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
         },
         {
-            modelName: ModelPermission_1.AllowedModels.Assignments,
+            modelName: ModelPermission_1.AllowedModels.Videos,
+            permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
+        },
+        {
+            modelName: ModelPermission_1.AllowedModels.Articles,
+            permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
+        },
+        {
+            modelName: ModelPermission_1.AllowedModels.Quizzes,
             permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
         },
         {
@@ -81,10 +89,6 @@ const upsertMainItemsIntoDB = async () => {
             permissions: [ModelPermission_1.Permissions.Read]
         },
         {
-            modelName: ModelPermission_1.AllowedModels.Assignments,
-            permissions: [ModelPermission_1.Permissions.Read]
-        },
-        {
             modelName: ModelPermission_1.AllowedModels.Comments,
             permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
         },
@@ -120,27 +124,23 @@ const upsertMainItemsIntoDB = async () => {
         },
         {
             modelName: ModelPermission_1.AllowedModels.Courses,
-            permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
+            permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
         },
         {
             modelName: ModelPermission_1.AllowedModels.Chapters,
-            permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
+            permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
         },
         {
             modelName: ModelPermission_1.AllowedModels.Lessons,
-            permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
-        },
-        {
-            modelName: ModelPermission_1.AllowedModels.Assignments,
-            permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
+            permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
         },
         {
             modelName: ModelPermission_1.AllowedModels.Ratings,
-            permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
+            permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
         },
         {
             modelName: ModelPermission_1.AllowedModels.Comments,
-            permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
+            permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
         },
     ];
     await Promise.all([

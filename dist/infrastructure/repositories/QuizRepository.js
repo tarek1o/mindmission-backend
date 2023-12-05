@@ -23,6 +23,9 @@ let QuizRepository = class QuizRepository {
     findUnique(args) {
         return db_1.default.quiz.findUnique(args);
     }
+    create(args) {
+        return db_1.default.quiz.create(args);
+    }
     update(args) {
         return db_1.default.quiz.update(args);
     }

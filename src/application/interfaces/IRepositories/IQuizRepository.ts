@@ -1,7 +1,5 @@
 import { Quiz } from "@prisma/client";
-import { IFindBaseRepository } from "./Base/IFindBaseRepository";
-import { IUpdateBaseRepository } from "./Base/IUpdateBaseRepository";
-import { IDeleteBaseRepository } from "./Base/IDeleteBaseRepository";
+import { IRepository } from "./Base/IRepository";
 
-export interface IQuizRepository extends IFindBaseRepository<Quiz>, IUpdateBaseRepository<Quiz>, IDeleteBaseRepository<Quiz> {
+export interface IQuizRepository extends IRepository<Quiz> {
 }
