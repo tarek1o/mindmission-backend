@@ -12,7 +12,9 @@ exports.AllowedModels = {
     Ratings: 'rating',
     Chapters: 'chapter',
     Lessons: 'lesson',
-    Assignments: 'Assignment',
+    Videos: 'video',
+    Articles: 'article',
+    Quizzes: 'quiz',
     Comments: 'comment',
 };
 exports.Permissions = {

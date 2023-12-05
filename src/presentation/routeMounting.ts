@@ -1,12 +1,18 @@
 import { Application } from 'express';
-import userRoutes from "./routes/userRoute";
-import roleRoutes from "./routes/roleRoute";
-import authenticationRoutes from "./routes/authenticationRoute";
-import modelPermissionRoutes from "./routes/modelPermissionRoute";
-import logRoutes from "./routes/logRoute";
-import categoryRoutes from "./routes/categoryRoute";
-import instructorRoutes from "./routes/instructorRoute";
-import whatsAppRoute from "./routes/whatsAppRoute"
+import userRoutes from "./routes/userRoutes";
+import roleRoutes from "./routes/roleRoutes";
+import authenticationRoutes from "./routes/authenticationRoutes";
+import modelPermissionRoutes from "./routes/modelPermissionRoutes";
+import logRoutes from "./routes/logRoutes";
+import categoryRoutes from "./routes/categoryRoutes";
+import instructorRoutes from "./routes/instructorRoutes";
+import courseRoutes from "./routes/courseRoutes";
+import chapterRoutes from "./routes/chapterRoutes";
+import lessonRoutes from "./routes/lessonRoutes";
+import articleRoutes from "./routes/articleRoutes";
+import videoRoutes from "./routes/videoRoutes";
+import quizRoutes from "./routes/quizRoutes";
+import whatsAppRoute from "./routes/whatsAppRoutes"
 
 export const routeMounting = (app: Application) => {
   app.use(`${process.env.apiVersion}/auth`, authenticationRoutes);
@@ -16,5 +22,11 @@ export const routeMounting = (app: Application) => {
   app.use(`${process.env.apiVersion}/permissions`, modelPermissionRoutes);
   app.use(`${process.env.apiVersion}/categories`, categoryRoutes);
   app.use(`${process.env.apiVersion}/instructors`, instructorRoutes);
+  app.use(`${process.env.apiVersion}/courses`, courseRoutes);
+  app.use(`${process.env.apiVersion}/chapters`, chapterRoutes);
+  app.use(`${process.env.apiVersion}/lessons`, lessonRoutes);
+  app.use(`${process.env.apiVersion}/articles`, articleRoutes);
+  app.use(`${process.env.apiVersion}/videos`, videoRoutes);
+  app.use(`${process.env.apiVersion}/quizzes`, quizRoutes);
   // app.use(`${process.env.apiVersion}/whatsApp`, whatsAppRoute);
 }
