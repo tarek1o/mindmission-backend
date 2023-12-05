@@ -1,4 +1,4 @@
-import { Prisma, Instructor } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { injectable } from "inversify";
 import { IInstructorRepository } from "../../application/interfaces/IRepositories/IInstructorRepository";
 import prisma from "../../domain/db";

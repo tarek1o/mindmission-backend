@@ -6,6 +6,7 @@ import './classes/authorizationDI';
 import './classes/logDI';
 import './classes/categoryDI';
 import './classes/instructorDI';
+import './classes/studentDI';
 import './classes/courseDI';
 import './classes/chapterDI';
 import './classes/lessonDI';

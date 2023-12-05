@@ -6,6 +6,7 @@ import modelPermissionRoutes from "./routes/modelPermissionRoutes";
 import logRoutes from "./routes/logRoutes";
 import categoryRoutes from "./routes/categoryRoutes";
 import instructorRoutes from "./routes/instructorRoutes";
+import studentRoutes from "./routes/studentRoutes";
 import courseRoutes from "./routes/courseRoutes";
 import chapterRoutes from "./routes/chapterRoutes";
 import lessonRoutes from "./routes/lessonRoutes";
@@ -22,6 +23,7 @@ export const routeMounting = (app: Application) => {
   app.use(`${process.env.apiVersion}/permissions`, modelPermissionRoutes);
   app.use(`${process.env.apiVersion}/categories`, categoryRoutes);
   app.use(`${process.env.apiVersion}/instructors`, instructorRoutes);
+  app.use(`${process.env.apiVersion}/students`, studentRoutes);
   app.use(`${process.env.apiVersion}/courses`, courseRoutes);
   app.use(`${process.env.apiVersion}/chapters`, chapterRoutes);
   app.use(`${process.env.apiVersion}/lessons`, lessonRoutes);

@@ -8,6 +8,7 @@ require("./classes/authorizationDI");
 require("./classes/logDI");
 require("./classes/categoryDI");
 require("./classes/instructorDI");
+require("./classes/studentDI");
 require("./classes/courseDI");
 require("./classes/chapterDI");
 require("./classes/lessonDI");

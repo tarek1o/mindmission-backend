@@ -11,6 +11,7 @@ const modelPermissionRoutes_1 = __importDefault(require("./routes/modelPermissio
 const logRoutes_1 = __importDefault(require("./routes/logRoutes"));
 const categoryRoutes_1 = __importDefault(require("./routes/categoryRoutes"));
 const instructorRoutes_1 = __importDefault(require("./routes/instructorRoutes"));
+const studentRoutes_1 = __importDefault(require("./routes/studentRoutes"));
 const courseRoutes_1 = __importDefault(require("./routes/courseRoutes"));
 const chapterRoutes_1 = __importDefault(require("./routes/chapterRoutes"));
 const lessonRoutes_1 = __importDefault(require("./routes/lessonRoutes"));
@@ -25,6 +26,7 @@ const routeMounting = (app) => {
     app.use(`${process.env.apiVersion}/permissions`, modelPermissionRoutes_1.default);
     app.use(`${process.env.apiVersion}/categories`, categoryRoutes_1.default);
     app.use(`${process.env.apiVersion}/instructors`, instructorRoutes_1.default);
+    app.use(`${process.env.apiVersion}/students`, studentRoutes_1.default);
     app.use(`${process.env.apiVersion}/courses`, courseRoutes_1.default);
     app.use(`${process.env.apiVersion}/chapters`, chapterRoutes_1.default);
     app.use(`${process.env.apiVersion}/lessons`, lessonRoutes_1.default);
