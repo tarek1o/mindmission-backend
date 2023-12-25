@@ -6,7 +6,7 @@
   "scripts": {
     "postinstall": "prisma generate",
     "start": "node dist/presentation/index.js",
-    "build": "rimraf dist && tsc && yarn cache clean",
+    "build": "rimraf dist && tsc",
     "ts.check": "tsc --project tsconfig.json",
     "add-build": "git add dist",
     "dev": "nodemon src/presentation/index.ts",
