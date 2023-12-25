@@ -91,13 +91,12 @@ export class PaymentService implements IPaymentService {
 	};
 
 	async update(args: {data: UpdatePayment, select?: Prisma.PaymentSelect, include?: Prisma.PaymentInclude}): Promise<ExtendedPayment> {
-		const {id, currency, status} = args.data;
+		const {id, status} = args.data;
 		return this.paymentRepository.update({
 			where: {
 				id
 			},
 			data: {
-				currency: currency || undefined,
 				status: status || undefined
 			},
 			select: args.select,

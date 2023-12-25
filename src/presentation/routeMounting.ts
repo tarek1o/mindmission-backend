@@ -13,6 +13,7 @@ import lessonRoutes from "./routes/lessonRoutes";
 import articleRoutes from "./routes/articleRoutes";
 import videoRoutes from "./routes/videoRoutes";
 import quizRoutes from "./routes/quizRoutes";
+import paymentRoutes from "./routes/paymentRoutes";
 import couponRoutes from "./routes/couponRoutes";
 import whatsAppRoute from "./routes/whatsAppRoutes"
 
@@ -31,6 +32,7 @@ export const routeMounting = (app: Application) => {
   app.use(`${process.env.apiVersion}/articles`, articleRoutes);
   app.use(`${process.env.apiVersion}/videos`, videoRoutes);
   app.use(`${process.env.apiVersion}/quizzes`, quizRoutes);
+  app.use(`${process.env.apiVersion}/payments`, paymentRoutes);
   app.use(`${process.env.apiVersion}/coupons`, couponRoutes);
   // app.use(`${process.env.apiVersion}/whatsApp`, whatsAppRoute);
 }

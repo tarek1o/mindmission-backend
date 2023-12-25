@@ -1,12 +1,12 @@
 import express from 'express';
 import container from '../dependencyInjection/DI'
 import {idValidation} from "../middlewares/express-validator/idValidation";
-import {wishlistValidation, enrollValidation, rateValidation} from "../middlewares/express-validator/studentValidator";
+import {wishlistValidation, rateValidation} from "../middlewares/express-validator/studentValidator";
 import {Authorization} from '../middlewares/authorization-validator/AuthorizationValidator';
 import { StudentController } from '../controllers/StudentController';
 
 const {isAuthenticated, isAuthorized} = container.get<Authorization>('Authorization');
-const {getAllStudents, getStudentById, addToWishlist, removeFromWishlist, enroll, rate, enrollmentPayMobConfirmation, enrollmentPayPalConfirmation} = container.get<StudentController>('StudentController');
+const {getAllStudents, getStudentById, addToWishlist, removeFromWishlist, rate} = container.get<StudentController>('StudentController');
 
 const studentRouter = express.Router();
 
@@ -21,15 +21,6 @@ studentRouter.route("/wishlist/add")
 
 studentRouter.route("/wishlist/remove")
 	.post(isAuthenticated, isAuthorized('Wishlist', 'PATCH'), wishlistValidation, removeFromWishlist);
-
-studentRouter.route("/enroll")
-	.post(isAuthenticated, isAuthorized('Payment', 'PATCH'), enrollValidation, enroll);
-
-studentRouter.route("/paymob/confirm")
-	.post(enrollmentPayMobConfirmation);
-
-studentRouter.route("/paypal/confirm")
-	.post(enrollmentPayPalConfirmation);
 
 studentRouter.route("/rate")
 	.post(isAuthenticated, isAuthorized('Rating', 'PATCH'), rateValidation, rate);

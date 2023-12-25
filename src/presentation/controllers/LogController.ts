@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
 import asyncHandler from'express-async-handler';
-import HttpStatusCode from '../enums/HTTPStatusCode';
 import { ILogService } from "../../application/interfaces/IServices/ILogService";
+import { RequestManager } from "../services/RequestManager";
 import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
 import APIError from "../errorHandlers/APIError";
-import { RequestManager } from "../services/RequestManager";
+import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class LogController {

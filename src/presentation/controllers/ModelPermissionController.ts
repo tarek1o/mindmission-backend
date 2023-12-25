@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import asyncHandler from'express-async-handler';
 import {AllowedModels, Permissions} from '../types/ModelPermission'
-import HttpStatusCode from '../enums/HTTPStatusCode';
 import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
+import HttpStatusCode from '../enums/HTTPStatusCode';
 
 export class ModelPermissionController {
 	constructor() {}

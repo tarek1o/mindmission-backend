@@ -2,15 +2,15 @@ import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
 import asyncHandler from'express-async-handler';
 import bcrypt from 'bcrypt';
-import HttpStatusCode from '../enums/HTTPStatusCode';
 import { IUserService } from "../../application/interfaces/IServices/IUserService";
 import { ILogService } from "../../application/interfaces/IServices/ILogService";
-import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
 import { JWTGenerator } from "../services/JWTGenerator";
-import APIError from "../errorHandlers/APIError";
 import { RequestManager } from "../services/RequestManager";
 import { UserMapper } from "../mapping/UserMapper";
 import { ExtendedRequest } from "../types/ExtendedRequest";
+import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
+import APIError from "../errorHandlers/APIError";
+import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class UserController {

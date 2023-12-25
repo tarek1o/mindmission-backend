@@ -1,18 +1,17 @@
 import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
 import asyncHandler from'express-async-handler';
-import HttpStatusCode from '../enums/HTTPStatusCode';
 import { ICourseService } from "../../application/interfaces/IServices/ICourseService";
-import { ILogService } from "../../application/interfaces/IServices/ILogService";
-import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
-import APIError from "../errorHandlers/APIError";
-import { RequestManager } from "../services/RequestManager";
 import { ExtendedRequest } from "../types/ExtendedRequest";
+import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
+import { RequestManager } from "../services/RequestManager";
+import APIError from "../errorHandlers/APIError";
+import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class CourseController {
 
-	constructor(@inject('ICourseService') private courseService: ICourseService, @inject('ILogService') private logService: ILogService) {}
+	constructor(@inject('ICourseService') private courseService: ICourseService) {}
 
 	courseAggregates = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const {where, skip, take, orderBy} = RequestManager.findOptionsWrapper(request);
