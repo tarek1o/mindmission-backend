@@ -5,18 +5,18 @@ import {updateInstructorValidation} from "../middlewares/express-validator/instr
 import {Authorization} from '../middlewares/authorization-validator/AuthorizationValidator';
 import { InstructorController } from '../controllers/InstructorController';
 
-const {isAuthenticated, isAuthorized} = container.get<Authorization>('Authorization');
+const {isAuthenticated, isAuthorized, isCurrentUserRoleInBlackList} = container.get<Authorization>('Authorization');
 const {getAllInstructors, getInstructorById, updateInstructor} = container.get<InstructorController>('InstructorController');
 
-const roleRouter = express.Router();
+const instructorRouter = express.Router();
 
-roleRouter.route("/get")
-	.post(isAuthenticated, isAuthorized('Instructor', 'GET'), getAllInstructors);
+instructorRouter.route("/get")
+	.post(isAuthenticated, isAuthorized('Instructor', 'GET'), isCurrentUserRoleInBlackList("instructor", "student"), getAllInstructors);
 
-roleRouter.route("/get/:id")
+instructorRouter.route("/get/:id")
 	.post(idValidation, isAuthenticated, isAuthorized('Instructor', 'GET'), getInstructorById);
 
-roleRouter.route("/update/:id")
+instructorRouter.route("/update/:id")
 	.post(idValidation, isAuthenticated, isAuthorized('Instructor', 'PATCH'), updateInstructorValidation, updateInstructor);
 
-export default roleRouter;
+export default instructorRouter;

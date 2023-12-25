@@ -142,6 +142,10 @@ const upsertMainItemsIntoDB = async () => {
             modelName: ModelPermission_1.AllowedModels.Comments,
             permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
         },
+        {
+            modelName: ModelPermission_1.AllowedModels.Coupons,
+            permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
+        },
     ];
     await Promise.all([
         db_1.default.role.upsert({
@@ -161,7 +165,10 @@ const upsertMainItemsIntoDB = async () => {
                         firstName: firstName || "Tarek",
                         lastName: lastName || "Eslam",
                         email: email || "tarekeslam159@gmail.com",
-                        password: bcrypt_1.default.hashSync(password || "Ta123456789*", 10)
+                        password: bcrypt_1.default.hashSync(password || "Ta123456789*", 10),
+                        admin: {
+                            create: {}
+                        }
                     }
                 }
             },

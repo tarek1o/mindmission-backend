@@ -51,16 +51,43 @@ let ArticleService = class ArticleService {
     }
     ;
     async create(args) {
-        var _a, _b;
-        await this.isLessonTypeIsArticle((_b = (_a = args.data.lesson) === null || _a === void 0 ? void 0 : _a.connect) === null || _b === void 0 ? void 0 : _b.id);
-        return this.articleRepository.create(args);
+        const { lessonId, title, content } = args.data;
+        await this.isLessonTypeIsArticle(args.data.lessonId);
+        return this.articleRepository.create({
+            data: {
+                title,
+                content,
+                lesson: {
+                    connect: {
+                        id: lessonId
+                    }
+                }
+            },
+            select: args.select,
+            include: args.include
+        });
     }
     async update(args) {
-        var _a, _b;
-        if ((_b = (_a = args.data.lesson) === null || _a === void 0 ? void 0 : _a.connect) === null || _b === void 0 ? void 0 : _b.id) {
-            await this.isLessonTypeIsArticle(args.data.lesson.connect.id);
+        const { id, lessonId, title, content } = args.data;
+        if (lessonId) {
+            await this.isLessonTypeIsArticle(lessonId);
         }
-        return this.articleRepository.update(args);
+        return this.articleRepository.update({
+            where: {
+                id: id
+            },
+            data: {
+                title: title || undefined,
+                content: content || undefined,
+                lesson: lessonId ? {
+                    connect: {
+                        id: lessonId
+                    }
+                } : undefined
+            },
+            select: args.select,
+            include: args.include
+        });
     }
     delete(id) {
         return this.articleRepository.delete(id);

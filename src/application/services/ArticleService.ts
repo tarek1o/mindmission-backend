@@ -1,5 +1,6 @@
 import { Prisma, Article, LessonType } from "@prisma/client"
 import {inject, injectable } from "inversify"
+import { CreateArticle, UpdateArticle } from "../inputs/articleInput";
 import { IArticleService } from "../interfaces/IServices/IArticleService"
 import { ILessonService } from "../interfaces/IServices/ILessonService";
 import { IArticleRepository } from "../interfaces/IRepositories/IArticleRepository"
@@ -41,16 +42,45 @@ export class ArticleService implements IArticleService {
 		return this.articleRepository.findUnique(args);
 	};
 
-	async create(args: Prisma.ArticleCreateArgs): Promise<Article> {
-		await this.isLessonTypeIsArticle(args.data.lesson?.connect?.id as number);
-		return this.articleRepository.create(args);
+	async create(args: {data: CreateArticle, select?: Prisma.ArticleSelect, include?: Prisma.ArticleInclude}): Promise<Article> {
+		const {lessonId, title, content} = args.data;
+		await this.isLessonTypeIsArticle(args.data.lessonId);
+		return this.articleRepository.create({
+			data: {
+				title,
+				content,
+				lesson: {
+					connect: {
+						id: lessonId
+					}
+				}
+			},
+			select: args.select,
+			include: args.include
+		});
 	}
 
-	async update(args: Prisma.ArticleUpdateArgs): Promise<Article> {
-		if(args.data.lesson?.connect?.id) {
-			await this.isLessonTypeIsArticle(args.data.lesson.connect.id);
+	async update(args: {data: UpdateArticle, select?: Prisma.ArticleSelect, include?: Prisma.ArticleInclude}): Promise<Article> {
+		const {id, lessonId, title, content} = args.data;
+		if(lessonId) {
+			await this.isLessonTypeIsArticle(lessonId);
 		}
-		return this.articleRepository.update(args);
+		return this.articleRepository.update({
+			where: {
+				id: id
+			},
+			data: {
+				title: title || undefined,
+				content: content || undefined,
+				lesson: lessonId ? {
+					connect: {
+						id: lessonId
+					}
+				} : undefined
+			},
+			select: args.select,
+			include: args.include
+		});
 	}
 
 	delete(id: number): Promise<Article> {

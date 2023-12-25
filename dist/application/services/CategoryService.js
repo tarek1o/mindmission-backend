@@ -61,12 +61,12 @@ let CategoryService = class CategoryService {
     }
     ;
     async create(args) {
-        var _a, _b, _c;
-        const { type } = args.data;
-        args.data.slug = (0, slugify_1.default)(args.data.name, { trim: true, lower: true });
+        var _a;
+        const { name, type, description, parentId } = args.data;
+        const slug = (0, slugify_1.default)(name, { trim: true, lower: true });
         const isExist = await this.findUnique({
             where: {
-                slug: args.data.slug
+                slug
             },
             select: {
                 id: true
@@ -75,46 +75,82 @@ let CategoryService = class CategoryService {
         if (isExist) {
             throw new APIError_1.default('This name already exists', HTTPStatusCode_1.default.BadRequest);
         }
-        if (!await this.isCorrectParent(type, (_b = (_a = args.data.parent) === null || _a === void 0 ? void 0 : _a.connect) === null || _b === void 0 ? void 0 : _b.id)) {
-            const errorMessage = this.parentChild[type] ? `The ${type.toLowerCase()} must belong to a ${(_c = this.parentChild[type]) === null || _c === void 0 ? void 0 : _c.toLowerCase()}` : 'The category has no parent';
+        if (!await this.isCorrectParent(type, parentId)) {
+            const errorMessage = this.parentChild[type] ? `The ${type.toLowerCase()} must belong to a ${(_a = this.parentChild[type]) === null || _a === void 0 ? void 0 : _a.toLowerCase()}` : 'The category has no parent';
             throw new APIError_1.default(errorMessage, HTTPStatusCode_1.default.BadRequest);
         }
-        return this.categoryRepository.create(args);
+        return this.categoryRepository.create({
+            data: {
+                name: name,
+                slug,
+                type: type,
+                description: description,
+                parent: parentId ? {
+                    connect: {
+                        id: parentId
+                    }
+                } : undefined
+            },
+            select: args.select,
+            include: args.include
+        });
     }
     ;
     async update(args) {
-        var _a, _b, _c, _d, _e;
-        if (args.data.name) {
-            args.data.slug = (0, slugify_1.default)(args.data.name.toString(), { trim: true, lower: true });
+        var _a;
+        const { id, name, type, description, parentId } = args.data;
+        let slug = undefined;
+        if (name) {
+            slug = (0, slugify_1.default)(name.toString(), { trim: true, lower: true });
             const isExist = await this.findUnique({
                 where: {
-                    slug: args.data.slug
+                    slug
                 },
                 select: {
                     id: true
                 }
             });
-            if (isExist && isExist.id !== args.where.id) {
+            if (isExist && isExist.id !== id) {
                 throw new APIError_1.default('This name already exists', HTTPStatusCode_1.default.BadRequest);
             }
         }
-        if (args.data.type || ((_b = (_a = args.data.parent) === null || _a === void 0 ? void 0 : _a.connect) === null || _b === void 0 ? void 0 : _b.id)) {
+        if (type || parentId) {
             const category = await this.categoryRepository.findUnique({
-                where: args.where,
+                where: {
+                    id
+                },
                 select: {
                     type: true,
                     parentId: true,
                 }
             });
             const type = (args.data.type || (category === null || category === void 0 ? void 0 : category.type));
-            const parentId = (((_d = (_c = args.data.parent) === null || _c === void 0 ? void 0 : _c.connect) === null || _d === void 0 ? void 0 : _d.id) || (category === null || category === void 0 ? void 0 : category.parentId));
+            const parentId = (args.data.parentId || (category === null || category === void 0 ? void 0 : category.parentId));
             if (!await this.isCorrectParent(type, parentId)) {
-                const errorMessage = this.parentChild[type] ? `The ${type.toLowerCase()} must belong to a ${(_e = this.parentChild[type]) === null || _e === void 0 ? void 0 : _e.toLowerCase()}` : 'The category has no parent';
+                const errorMessage = this.parentChild[type] ? `The ${type.toLowerCase()} must belong to a ${(_a = this.parentChild[type]) === null || _a === void 0 ? void 0 : _a.toLowerCase()}` : 'The category has no parent';
                 throw new APIError_1.default(errorMessage, HTTPStatusCode_1.default.BadRequest);
             }
         }
-        return this.categoryRepository.update(args);
+        return this.categoryRepository.update({
+            where: {
+                id
+            },
+            data: {
+                name: name || undefined,
+                slug: slug || undefined,
+                type: type || undefined,
+                description: description || undefined,
+                parent: parentId ? {
+                    connect: {
+                        id: parentId
+                    }
+                } : undefined,
+            },
+            select: args.select,
+            include: args.include
+        });
     }
+    ;
     delete(id) {
         return this.categoryRepository.delete(id);
     }

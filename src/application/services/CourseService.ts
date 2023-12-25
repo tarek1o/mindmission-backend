@@ -31,6 +31,10 @@ export class CourseService implements ICourseService {
 		}
 	}
 
+  aggregate(args: Prisma.CourseAggregateArgs): Promise<Prisma.GetCourseAggregateType<Prisma.CourseAggregateArgs>> {
+    return this.courseRepository.aggregate(args);
+  }
+
 	count(args: Prisma.CourseCountArgs): Promise<number> {
 		return this.courseRepository.count(args);
 	};

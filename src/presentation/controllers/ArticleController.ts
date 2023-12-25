@@ -38,42 +38,13 @@ export class ArticleController {
 
 	createArticle = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const {title, content, lessonId} = request.body.input;
-		const createdArticle = await this.articleService.create({
-			data: {
-				title,
-				content,
-				lesson: {
-					connect: {
-						id: lessonId
-					}
-				}
-			},
-			select,
-			include,
-		});
+		const createdArticle = await this.articleService.create({data: request.body.input, select, include});
 		response.status(HttpStatusCode.Created).json(ResponseFormatter.formate(true, 'The article is created successfully', [createdArticle]));
 	});
 
 	updateArticle = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const {title, content, lessonId} = request.body.input;
-		const updatedArticle = await this.articleService.update({
-			where: {
-				id: +request.params.id,
-			},
-			data: {
-				title: title || undefined,
-				content: content || undefined,
-				lesson: lessonId ? {
-					connect: {
-						id: lessonId
-					}
-				} : undefined
-			},
-			select,
-			include,
-		});
+		const updatedArticle = await this.articleService.update({data: {...request.body.input, id: +request.params.id}, select, include});
 		response.status(HttpStatusCode.Created).json(ResponseFormatter.formate(true, 'The article is updated successfully', [updatedArticle]));
 	});
 

@@ -5,6 +5,7 @@ import { ICategoryService } from "../interfaces/IServices/ICategoryService"
 import { ICategoryRepository } from "../interfaces/IRepositories/ICategoryRepository"
 import APIError from "../../presentation/errorHandlers/APIError"
 import HttpStatusCode from "../../presentation/enums/HTTPStatusCode"
+import { CreateCategory, UpdateCategory } from "../inputs/categoryInput"
 
 @injectable()
 export class CategoryService implements ICategoryService {
@@ -50,12 +51,13 @@ export class CategoryService implements ICategoryService {
 		return this.categoryRepository.findUnique(args);
 	};
 
-	async create(args: Prisma.CategoryCreateArgs): Promise<Category> {
-		const {type} = args.data;
-		args.data.slug = slugify(args.data.name, {trim: true, lower: true});
+	async create(args: {data: CreateCategory, select?: Prisma.CategorySelect, include?: Prisma.CategoryInclude}): Promise<Category> {
+		const {name, type, description, parentId} = args.data;
+		
+		const slug = slugify(name, {trim: true, lower: true});
 		const isExist = await this.findUnique({
 			where: {
-				slug: args.data.slug
+				slug
 			},
 			select: {
 				id: true
@@ -64,33 +66,51 @@ export class CategoryService implements ICategoryService {
 		if(isExist) {
 			throw new APIError('This name already exists', HttpStatusCode.BadRequest);
 		}
-		if(!await this.isCorrectParent(type, args.data.parent?.connect?.id)) {
+		if(!await this.isCorrectParent(type, parentId)) {
 			const errorMessage = this.parentChild[type] ? `The ${type.toLowerCase()} must belong to a ${this.parentChild[type]?.toLowerCase()}` : 'The category has no parent';
 			throw new APIError(errorMessage, HttpStatusCode.BadRequest);
 		}
-		return this.categoryRepository.create(args);
+		return this.categoryRepository.create({
+			data: {
+				name: name,
+				slug,
+				type: type,
+				description: description,
+				parent: parentId ? {
+					connect: {
+						id: parentId
+					}
+				} : undefined
+			},
+			select: args.select,
+			include: args.include
+		});
 	};
 
-	async update(args: Prisma.CategoryUpdateArgs): Promise<Category> {
-		if(args.data.name) {
-			args.data.slug = slugify(args.data.name.toString(), {trim: true, lower: true});
+	async update(args: {data: UpdateCategory, select?: Prisma.CategorySelect, include?: Prisma.CategoryInclude}): Promise<Category> {
+		const {id, name, type, description, parentId} = args.data;
+		let slug = undefined
+		if(name) {
+			slug = slugify(name.toString(), {trim: true, lower: true});
 			const isExist = await this.findUnique({
 				where: {
-					slug: args.data.slug
+					slug
 				},
 				select: {
 					id: true
 				}
 			});
 
-			if(isExist && isExist.id !== args.where.id) {
+			if(isExist && isExist.id !== id) {
 				throw new APIError('This name already exists', HttpStatusCode.BadRequest);
 			}
 		}
 
-		if(args.data.type || args.data.parent?.connect?.id) {
+		if(type || parentId) {
 			const category = await this.categoryRepository.findUnique({
-				where: args.where,
+				where: {
+					id
+				},
 				select: {
 					type: true,
 					parentId: true,
@@ -98,7 +118,7 @@ export class CategoryService implements ICategoryService {
 			});
 
 			const type = (args.data.type || category?.type) as CategoryType;
-			const parentId = (args.data.parent?.connect?.id || category?.parentId) as number;
+			const parentId = (args.data.parentId || category?.parentId) as number;
 
 			if(!await this.isCorrectParent(type, parentId)) {
 				const errorMessage = this.parentChild[type] ? `The ${type.toLowerCase()} must belong to a ${this.parentChild[type]?.toLowerCase()}` : 'The category has no parent';
@@ -106,8 +126,25 @@ export class CategoryService implements ICategoryService {
 			}
 		}
 
-		return this.categoryRepository.update(args);
-	}
+		return this.categoryRepository.update({
+			where: {
+				id
+			},
+			data: {
+				name: name || undefined,
+				slug: slug || undefined,
+				type: type || undefined,
+				description: description || undefined,
+				parent: parentId ? {
+					connect: {
+						id: parentId
+					}
+				} : undefined,
+			},
+			select: args.select,
+			include: args.include
+		});
+	};
 
 	delete(id: number): Promise<Category> {
 		return this.categoryRepository.delete(id);

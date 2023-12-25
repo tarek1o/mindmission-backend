@@ -39,4 +39,4 @@ SendEmail.send = async (emailContent) => {
         throw new APIError_1.default('Something wrong is happened', HTTPStatusCode_1.default.InternalServerError);
     }
 };
-//# sourceMappingURL=SendEmailService.js.map
+//# sourceMappingURL=SendEmail.js.map

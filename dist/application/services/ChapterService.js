@@ -39,11 +39,11 @@ let ChapterService = class ChapterService {
     }
     ;
     async create(args) {
-        var _a, _b;
+        const { courseId, order, title, description } = args.data;
         const isOrderExist = await this.findFirst({
             where: {
-                courseId: (_b = (_a = args.data.course) === null || _a === void 0 ? void 0 : _a.connect) === null || _b === void 0 ? void 0 : _b.id,
-                order: args.data.order
+                courseId: courseId,
+                order: order
             },
             select: {
                 id: true
@@ -52,23 +52,59 @@ let ChapterService = class ChapterService {
         if (isOrderExist) {
             throw new APIError_1.default('There is already chapter with the same order', HTTPStatusCode_1.default.BadRequest);
         }
-        return this.chapterRepository.create(args);
+        return this.chapterRepository.create({
+            data: {
+                title: title,
+                order: order,
+                description: description,
+                course: {
+                    connect: {
+                        id: courseId
+                    }
+                }
+            },
+            select: args === null || args === void 0 ? void 0 : args.select,
+            include: args === null || args === void 0 ? void 0 : args.include
+        });
     }
     async update(args) {
-        if (args.data.title) {
-            args.data.slug = (0, slugify_1.default)(args.data.title.toString(), { lower: true, trim: true });
-        }
-        if (args.data.lessons) {
+        const { id, title, description, lessons } = args.data;
+        const slug = title ? (0, slugify_1.default)(title.toString(), { lower: true, trim: true }) : undefined;
+        if (lessons) {
             const count = await this.lessonService.count({
                 where: {
-                    chapterId: args.where.id
+                    chapterId: id
                 },
             });
-            if (count !== args.data.lessons.update.length) {
+            if (count !== lessons.length) {
                 throw new APIError_1.default("You should send all chapter's lessons during update the order of lessons", HTTPStatusCode_1.default.BadRequest);
             }
         }
-        return this.chapterRepository.update(args);
+        ;
+        return this.chapterRepository.update({
+            where: {
+                id: id
+            },
+            data: {
+                title: title || undefined,
+                slug: slug || undefined,
+                description: description || undefined,
+                lessons: lessons ? {
+                    update: lessons.map(({ id, order }) => {
+                        return {
+                            where: {
+                                id
+                            },
+                            data: {
+                                order
+                            }
+                        };
+                    })
+                } : undefined
+            },
+            select: args === null || args === void 0 ? void 0 : args.select,
+            include: args === null || args === void 0 ? void 0 : args.include
+        });
     }
     delete(id) {
         return this.chapterRepository.delete(id);

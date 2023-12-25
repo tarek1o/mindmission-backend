@@ -80,4 +80,4 @@ const sendImageMessage = async (phone, image, caption) => {
     });
 };
 exports.sendImageMessage = sendImageMessage;
-//# sourceMappingURL=whatsAppService.js.map
+//# sourceMappingURL=WhatsAppService.js.map

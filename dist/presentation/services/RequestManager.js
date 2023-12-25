@@ -20,10 +20,6 @@ RequestManager.where = (request) => {
     const { where } = request.body;
     return where;
 };
-RequestManager.distinct = (request) => {
-    const { distinct } = request.body;
-    return distinct;
-};
 RequestManager.orderBy = (request) => {
     const { order } = request.body;
     return order;
@@ -34,6 +30,21 @@ RequestManager.skip = (request) => {
 RequestManager.take = (request) => {
     return request.body.take || _a.takeItems;
 };
+RequestManager._count = (request) => {
+    return request.body._count;
+};
+RequestManager._sum = (request) => {
+    return request.body._sum;
+};
+RequestManager._avg = (request) => {
+    return request.body._avg;
+};
+RequestManager._min = (request) => {
+    return request.body._min;
+};
+RequestManager._max = (request) => {
+    return request.body._min;
+};
 RequestManager.findOptionsWrapper = (request) => {
     return {
         where: _a.where(request),
@@ -43,5 +54,20 @@ RequestManager.findOptionsWrapper = (request) => {
         skip: _a.skip(request),
         take: _a.take(request),
     };
+};
+RequestManager.aggregateOptionsWrapper = (request) => {
+    const aggregate = {
+        _count: _a._count(request),
+        _sum: _a._sum(request),
+        _avg: _a._avg(request),
+        _min: _a._min(request),
+        _max: _a._max(request),
+    };
+    for (const option in aggregate) {
+        if (!aggregate[option]) {
+            delete aggregate[option];
+        }
+    }
+    return aggregate;
 };
 //# sourceMappingURL=RequestManager.js.map

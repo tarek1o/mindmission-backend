@@ -5,9 +5,9 @@ import {ModelPermissionController} from "../controllers/ModelPermissionControlle
 
 const {isAuthenticated, isAuthorized} = container.get<Authorization>('Authorization');
 const {getAllModelPermissions} = new ModelPermissionController();
-const roleRouter = express.Router();
+const modelPermissionRouter = express.Router();
 
-roleRouter.route("/get")
+modelPermissionRouter.route("/get")
 	.post(isAuthenticated, isAuthorized('Role', 'GET'), getAllModelPermissions)
 
-export default roleRouter;
+export default modelPermissionRouter;

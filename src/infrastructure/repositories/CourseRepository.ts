@@ -7,6 +7,10 @@ import prisma from "../../domain/db";
 export class CourseRepository implements ICourseRepository {
   constructor() {}
 
+  aggregate(args: Prisma.CourseAggregateArgs): Prisma.PrismaPromise<Prisma.GetCourseAggregateType<any>> {
+    return prisma.course.aggregate(args);
+  }
+
   count(args: Prisma.CourseCountArgs): Promise<number> {
     return prisma.course.count(args)
   }

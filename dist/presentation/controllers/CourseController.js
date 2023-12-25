@@ -23,6 +23,15 @@ let CourseController = class CourseController {
     constructor(courseService, logService) {
         this.courseService = courseService;
         this.logService = logService;
+        this.courseAggregates = (0, express_async_handler_1.default)(async (request, response, next) => {
+            const { where, skip, take, orderBy } = RequestManager_1.RequestManager.findOptionsWrapper(request);
+            const aggregate = RequestManager_1.RequestManager.aggregateOptionsWrapper(request);
+            const aggregateResult = await this.courseService.aggregate(Object.assign({ where,
+                orderBy,
+                skip,
+                take }, aggregate));
+            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'Course aggregate results are retrieved successfully', [aggregateResult]));
+        });
         this.getAllCourses = (0, express_async_handler_1.default)(async (request, response, next) => {
             const findOptions = RequestManager_1.RequestManager.findOptionsWrapper(request);
             const promiseResult = await Promise.all([

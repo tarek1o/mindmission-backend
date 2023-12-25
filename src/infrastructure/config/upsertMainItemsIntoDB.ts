@@ -140,6 +140,10 @@ export const upsertMainItemsIntoDB = async () => {
       modelName: AllowedModels.Comments,
       permissions: [Permissions.Read, Permissions.Update, Permissions.Delete]
     },
+    {
+      modelName: AllowedModels.Coupons,
+      permissions: [Permissions.Read, Permissions.Create, Permissions.Update, Permissions.Delete]
+    },
   ];
 
   await Promise.all([
@@ -160,7 +164,10 @@ export const upsertMainItemsIntoDB = async () => {
             firstName: firstName || "Tarek",
             lastName: lastName || "Eslam",
             email: email || "tarekeslam159@gmail.com",
-            password: bcrypt.hashSync(password || "Ta123456789*", 10)
+            password: bcrypt.hashSync(password || "Ta123456789*", 10),
+            admin: {
+              create: {}
+            }
           }
         }
       },

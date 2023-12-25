@@ -7,12 +7,12 @@ import { LogController } from '../controllers/LogController';
 const {isAuthenticated, isAuthorized} = container.get<Authorization>('Authorization');
 const {getAllLogs, getLogById} = container.get<LogController>('LogController');
 
-const roleRouter = express.Router();
+const logRouter = express.Router();
 
-roleRouter.route("/get")
+logRouter.route("/get")
 	.post(isAuthenticated, isAuthorized('Log', 'GET'), getAllLogs);
 
-roleRouter.route("/get/:id")
+logRouter.route("/get/:id")
 	.post(idValidation, isAuthenticated, isAuthorized('Log', 'GET'), getLogById)
 
-export default roleRouter;
+export default logRouter;

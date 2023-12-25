@@ -8,10 +8,10 @@ const DI_1 = __importDefault(require("../dependencyInjection/DI"));
 const idValidation_1 = require("../middlewares/express-validator/idValidation");
 const { isAuthenticated, isAuthorized } = DI_1.default.get('Authorization');
 const { getAllLogs, getLogById } = DI_1.default.get('LogController');
-const roleRouter = express_1.default.Router();
-roleRouter.route("/get")
+const logRouter = express_1.default.Router();
+logRouter.route("/get")
     .post(isAuthenticated, isAuthorized('Log', 'GET'), getAllLogs);
-roleRouter.route("/get/:id")
+logRouter.route("/get/:id")
     .post(idValidation_1.idValidation, isAuthenticated, isAuthorized('Log', 'GET'), getLogById);
-exports.default = roleRouter;
+exports.default = logRouter;
 //# sourceMappingURL=logRoutes.js.map
