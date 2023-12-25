@@ -17,13 +17,13 @@ studentRouter.route("/get/:id")
 	.post(idValidation, isAuthenticated, isAuthorized('Student', 'GET'), getStudentById);
 
 studentRouter.route("/wishlist/add")
-	.post(isAuthenticated, isAuthorized('Student', 'PATCH'), wishlistValidation, addToWishlist);
+	.post(isAuthenticated, isAuthorized('Wishlist', 'PATCH'), wishlistValidation, addToWishlist);
 
 studentRouter.route("/wishlist/remove")
-	.post(isAuthenticated, isAuthorized('Student', 'PATCH'), wishlistValidation, removeFromWishlist);
+	.post(isAuthenticated, isAuthorized('Wishlist', 'PATCH'), wishlistValidation, removeFromWishlist);
 
 studentRouter.route("/enroll")
-	.post(isAuthenticated, isAuthorized('Student', 'PATCH'), enrollValidation, enroll);
+	.post(isAuthenticated, isAuthorized('Payment', 'PATCH'), enrollValidation, enroll);
 
 studentRouter.route("/paymob/confirm")
 	.post(enrollmentPayMobConfirmation);
@@ -32,6 +32,6 @@ studentRouter.route("/paypal/confirm")
 	.post(enrollmentPayPalConfirmation);
 
 studentRouter.route("/rate")
-	.post(isAuthenticated, isAuthorized('Student', 'PATCH'), rateValidation, rate);
+	.post(isAuthenticated, isAuthorized('Rating', 'PATCH'), rateValidation, rate);
 
 export default studentRouter;

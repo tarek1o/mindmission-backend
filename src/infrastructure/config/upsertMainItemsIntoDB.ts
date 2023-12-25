@@ -90,6 +90,14 @@ export const upsertMainItemsIntoDB = async () => {
       permissions: [Permissions.Read, Permissions.Create, Permissions.Update, Permissions.Delete]
     },
     {
+      modelName: AllowedModels.Wishlists,
+      permissions: [Permissions.Read, Permissions.Create, Permissions.Update, Permissions.Delete]
+    },
+    {
+      modelName: AllowedModels.Payments,
+      permissions: [Permissions.Read, Permissions.Create]
+    },
+    {
       modelName: AllowedModels.Ratings,
       permissions: [Permissions.Read, Permissions.Create, Permissions.Update, Permissions.Delete]
     },
