@@ -15,16 +15,16 @@ studentRouter.route("/get")
 studentRouter.route("/get/:id")
     .post(idValidation_1.idValidation, isAuthenticated, isAuthorized('Student', 'GET'), getStudentById);
 studentRouter.route("/wishlist/add")
-    .post(isAuthenticated, isAuthorized('Student', 'PATCH'), studentValidator_1.wishlistValidation, addToWishlist);
+    .post(isAuthenticated, isAuthorized('Wishlist', 'PATCH'), studentValidator_1.wishlistValidation, addToWishlist);
 studentRouter.route("/wishlist/remove")
-    .post(isAuthenticated, isAuthorized('Student', 'PATCH'), studentValidator_1.wishlistValidation, removeFromWishlist);
+    .post(isAuthenticated, isAuthorized('Wishlist', 'PATCH'), studentValidator_1.wishlistValidation, removeFromWishlist);
 studentRouter.route("/enroll")
-    .post(isAuthenticated, isAuthorized('Student', 'PATCH'), studentValidator_1.enrollValidation, enroll);
+    .post(isAuthenticated, isAuthorized('Payment', 'PATCH'), studentValidator_1.enrollValidation, enroll);
 studentRouter.route("/paymob/confirm")
     .post(enrollmentPayMobConfirmation);
 studentRouter.route("/paypal/confirm")
     .post(enrollmentPayPalConfirmation);
 studentRouter.route("/rate")
-    .post(isAuthenticated, isAuthorized('Student', 'PATCH'), studentValidator_1.rateValidation, rate);
+    .post(isAuthenticated, isAuthorized('Rating', 'PATCH'), studentValidator_1.rateValidation, rate);
 exports.default = studentRouter;
 //# sourceMappingURL=studentRoutes.js.map

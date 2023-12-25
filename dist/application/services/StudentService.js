@@ -21,21 +21,24 @@ let StudentService = class StudentService {
         this.studentRepository = studentRepository;
         this.courseService = courseService;
     }
-    async isStudentEnrollInThCourse(studentId, courseId) {
+    async isStudentEnrollInThCourse(userId, courseId) {
         const student = await this.studentRepository.findFirst({
             where: {
-                id: studentId,
+                userId,
                 enrolledCourses: {
                     some: {
                         id: courseId
                     }
                 }
+            },
+            select: {
+                id: true
             }
         });
         if (student) {
-            return true;
+            return student;
         }
-        return false;
+        return null;
     }
     ;
     count(args) {
@@ -57,6 +60,7 @@ let StudentService = class StudentService {
     async update(args) {
         const { id, enrolledCourses, ratings, wishlistCourse } = args.data;
         let instructorId = 0;
+        let studentId = 0;
         if (ratings) {
             const isCourseExist = await this.courseService.findUnique({
                 where: {
@@ -69,23 +73,25 @@ let StudentService = class StudentService {
             if (!isCourseExist) {
                 throw new APIError_1.default("This course does not exist", HTTPStatusCode_1.default.BadRequest);
             }
-            if (!await this.isStudentEnrollInThCourse(id, ratings.courseId)) {
+            const student = await this.isStudentEnrollInThCourse(id, ratings.courseId);
+            if (!student) {
                 throw new APIError_1.default('The current student cannot rate the course not enroll in', HTTPStatusCode_1.default.Forbidden);
             }
+            studentId = student.id;
             instructorId = isCourseExist.instructorId;
         }
         return this.studentRepository.update({
             where: {
-                id
+                userId: id
             },
             data: {
                 ratings: ratings ? {
                     upsert: {
                         where: {
                             studentId_courseId_instructorId: {
-                                studentId: id,
+                                studentId,
+                                instructorId,
                                 courseId: ratings.courseId,
-                                instructorId
                             },
                         },
                         update: {
@@ -113,15 +119,15 @@ let StudentService = class StudentService {
                     }
                 } : undefined,
                 enrolledCourses: enrolledCourses ? {
-                    connect: enrolledCourses === null || enrolledCourses === void 0 ? void 0 : enrolledCourses.map(course => {
+                    connect: enrolledCourses === null || enrolledCourses === void 0 ? void 0 : enrolledCourses.map(id => {
                         return {
-                            id: course
+                            id
                         };
                     })
                 } : undefined,
                 wishlistCourses: wishlistCourse ? {
                     [wishlistCourse.operation]: {
-                        id: wishlistCourse === null || wishlistCourse === void 0 ? void 0 : wishlistCourse.courseId
+                        id: wishlistCourse.courseId
                     }
                 } : undefined
             },
