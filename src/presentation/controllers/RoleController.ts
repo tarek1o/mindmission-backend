@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
 import asyncHandler from'express-async-handler';
-import HttpStatusCode from '../enums/HTTPStatusCode';
 import {IRoleService} from "../../application/interfaces/IServices/IRoleService"
 import { ILogService } from "../../application/interfaces/IServices/ILogService";
-import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
-import APIError from "../errorHandlers/APIError";
 import { RequestManager } from "../services/RequestManager";
 import { ExtendedRequest } from "../types/ExtendedRequest";
+import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
+import APIError from "../errorHandlers/APIError";
+import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class RoleController {

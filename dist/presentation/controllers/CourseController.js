@@ -15,14 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CourseController = void 0;
 const inversify_1 = require("inversify");
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
-const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
 const ResponseFormatter_1 = require("../responseFormatter/ResponseFormatter");
-const APIError_1 = __importDefault(require("../errorHandlers/APIError"));
 const RequestManager_1 = require("../services/RequestManager");
+const APIError_1 = __importDefault(require("../errorHandlers/APIError"));
+const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
 let CourseController = class CourseController {
-    constructor(courseService, logService) {
+    constructor(courseService) {
         this.courseService = courseService;
-        this.logService = logService;
         this.courseAggregates = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { where, skip, take, orderBy } = RequestManager_1.RequestManager.findOptionsWrapper(request);
             const aggregate = RequestManager_1.RequestManager.aggregateOptionsWrapper(request);
@@ -142,7 +141,6 @@ let CourseController = class CourseController {
 exports.CourseController = CourseController;
 exports.CourseController = CourseController = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)('ICourseService')),
-    __param(1, (0, inversify_1.inject)('ILogService'))
+    __param(0, (0, inversify_1.inject)('ICourseService'))
 ], CourseController);
 //# sourceMappingURL=CourseController.js.map

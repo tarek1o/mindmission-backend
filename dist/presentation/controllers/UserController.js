@@ -16,12 +16,12 @@ exports.UserController = void 0;
 const inversify_1 = require("inversify");
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
-const ResponseFormatter_1 = require("../responseFormatter/ResponseFormatter");
 const JWTGenerator_1 = require("../services/JWTGenerator");
-const APIError_1 = __importDefault(require("../errorHandlers/APIError"));
 const RequestManager_1 = require("../services/RequestManager");
 const UserMapper_1 = require("../mapping/UserMapper");
+const ResponseFormatter_1 = require("../responseFormatter/ResponseFormatter");
+const APIError_1 = __importDefault(require("../errorHandlers/APIError"));
+const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
 let UserController = class UserController {
     constructor(userService, logService) {
         this.userService = userService;

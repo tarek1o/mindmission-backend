@@ -1,6 +1,6 @@
 import asyncHandler from'express-async-handler';
-import { ResponseFormatter } from '../responseFormatter/ResponseFormatter';
 import { sendImageMessage, sendTextMessage, login } from '../services/WhatsAppService';
+import { ResponseFormatter } from '../responseFormatter/ResponseFormatter';
 
 export const connect = asyncHandler(async (request, response, next) => {
   const update = await login()

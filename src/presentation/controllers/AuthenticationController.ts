@@ -3,14 +3,14 @@ import { User } from "@prisma/client";
 import { inject, injectable } from "inversify";
 import asyncHandler from'express-async-handler';
 import bcrypt from "bcrypt"
-import HttpStatusCode from '../enums/HTTPStatusCode';
 import { IUserService } from "../../application/interfaces/IServices/IUserService";
-import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
-import APIError from "../errorHandlers/APIError";
 import { SendEmail } from "../services/SendEmail";
 import { JWTGenerator } from "../services/JWTGenerator";
 import { RequestManager } from "../services/RequestManager";
 import { UserMapper } from "../mapping/UserMapper";
+import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
+import APIError from "../errorHandlers/APIError";
+import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class AuthenticationController {

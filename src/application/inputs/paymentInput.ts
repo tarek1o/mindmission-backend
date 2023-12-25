@@ -10,6 +10,5 @@ export type CreatePayment = {
 
 export type UpdatePayment = {
   id: number;
-  currency?: Currency;
   status?: PaymentStatus;
 }

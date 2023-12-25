@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ModelPermissionController = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const ModelPermission_1 = require("../types/ModelPermission");
-const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
 const ResponseFormatter_1 = require("../responseFormatter/ResponseFormatter");
+const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
 class ModelPermissionController {
     constructor() {
         this.getAllModelPermissions = (0, express_async_handler_1.default)(async (request, response, next) => {

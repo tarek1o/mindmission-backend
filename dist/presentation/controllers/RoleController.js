@@ -15,10 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoleController = void 0;
 const inversify_1 = require("inversify");
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
-const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
+const RequestManager_1 = require("../services/RequestManager");
 const ResponseFormatter_1 = require("../responseFormatter/ResponseFormatter");
 const APIError_1 = __importDefault(require("../errorHandlers/APIError"));
-const RequestManager_1 = require("../services/RequestManager");
+const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
 let RoleController = class RoleController {
     constructor(roleService, logService) {
         this.roleService = roleService;
