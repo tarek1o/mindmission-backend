@@ -7,14 +7,14 @@ const express_1 = __importDefault(require("express"));
 const DI_1 = __importDefault(require("../dependencyInjection/DI"));
 const idValidation_1 = require("../middlewares/express-validator/idValidation");
 const instructorValidator_1 = require("../middlewares/express-validator/instructorValidator");
-const { isAuthenticated, isAuthorized } = DI_1.default.get('Authorization');
+const { isAuthenticated, isAuthorized, isCurrentUserRoleInBlackList } = DI_1.default.get('Authorization');
 const { getAllInstructors, getInstructorById, updateInstructor } = DI_1.default.get('InstructorController');
-const roleRouter = express_1.default.Router();
-roleRouter.route("/get")
-    .post(isAuthenticated, isAuthorized('Instructor', 'GET'), getAllInstructors);
-roleRouter.route("/get/:id")
+const instructorRouter = express_1.default.Router();
+instructorRouter.route("/get")
+    .post(isAuthenticated, isAuthorized('Instructor', 'GET'), isCurrentUserRoleInBlackList("instructor", "student"), getAllInstructors);
+instructorRouter.route("/get/:id")
     .post(idValidation_1.idValidation, isAuthenticated, isAuthorized('Instructor', 'GET'), getInstructorById);
-roleRouter.route("/update/:id")
+instructorRouter.route("/update/:id")
     .post(idValidation_1.idValidation, isAuthenticated, isAuthorized('Instructor', 'PATCH'), instructorValidator_1.updateInstructorValidation, updateInstructor);
-exports.default = roleRouter;
+exports.default = instructorRouter;
 //# sourceMappingURL=instructorRoutes.js.map

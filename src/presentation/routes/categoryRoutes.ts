@@ -11,10 +11,10 @@ const {getAllCategories, getCategoryById, createCategory, updateCategory, delete
 const categoryRouter = express.Router();
 
 categoryRouter.route("/get")
-	.post(isAuthenticated, isAuthorized('Category', 'GET'), getAllCategories);
+	.post(getAllCategories);
 
 categoryRouter.route("/get/:id")
-	.post(idValidation, isAuthenticated, isAuthorized('Category', 'GET'), getCategoryById);
+	.post(idValidation, getCategoryById);
 
 categoryRouter.route("/add")
 	.post(isAuthenticated, isAuthorized('Category', 'POST'), addCategoryValidation, createCategory);

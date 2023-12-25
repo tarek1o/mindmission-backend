@@ -39,6 +39,9 @@ let CourseService = class CourseService {
             throw new APIError_1.default(`Any course must belongs to topic not ${topic.type.toLowerCase()}`, HTTPStatusCode_1.default.BadRequest);
         }
     }
+    aggregate(args) {
+        return this.courseRepository.aggregate(args);
+    }
     count(args) {
         return this.courseRepository.count(args);
     }

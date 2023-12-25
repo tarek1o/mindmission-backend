@@ -23,6 +23,9 @@ let StudentRepository = class StudentRepository {
     findUnique(args) {
         return db_1.default.student.findUnique(args);
     }
+    findFirst(args) {
+        return db_1.default.student.findFirst(args);
+    }
     create(args) {
         return db_1.default.student.create(args);
     }

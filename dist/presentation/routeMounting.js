@@ -18,6 +18,7 @@ const lessonRoutes_1 = __importDefault(require("./routes/lessonRoutes"));
 const articleRoutes_1 = __importDefault(require("./routes/articleRoutes"));
 const videoRoutes_1 = __importDefault(require("./routes/videoRoutes"));
 const quizRoutes_1 = __importDefault(require("./routes/quizRoutes"));
+const couponRoutes_1 = __importDefault(require("./routes/couponRoutes"));
 const routeMounting = (app) => {
     app.use(`${process.env.apiVersion}/auth`, authenticationRoutes_1.default);
     app.use(`${process.env.apiVersion}/users`, userRoutes_1.default);
@@ -33,6 +34,7 @@ const routeMounting = (app) => {
     app.use(`${process.env.apiVersion}/articles`, articleRoutes_1.default);
     app.use(`${process.env.apiVersion}/videos`, videoRoutes_1.default);
     app.use(`${process.env.apiVersion}/quizzes`, quizRoutes_1.default);
+    app.use(`${process.env.apiVersion}/coupons`, couponRoutes_1.default);
     // app.use(`${process.env.apiVersion}/whatsApp`, whatsAppRoute);
 };
 exports.routeMounting = routeMounting;

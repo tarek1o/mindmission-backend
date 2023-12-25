@@ -8,8 +8,8 @@ const DI_1 = __importDefault(require("../dependencyInjection/DI"));
 const ModelPermissionController_1 = require("../controllers/ModelPermissionController");
 const { isAuthenticated, isAuthorized } = DI_1.default.get('Authorization');
 const { getAllModelPermissions } = new ModelPermissionController_1.ModelPermissionController();
-const roleRouter = express_1.default.Router();
-roleRouter.route("/get")
+const modelPermissionRouter = express_1.default.Router();
+modelPermissionRouter.route("/get")
     .post(isAuthenticated, isAuthorized('Role', 'GET'), getAllModelPermissions);
-exports.default = roleRouter;
+exports.default = modelPermissionRouter;
 //# sourceMappingURL=modelPermissionRoutes.js.map

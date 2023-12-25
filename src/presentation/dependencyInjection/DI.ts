@@ -13,5 +13,7 @@ import './classes/lessonDI';
 import './classes/videoDI';
 import './classes/articleDI';
 import './classes/quizDI';
+import './classes/paymentDI';
+import './classes/couponDI';
 
 export default container;

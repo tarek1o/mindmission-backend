@@ -16,6 +16,7 @@ exports.AllowedModels = {
     Articles: 'article',
     Quizzes: 'quiz',
     Comments: 'comment',
+    Coupons: 'coupon',
 };
 exports.Permissions = {
     Read: 'get',

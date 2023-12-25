@@ -14,6 +14,19 @@ export class CourseController {
 
 	constructor(@inject('ICourseService') private courseService: ICourseService, @inject('ILogService') private logService: ILogService) {}
 
+	courseAggregates = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
+		const {where, skip, take, orderBy} = RequestManager.findOptionsWrapper(request);
+		const aggregate = RequestManager.aggregateOptionsWrapper(request);
+		const aggregateResult = await this.courseService.aggregate({
+			where,
+			orderBy,
+			skip,
+			take,
+			...aggregate,
+		});
+		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'Course aggregate results are retrieved successfully', [aggregateResult]));
+	});
+
 	getAllCourses = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const findOptions = RequestManager.findOptionsWrapper(request);
 		const promiseResult = await Promise.all([

@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
 import asyncHandler from'express-async-handler';
-import HttpStatusCode from '../enums/HTTPStatusCode';
+import { ExtendedRequest } from "../types/ExtendedRequest";
 import { ICategoryService } from "../../application/interfaces/IServices/ICategoryService";
 import { ILogService } from "../../application/interfaces/IServices/ILogService";
+import { RequestManager } from "../services/RequestManager";
 import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
 import APIError from "../errorHandlers/APIError";
-import { RequestManager } from "../services/RequestManager";
-import { ExtendedRequest } from "../types/ExtendedRequest";
+import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class CategoryController {
@@ -40,53 +40,28 @@ export class CategoryController {
 
 	createCategory = asyncHandler(async(request: ExtendedRequest, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const {name, description, type, parentId} = request.body.input;
-		const createdCategory = await this.categoryService.create({
-			data: {
-				name,
-				slug: name,
-				type,
-				description,
-				parent: parentId ? {
-					connect: {
-						id: parentId,
-					}
-				}: undefined
-			},
-			select,
-			include,
-		});
+		const {type} = request.body.input;
+		const createdCategory = await this.categoryService.create({data: request.body.input, select: {...select, id: true}, include});
 		this.logService.log('ADD', type, createdCategory, request.user);
+		if(!select.id) {
+			Reflect.deleteProperty(createdCategory, "id");
+		}
 		response.status(HttpStatusCode.Created).json(ResponseFormatter.formate(true, 'The category is created successfully', [createdCategory]));
 	});
 
 	updateCategory = asyncHandler(async(request: ExtendedRequest, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const {name, description, type, parentId} = request.body.input;
-		const updatedCategory = await this.categoryService.update({
-			where: {
-				id: +request.params.id
-			},
-			data: {
-				name,
-				description,
-				type,
-				parent: parentId ? {
-					connect: {
-						id: parentId,
-					}
-				} : undefined
-			},
-			select,
-			include,
-		});
-		this.logService.log('UPDATE', 'CATEGORY', updatedCategory, request.user);
+		const updatedCategory = await this.categoryService.update({data: {...request.body.input, id: +request.params.id}, select: {...select, type: true}, include});
+		this.logService.log('UPDATE', updatedCategory.type, {...request.body.input, id: +request.params.id, }, request.user);
+		if(!select.type) {
+			Reflect.deleteProperty(updatedCategory, "type");
+		}
 		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The category is updated successfully', [updatedCategory]));
 	});
 
 	deleteCategory = asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => {
 		const deletedCategory = await this.categoryService.delete(+request.params.id);
-		this.logService.log('DELETE', 'CATEGORY', deletedCategory, request.user);
+		this.logService.log('DELETE', deletedCategory.type, deletedCategory, request.user);
 		response.status(HttpStatusCode.NoContent).json();
 	});
 }

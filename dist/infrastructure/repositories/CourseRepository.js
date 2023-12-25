@@ -14,6 +14,9 @@ const inversify_1 = require("inversify");
 const db_1 = __importDefault(require("../../domain/db"));
 let CourseRepository = class CourseRepository {
     constructor() { }
+    aggregate(args) {
+        return db_1.default.course.aggregate(args);
+    }
     count(args) {
         return db_1.default.course.count(args);
     }

@@ -15,10 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CategoryController = void 0;
 const inversify_1 = require("inversify");
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
-const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
+const RequestManager_1 = require("../services/RequestManager");
 const ResponseFormatter_1 = require("../responseFormatter/ResponseFormatter");
 const APIError_1 = __importDefault(require("../errorHandlers/APIError"));
-const RequestManager_1 = require("../services/RequestManager");
+const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
 let CategoryController = class CategoryController {
     constructor(categoryService, logService) {
         this.categoryService = categoryService;
@@ -47,51 +47,26 @@ let CategoryController = class CategoryController {
         });
         this.createCategory = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
-            const { name, description, type, parentId } = request.body.input;
-            const createdCategory = await this.categoryService.create({
-                data: {
-                    name,
-                    slug: name,
-                    type,
-                    description,
-                    parent: parentId ? {
-                        connect: {
-                            id: parentId,
-                        }
-                    } : undefined
-                },
-                select,
-                include,
-            });
+            const { type } = request.body.input;
+            const createdCategory = await this.categoryService.create({ data: request.body.input, select: Object.assign(Object.assign({}, select), { id: true }), include });
             this.logService.log('ADD', type, createdCategory, request.user);
+            if (!select.id) {
+                Reflect.deleteProperty(createdCategory, "id");
+            }
             response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The category is created successfully', [createdCategory]));
         });
         this.updateCategory = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
-            const { name, description, type, parentId } = request.body.input;
-            const updatedCategory = await this.categoryService.update({
-                where: {
-                    id: +request.params.id
-                },
-                data: {
-                    name,
-                    description,
-                    type,
-                    parent: parentId ? {
-                        connect: {
-                            id: parentId,
-                        }
-                    } : undefined
-                },
-                select,
-                include,
-            });
-            this.logService.log('UPDATE', 'CATEGORY', updatedCategory, request.user);
+            const updatedCategory = await this.categoryService.update({ data: Object.assign(Object.assign({}, request.body.input), { id: +request.params.id }), select: Object.assign(Object.assign({}, select), { type: true }), include });
+            this.logService.log('UPDATE', updatedCategory.type, Object.assign(Object.assign({}, request.body.input), { id: +request.params.id }), request.user);
+            if (!select.type) {
+                Reflect.deleteProperty(updatedCategory, "type");
+            }
             response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The category is updated successfully', [updatedCategory]));
         });
         this.deleteCategory = (0, express_async_handler_1.default)(async (request, response, next) => {
             const deletedCategory = await this.categoryService.delete(+request.params.id);
-            this.logService.log('DELETE', 'CATEGORY', deletedCategory, request.user);
+            this.logService.log('DELETE', deletedCategory.type, deletedCategory, request.user);
             response.status(HTTPStatusCode_1.default.NoContent).json();
         });
     }

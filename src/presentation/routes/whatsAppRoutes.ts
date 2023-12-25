@@ -1,12 +1,12 @@
 import express from 'express';
-import {sendMessageByWhatsApp, connect} from '../controllers/whatsAppController';
+import {sendMessageByWhatsApp, connect} from '../controllers/WhatsAppController';
 
-const userRouter = express.Router();
+const whatsAppRouter = express.Router();
 
-userRouter.route("/scan")
+whatsAppRouter.route("/scan")
   .post(connect);
   
-userRouter.route("/scan")
+whatsAppRouter.route("/scan")
   .post(sendMessageByWhatsApp);
 
-export default userRouter;
+export default whatsAppRouter;

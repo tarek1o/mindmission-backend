@@ -45,6 +45,7 @@ model User {
   admin                 Admin?
   logs                  Log[]
   personalLinks         PersonalLink[]
+  comments              Comment[]
   createdAt             DateTime    @default(now())
   updatedAt             DateTime?   @updatedAt
 }
@@ -71,6 +72,7 @@ enum Platform {
 
 model Admin {
   id              Int            @id @default(autoincrement())
+  coupons         Coupon[]
   userId          Int            @unique
   user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt       DateTime       @default(now())
@@ -82,6 +84,7 @@ model Student {
   enrolledCourses     Course[]           @relation("enrolled")
   wishlistCourses     Course[]           @relation("wishlist")
   ratings             Rating[]
+  payments            Payment[]
   userId              Int                @unique
   user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt           DateTime           @default(now())
@@ -191,6 +194,7 @@ model Course {
   ratings            Rating[]       
   enrolledStudents   Student[]      @relation("enrolled")
   wishlistStudents   Student[]      @relation("wishlist")
+  paymentUnits       PaymentUnit[]
   instructorId       Int
   instructor         Instructor     @relation(fields: [instructorId], references: [id], onDelete: Cascade)
   topicId            Int
@@ -221,6 +225,7 @@ model Chapter {
   course            Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
   createdAt         DateTime       @default(now())
   updatedAt         DateTime?      @updatedAt
+  @@unique([order, courseId])
 }
 
 model Lesson {
@@ -239,6 +244,7 @@ model Lesson {
   comments          Comment[]
   createdAt         DateTime       @default(now())
   updatedAt         DateTime?      @updatedAt
+  @@unique([order, chapterId])
 }
 
 enum LessonType {
@@ -311,6 +317,59 @@ enum QuestionLevel {
   ADVANCED
 }
 
+model Payment {
+  id             Int            @id @default(autoincrement())
+  currency       Currency
+  paymentMethod  PaymentMethod
+  status         PaymentStatus  @default(PENDING)
+  totalPrice     Float
+  discount       Float          @default(0)
+  paymentUnits   PaymentUnit[]
+  couponCode     String?
+  coupon         Coupon?        @relation(fields: [couponCode], references: [code], onDelete: Cascade)      
+  studentId      Int        
+  student        Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  createdAt      DateTime       @default(now())
+}
+
+enum Currency {
+  EGP
+  USD
+}
+
+enum PaymentMethod {
+  PAYPAL
+  CARD
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETE
+  FAILED
+}
+
+model PaymentUnit {
+  id             Int            @id @default(autoincrement())
+  price          Float
+  courseId       Int
+  course         Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  paymentId      Int
+  payment        Payment        @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  createdAt      DateTime       @default(now())
+}
+
+model Coupon {
+  id             Int            @id @default(autoincrement())
+  code           String         @unique
+  discount       Float
+  expiredAt      DateTime
+  adminId        Int 
+  admin          Admin          @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  payments       Payment[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime?      @updatedAt
+}
+
 model Comment {
   id                Int            @id @default(autoincrement())
   content           String
@@ -319,6 +378,8 @@ model Comment {
   replies           Comment[]      @relation("replies")
   lessonId          Int
   lesson            Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  userId            Int
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt         DateTime       @default(now())
   updatedAt         DateTime?      @updatedAt
 }
@@ -339,6 +400,7 @@ enum LogModel {
   CATEGORY
   SUBCATEGORY
   TOPIC
+  COUPON
 }
 
 enum OperationType {

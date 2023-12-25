@@ -62,9 +62,7 @@ export class Authorization {
         }
       }
     }
-
     permission = (permission === 'post') ? 'add' : (permission === 'patch') ? 'update' : (permission === 'put') ? 'get' : permission;
-
     throw new APIError(`Not Allowed to ${permission} ${modelName}`, HttpStatusCode.Unauthorized);
   });
   

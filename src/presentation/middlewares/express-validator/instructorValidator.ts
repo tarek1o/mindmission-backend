@@ -56,7 +56,7 @@ export const updateInstructorValidation = [
   .isLength({max: 1000}).withMessage("Too long bref, must be 1000 characters at most"),
   
   body("input.skills")
-    .notEmpty().withMessage('Video Pro Academy is required')
+    .notEmpty().withMessage('Skills are required')
     .isArray().withMessage('Skills must be an array of skill object')
     .custom((skills) => {
       skills.forEach((skill: any) => {

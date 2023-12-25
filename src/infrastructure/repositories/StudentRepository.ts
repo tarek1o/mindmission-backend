@@ -20,6 +20,10 @@ export class StudentRepository implements IStudentRepository {
     return prisma.student.findUnique(args);
   }
 
+  findFirst(args: Prisma.StudentFindFirstArgs): Promise<ExtendedStudent | null> {
+    return prisma.student.findFirst(args);
+  }
+
   create(args: Prisma.StudentCreateArgs): Promise<ExtendedStudent> {
     return prisma.student.create(args);
   }

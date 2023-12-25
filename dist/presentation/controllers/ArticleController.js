@@ -46,41 +46,12 @@ let ArticleController = class ArticleController {
         });
         this.createArticle = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
-            const { title, content, lessonId } = request.body.input;
-            const createdArticle = await this.articleService.create({
-                data: {
-                    title,
-                    content,
-                    lesson: {
-                        connect: {
-                            id: lessonId
-                        }
-                    }
-                },
-                select,
-                include,
-            });
+            const createdArticle = await this.articleService.create({ data: request.body.input, select, include });
             response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The article is created successfully', [createdArticle]));
         });
         this.updateArticle = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
-            const { title, content, lessonId } = request.body.input;
-            const updatedArticle = await this.articleService.update({
-                where: {
-                    id: +request.params.id,
-                },
-                data: {
-                    title: title || undefined,
-                    content: content || undefined,
-                    lesson: lessonId ? {
-                        connect: {
-                            id: lessonId
-                        }
-                    } : undefined
-                },
-                select,
-                include,
-            });
+            const updatedArticle = await this.articleService.update({ data: Object.assign(Object.assign({}, request.body.input), { id: +request.params.id }), select, include });
             response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The article is updated successfully', [updatedArticle]));
         });
         this.deleteArticle = (0, express_async_handler_1.default)(async (request, response, next) => {

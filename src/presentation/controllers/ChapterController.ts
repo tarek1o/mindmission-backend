@@ -39,52 +39,13 @@ export class ChapterController {
 
 	createChapter = asyncHandler(async(request: ExtendedRequest, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const {title, description, order, courseId} = request.body.input;
-		const createdChapter = await this.chapterService.create({
-			data: {
-				title,
-				slug: title,
-				description,
-				order,
-				course: {
-					connect: {
-						id: courseId
-					}
-				}
-			},
-			select,
-			include,
-		});
+		const createdChapter = await this.chapterService.create({data: request.body.input, select, include});
 		response.status(HttpStatusCode.Created).json(ResponseFormatter.formate(true, 'The chapter is created successfully', [createdChapter]));
   });
 
 	updateChapter = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const {title, description, lessons} = request.body.input;
-		const updatedLesson = await this.chapterService.update({
-			where: {
-				id: +request.params.id
-			},
-			data: {
-				title: title || undefined,
-				slug: title || undefined,
-				description: description || undefined,
-				lessons: lessons && lessons.length > 0 ? {
-					update: lessons.map((lesson: {id: number, order: number}) => {
-						return {
-							where: {
-								id: lesson.id,
-							},
-							data: {
-								order: lesson.order
-							}
-						}
-					})
-				} : undefined
-			},
-			select,
-			include,
-		});
+		const updatedLesson = await this.chapterService.update({data: {...request.body.input, id: +request.params.id,}, select, include});
 		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The chapter is updated successfully', [updatedLesson]));
 	});
 

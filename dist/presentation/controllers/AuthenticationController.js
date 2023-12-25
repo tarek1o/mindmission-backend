@@ -19,7 +19,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
 const ResponseFormatter_1 = require("../responseFormatter/ResponseFormatter");
 const APIError_1 = __importDefault(require("../errorHandlers/APIError"));
-const SendEmailService_1 = require("../services/SendEmailService");
+const SendEmail_1 = require("../services/SendEmail");
 const JWTGenerator_1 = require("../services/JWTGenerator");
 const RequestManager_1 = require("../services/RequestManager");
 const UserMapper_1 = require("../mapping/UserMapper");
@@ -138,7 +138,7 @@ let AuthenticationController = class AuthenticationController {
         <p style="color: black">Thanks for helping us keep your account secure.</p>
         <p style="color: black">${process.env.APP_Name} Team</p>
       `;
-                await SendEmailService_1.SendEmail.send({ to: user.email, subject: "Reset Password Code", message: message });
+                await SendEmail_1.SendEmail.send({ to: user.email, subject: "Reset Password Code", message: message });
                 await this.userService.update({
                     where: {
                         id: user.id,

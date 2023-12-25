@@ -7,7 +7,7 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 import { IUserService } from "../../application/interfaces/IServices/IUserService";
 import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
 import APIError from "../errorHandlers/APIError";
-import { SendEmail } from "../services/SendEmailService";
+import { SendEmail } from "../services/SendEmail";
 import { JWTGenerator } from "../services/JWTGenerator";
 import { RequestManager } from "../services/RequestManager";
 import { UserMapper } from "../mapping/UserMapper";

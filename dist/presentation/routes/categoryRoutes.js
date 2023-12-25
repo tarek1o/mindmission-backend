@@ -11,9 +11,9 @@ const { isAuthenticated, isAuthorized } = DI_1.default.get('Authorization');
 const { getAllCategories, getCategoryById, createCategory, updateCategory, deleteCategory } = DI_1.default.get('CategoryController');
 const categoryRouter = express_1.default.Router();
 categoryRouter.route("/get")
-    .post(isAuthenticated, isAuthorized('Category', 'GET'), getAllCategories);
+    .post(getAllCategories);
 categoryRouter.route("/get/:id")
-    .post(idValidation_1.idValidation, isAuthenticated, isAuthorized('Category', 'GET'), getCategoryById);
+    .post(idValidation_1.idValidation, getCategoryById);
 categoryRouter.route("/add")
     .post(isAuthenticated, isAuthorized('Category', 'POST'), categoryValidator_1.addCategoryValidation, createCategory);
 categoryRouter.route("/update/:id")
