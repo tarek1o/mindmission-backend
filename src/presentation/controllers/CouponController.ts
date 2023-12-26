@@ -11,7 +11,6 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class CouponController {
-
 	constructor(@inject('ICouponService') private couponService: ICouponService, @inject('ILogService') private logService: ILogService) {}
 
 	getAllCoupons = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {

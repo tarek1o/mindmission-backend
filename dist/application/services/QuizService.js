@@ -31,12 +31,10 @@ let QuizService = class QuizService {
                 lessonType: true
             }
         });
-        if (!lesson) {
-            throw new APIError_1.default('This lesson is not exist', HTTPStatusCode_1.default.BadRequest);
+        if (lesson && lesson.lessonType === client_1.LessonType.QUIZ) {
+            return true;
         }
-        if (lesson.lessonType !== client_1.LessonType.QUIZ) {
-            throw new APIError_1.default('The type of this lesson is not quiz', HTTPStatusCode_1.default.BadRequest);
-        }
+        return false;
     }
     count(args) {
         return this.quizRepository.count(args);
@@ -51,17 +49,95 @@ let QuizService = class QuizService {
     }
     ;
     async create(args) {
-        var _a, _b;
-        await this.isLessonTypeIsQuiz((_b = (_a = args.data.lesson) === null || _a === void 0 ? void 0 : _a.connect) === null || _b === void 0 ? void 0 : _b.id);
-        return this.quizRepository.create(args);
-    }
-    async update(args) {
-        var _a, _b;
-        if ((_b = (_a = args.data.lesson) === null || _a === void 0 ? void 0 : _a.connect) === null || _b === void 0 ? void 0 : _b.id) {
-            await this.isLessonTypeIsQuiz(args.data.lesson.connect.id);
+        const { title, description, requiredTime, questions, lessonId } = args.data;
+        if (await this.isLessonTypeIsQuiz(lessonId)) {
+            throw new APIError_1.default("This lesson may be not exist or may be exist but its type is not a quiz", HTTPStatusCode_1.default.BadRequest);
         }
-        return this.quizRepository.update(args);
+        return this.quizRepository.create({
+            data: {
+                title,
+                requiredTime,
+                description,
+                questions: {
+                    createMany: {
+                        data: questions.map((question, index) => {
+                            return {
+                                questionText: question.questionText,
+                                choiceA: question.choiceA,
+                                choiceB: question.choiceB,
+                                choiceC: question.choiceC,
+                                choiceD: question.choiceD,
+                                correctAnswer: question.correctAnswer,
+                                order: question.order || index + 1,
+                                level: question.level
+                            };
+                        })
+                    }
+                },
+                lesson: {
+                    connect: {
+                        id: lessonId
+                    }
+                }
+            },
+            select: args.select,
+            include: args.include
+        });
     }
+    ;
+    async update(args) {
+        const { id, title, description, requiredTime, questions, lessonId } = args.data;
+        if (lessonId && !await this.isLessonTypeIsQuiz(lessonId)) {
+            throw new APIError_1.default("This lesson may be not exist or may be exist but its type is not a quiz", HTTPStatusCode_1.default.BadRequest);
+        }
+        return this.quizRepository.update({
+            where: {
+                id,
+            },
+            data: {
+                title: title || undefined,
+                requiredTime: requiredTime || undefined,
+                description: description || undefined,
+                questions: questions && questions.length > 0 ? {
+                    upsert: questions.map((question, index) => {
+                        return {
+                            where: {
+                                id: question.id || 0
+                            },
+                            update: {
+                                questionText: question.questionText || undefined,
+                                choiceA: question.choiceA || undefined,
+                                choiceB: question.choiceB || undefined,
+                                choiceC: question.choiceC || undefined,
+                                choiceD: question.choiceD || undefined,
+                                correctAnswer: question.correctAnswer || undefined,
+                                order: question.order || undefined,
+                                level: question.level || undefined,
+                            },
+                            create: {
+                                questionText: question.questionText,
+                                choiceA: question.choiceA,
+                                choiceB: question.choiceB,
+                                choiceC: question.choiceC,
+                                choiceD: question.choiceD,
+                                correctAnswer: question.correctAnswer,
+                                order: question.order || index + 1,
+                                level: question.level
+                            }
+                        };
+                    })
+                } : undefined,
+                lesson: lessonId ? {
+                    connect: {
+                        id: lessonId
+                    }
+                } : undefined
+            },
+            select: args.select,
+            include: args.include
+        });
+    }
+    ;
     delete(id) {
         return this.quizRepository.delete(id);
     }

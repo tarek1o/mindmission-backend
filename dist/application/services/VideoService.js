@@ -31,12 +31,10 @@ let VideoService = class VideoService {
                 lessonType: true
             }
         });
-        if (!lesson) {
-            throw new APIError_1.default('This lesson is not exist', HTTPStatusCode_1.default.BadRequest);
+        if (lesson && lesson.lessonType === client_1.LessonType.VIDEO) {
+            return true;
         }
-        if (lesson.lessonType !== client_1.LessonType.VIDEO) {
-            throw new APIError_1.default('The type of this lesson is not video', HTTPStatusCode_1.default.BadRequest);
-        }
+        return false;
     }
     count(args) {
         return this.videoRepository.count(args);
@@ -51,16 +49,47 @@ let VideoService = class VideoService {
     }
     ;
     async create(args) {
-        var _a, _b;
-        await this.isLessonTypeIsVideo((_b = (_a = args.data.lesson) === null || _a === void 0 ? void 0 : _a.connect) === null || _b === void 0 ? void 0 : _b.id);
-        return this.videoRepository.create(args);
+        const { title, description, url, lessonId } = args.data;
+        if (!await this.isLessonTypeIsVideo(lessonId)) {
+            throw new APIError_1.default("This lesson may be not exist or may be exist but its type is not a video", HTTPStatusCode_1.default.BadRequest);
+        }
+        return this.videoRepository.create({
+            data: {
+                title,
+                description,
+                url,
+                lesson: {
+                    connect: {
+                        id: lessonId
+                    }
+                }
+            },
+            select: args.select,
+            include: args.include
+        });
     }
     async update(args) {
-        var _a, _b;
-        if ((_b = (_a = args.data.lesson) === null || _a === void 0 ? void 0 : _a.connect) === null || _b === void 0 ? void 0 : _b.id) {
-            await this.isLessonTypeIsVideo(args.data.lesson.connect.id);
+        const { id, title, description, url, lessonId } = args.data;
+        if (lessonId && !await this.isLessonTypeIsVideo(lessonId)) {
+            throw new APIError_1.default("This lesson may be not exist or may be exist but its type is not a video", HTTPStatusCode_1.default.BadRequest);
         }
-        return this.videoRepository.update(args);
+        return this.videoRepository.update({
+            where: {
+                id
+            },
+            data: {
+                title: title || undefined,
+                description: description || undefined,
+                url: url || undefined,
+                lesson: lessonId ? {
+                    connect: {
+                        id: lessonId
+                    }
+                } : undefined,
+            },
+            select: args.select,
+            include: args.include
+        });
     }
     delete(id) {
         return this.videoRepository.delete(id);

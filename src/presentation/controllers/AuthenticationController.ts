@@ -44,29 +44,21 @@ export class AuthenticationController {
         picture,
         refreshToken: JWTGenerator.generateRefreshToken({firstName, lastName, email, picture} as User),
         role: {
-          connect: {
-            slug
-          }
+          slug
         },
-        instructor: slug === 'instructor' ? {
-          create: {
-            specialization,
-            teachingType,
-            videoProAcademy,
-            haveAudience,
-          }
-        } : undefined,
-        student: slug === 'student' ? {
-          create: {}
+        instructor: slug === "instructor" ? {
+          specialization,
+          teachingType,
+          videoProAcademy,
+          haveAudience,
         } : undefined,
       },
       select,
       include,
 		});
-		response.status(HttpStatusCode.Created).json(ResponseFormatter.formate(true, 'Signup successfully', [
-      {
-        user: UserMapper.map([createdUser])[0], 
-        token: JWTGenerator.generateAccessToken(createdUser),
+		response.status(HttpStatusCode.Created).json(ResponseFormatter.formate(true, 'Signup successfully', [{
+      user: UserMapper.map([createdUser])[0], 
+      token: JWTGenerator.generateAccessToken(createdUser),
     }]));
   })
 
@@ -77,38 +69,42 @@ export class AuthenticationController {
       where: {
         email: {equals: email, mode: 'insensitive'}
       },
+      select: {
+        id: true,
+        firstName: true, 
+        lastName: true, 
+        email: true, 
+        picture: true,
+        password: true,
+        isDeleted: true,
+        isBlocked: true,
+        refreshToken: true
+      },
+      include
     });
-
-    if(isExist && !isExist.isDeleted && bcrypt.compareSync(password, isExist.password)) {
-      if(isExist.isBlocked) {
-        throw new APIError('Your are blocked, try to contact with our support team', HttpStatusCode.Forbidden);
-      }
-
-      let regeneratedRefreshToken;
-      if(!isExist.refreshToken || (isExist.refreshToken && this.isRefreshTokenExpiredSoon(isExist.refreshToken))) {
-        regeneratedRefreshToken = JWTGenerator.generateRefreshToken(isExist);
-      }
-
-      const updatedUser = await this.userService.update({
-        where: {
-          id: isExist.id,
-        },
-        data: {
-          isActive: true,
-          refreshToken: regeneratedRefreshToken ? regeneratedRefreshToken : undefined
-        },
-        select,
-        include,
-      });
-
-      response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'Login successfully', [{
-        user: UserMapper.map([updatedUser])[0], 
-        token: JWTGenerator.generateAccessToken(isExist),
-      }]));
-      return;
+    if(!isExist || isExist.isDeleted || !bcrypt.compareSync(password, isExist.password)) {
+      throw new APIError('Your email or password may be incorrect', HttpStatusCode.BadRequest);
     }
-    
-    throw new APIError('Your email or password may be incorrect', HttpStatusCode.BadRequest);
+    if(isExist.isBlocked) {
+      throw new APIError('Your are blocked, try to contact with our support team', HttpStatusCode.Forbidden);
+    }
+    let regeneratedRefreshToken;
+    if(!isExist.refreshToken || (isExist.refreshToken && this.isRefreshTokenExpiredSoon(isExist.refreshToken))) {
+      regeneratedRefreshToken = JWTGenerator.generateRefreshToken(isExist);
+    }
+    const updatedUser = await this.userService.update({
+      data: {
+        id: isExist.id,
+        isActive: true,
+        refreshToken: regeneratedRefreshToken ? regeneratedRefreshToken : undefined
+      },
+      select,
+      include,
+    });
+    response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'Login successfully', [{
+      user: UserMapper.map([updatedUser])[0], 
+      token: JWTGenerator.generateAccessToken(isExist),
+    }]));
   });
 
   forgetPassword = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
@@ -124,7 +120,6 @@ export class AuthenticationController {
         email: true
       }
     });
-
     if(user) {
       const resetCode = Math.floor(100000 + Math.random() * 900000);
       const message = `
@@ -136,16 +131,12 @@ export class AuthenticationController {
         <p style="color: black">Thanks for helping us keep your account secure.</p>
         <p style="color: black">${process.env.APP_Name} Team</p>
       `;
-
       await SendEmail.send({to: user.email, subject: "Reset Password Code", message: message});
-
       await this.userService.update({
-        where: {
-          id: user.id,
-        },
         data: {
+          id: user.id,
           resetPasswordCode: {
-            code: resetCode,
+            code: `${resetCode}`,
             expirationTime: Date.now() + 5 * 60 * 1000, // 5 minutes from the time of reset code generation
             isVerified: false
           }
@@ -155,7 +146,6 @@ export class AuthenticationController {
         }
       });
     };
-
     response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'If your email exists, you will receive a verification code'));
   });
 
@@ -174,10 +164,8 @@ export class AuthenticationController {
       const {code, expirationTime, isVerified} = user.resetPasswordCode as any;
       if(user.resetPasswordCode && code && bcrypt.compareSync(request.body.input.code.toString(), code) && expirationTime >= Date.now() && !isVerified) {
         await this.userService.update({
-          where: {
-            id: user.id,
-          },
           data: {
+            id: user.id,
             resetPasswordCode: {
               code,
               expirationTime,
@@ -210,12 +198,10 @@ export class AuthenticationController {
       const {expirationTime, isVerified} = user.resetPasswordCode as any;
       if(expirationTime >= Date.now() && isVerified) {
         await this.userService.update({
-          where: {
-            id: user.id,
-          },
           data: {
+            id: user.id,
             password: newPassword,
-            resetPasswordCode: {},
+            resetPasswordCode: undefined,
             passwordUpdatedTime: new Date()
           },
           select: {
@@ -231,7 +217,6 @@ export class AuthenticationController {
 
   refreshToken = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
     let {accessToken, refreshToken} = request.body.input;
-    
     if(JWTGenerator.isTokenExpired(accessToken)) {
       JWTGenerator.verifyRefreshToken(refreshToken);
       const accessTokenPayload = JWTGenerator.decode(accessToken);
@@ -248,20 +233,15 @@ export class AuthenticationController {
           refreshToken: true
         }
       });
-  
       if(!user || user.refreshToken !== refreshToken) {
         throw new APIError('Invalid tokens, try to login again', HttpStatusCode.BadRequest);
       }
-
       accessToken = JWTGenerator.generateAccessToken(user);
-
       if(this.isRefreshTokenExpiredSoon(refreshToken)) {
         refreshToken = JWTGenerator.generateRefreshToken(user);
         await this.userService.update({
-          where: {
-            id: user.id,
-          },
           data: {
+            id: user.id,
             refreshToken
           },
           select: {

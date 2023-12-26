@@ -46,40 +46,13 @@ let LessonController = class LessonController {
         });
         this.createLesson = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
-            const { title, isFree, attachment, order, lessonType, chapterId } = request.body.input;
-            const createdLesson = await this.lessonService.create({
-                data: {
-                    title,
-                    slug: title,
-                    isFree,
-                    attachment,
-                    order,
-                    lessonType,
-                    chapter: {
-                        connect: {
-                            id: chapterId
-                        }
-                    }
-                },
-                select,
-                include,
-            });
+            const createdLesson = await this.lessonService.create({ data: request.body.input, select, include });
             response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The lesson is created successfully', [createdLesson]));
         });
         this.updateLesson = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
-            const { title, isFree, attachment, order, lessonType, chapterId } = request.body.input;
             const updatedLesson = await this.lessonService.update({
-                where: {
-                    id: +request.params.id
-                },
-                data: {
-                    title: title || undefined,
-                    slug: title,
-                    isFree: isFree || undefined,
-                    attachment: attachment || undefined,
-                    lessonType: lessonType || undefined,
-                },
+                data: Object.assign(Object.assign({}, request.body.input), { id: +request.params.id }),
                 select,
                 include,
             });

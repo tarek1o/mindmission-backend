@@ -1,9 +1,10 @@
 import { Prisma } from "@prisma/client"
 import {inject, injectable } from "inversify"
+import slugify from "slugify";
 import { IInstructorRepository } from "../interfaces/IRepositories/IInstructorRepository";
 import { IInstructorService } from "../interfaces/IServices/IInstructorService";
 import { ExtendedInstructor } from "../types/ExtendedInstructor";
-import slugify from "slugify";
+import { UpdateInstructor } from "../inputs/instructorInput";
 
 @injectable()
 export class InstructorService implements IInstructorService {
@@ -21,31 +22,39 @@ export class InstructorService implements IInstructorService {
 		return this.instructorRepository.findUnique(args);
 	};
 
-	async update(args: Prisma.InstructorUpdateArgs): Promise<ExtendedInstructor> {
-		const {skills} = args.data;
-		if(skills) {
-			args.data.skills = {
-				upsert: (skills as any).map((skill: {name: string}) => {
-					const slug = slugify(skill.name, {lower: true, trim: true});
-					return {
-						where: {
-							slug_instructorId: {
-								instructorId: args.where.id,
-								slug,
+	async update(args: {data: UpdateInstructor, select?: Prisma.InstructorSelect, include?: Prisma.InstructorInclude}): Promise<ExtendedInstructor> {
+		const {id, bref, specialization, skills} = args.data;
+		return this.instructorRepository.update({
+			where: {
+				id
+			},
+			data: {
+				bref: bref || undefined,
+				specialization: specialization || undefined,
+				skills: skills ? {
+					upsert: skills.map(({name}) => {
+						const slug = slugify(name, {lower: true, trim: true});
+						return {
+							where: {
+								slug_instructorId: {
+									instructorId: id,
+									slug,
+								},
 							},
-						},
-						update: {
-							name: skill.name,
-							slug
-						},
-						create: {
-							name: skill.name,
-							slug
+							update: {
+								name: name,
+								slug
+							},
+							create: {
+								name: name,
+								slug
+							}
 						}
-					}
-				})
-			}
-		}
-		return this.instructorRepository.update(args);
+					})
+				} : undefined
+			},
+			select: args.select,
+			// include: args.include
+		});
 	};
 }

@@ -46,40 +46,13 @@ let VideoController = class VideoController {
         });
         this.createVideo = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
-            const { title, description, url, lessonId } = request.body.input;
-            const createdVideo = await this.videoService.create({
-                data: {
-                    title,
-                    description,
-                    url,
-                    lesson: {
-                        connect: {
-                            id: lessonId
-                        }
-                    }
-                },
-                select,
-                include,
-            });
+            const createdVideo = await this.videoService.create({ data: request.body.input, select, include });
             response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The video is created successfully', [createdVideo]));
         });
         this.updateVideo = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
-            const { title, description, url, lessonId } = request.body.input;
             const updatedVideo = await this.videoService.update({
-                where: {
-                    id: +request.params.id
-                },
-                data: {
-                    title: title || undefined,
-                    description: description || undefined,
-                    url: url || undefined,
-                    lesson: lessonId ? {
-                        connect: {
-                            id: lessonId
-                        }
-                    } : undefined
-                },
+                data: Object.assign(Object.assign({}, request.body.input), { id: +request.params.id }),
                 select,
                 include,
             });

@@ -53,31 +53,22 @@ let AuthenticationController = class AuthenticationController {
                     picture,
                     refreshToken: JWTGenerator_1.JWTGenerator.generateRefreshToken({ firstName, lastName, email, picture }),
                     role: {
-                        connect: {
-                            slug
-                        }
+                        slug
                     },
-                    instructor: slug === 'instructor' ? {
-                        create: {
-                            specialization,
-                            teachingType,
-                            videoProAcademy,
-                            haveAudience,
-                        }
-                    } : undefined,
-                    student: slug === 'student' ? {
-                        create: {}
+                    instructor: slug === "instructor" ? {
+                        specialization,
+                        teachingType,
+                        videoProAcademy,
+                        haveAudience,
                     } : undefined,
                 },
                 select,
                 include,
             });
-            response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'Signup successfully', [
-                {
+            response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'Signup successfully', [{
                     user: UserMapper_1.UserMapper.map([createdUser])[0],
                     token: JWTGenerator_1.JWTGenerator.generateAccessToken(createdUser),
-                }
-            ]));
+                }]));
         });
         this.login = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { email, password } = request.body.input;
@@ -86,33 +77,42 @@ let AuthenticationController = class AuthenticationController {
                 where: {
                     email: { equals: email, mode: 'insensitive' }
                 },
+                select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    email: true,
+                    picture: true,
+                    password: true,
+                    isDeleted: true,
+                    isBlocked: true,
+                    refreshToken: true
+                },
+                include
             });
-            if (isExist && !isExist.isDeleted && bcrypt_1.default.compareSync(password, isExist.password)) {
-                if (isExist.isBlocked) {
-                    throw new APIError_1.default('Your are blocked, try to contact with our support team', HTTPStatusCode_1.default.Forbidden);
-                }
-                let regeneratedRefreshToken;
-                if (!isExist.refreshToken || (isExist.refreshToken && this.isRefreshTokenExpiredSoon(isExist.refreshToken))) {
-                    regeneratedRefreshToken = JWTGenerator_1.JWTGenerator.generateRefreshToken(isExist);
-                }
-                const updatedUser = await this.userService.update({
-                    where: {
-                        id: isExist.id,
-                    },
-                    data: {
-                        isActive: true,
-                        refreshToken: regeneratedRefreshToken ? regeneratedRefreshToken : undefined
-                    },
-                    select,
-                    include,
-                });
-                response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'Login successfully', [{
-                        user: UserMapper_1.UserMapper.map([updatedUser])[0],
-                        token: JWTGenerator_1.JWTGenerator.generateAccessToken(isExist),
-                    }]));
-                return;
+            if (!isExist || isExist.isDeleted || !bcrypt_1.default.compareSync(password, isExist.password)) {
+                throw new APIError_1.default('Your email or password may be incorrect', HTTPStatusCode_1.default.BadRequest);
             }
-            throw new APIError_1.default('Your email or password may be incorrect', HTTPStatusCode_1.default.BadRequest);
+            if (isExist.isBlocked) {
+                throw new APIError_1.default('Your are blocked, try to contact with our support team', HTTPStatusCode_1.default.Forbidden);
+            }
+            let regeneratedRefreshToken;
+            if (!isExist.refreshToken || (isExist.refreshToken && this.isRefreshTokenExpiredSoon(isExist.refreshToken))) {
+                regeneratedRefreshToken = JWTGenerator_1.JWTGenerator.generateRefreshToken(isExist);
+            }
+            const updatedUser = await this.userService.update({
+                data: {
+                    id: isExist.id,
+                    isActive: true,
+                    refreshToken: regeneratedRefreshToken ? regeneratedRefreshToken : undefined
+                },
+                select,
+                include,
+            });
+            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'Login successfully', [{
+                    user: UserMapper_1.UserMapper.map([updatedUser])[0],
+                    token: JWTGenerator_1.JWTGenerator.generateAccessToken(isExist),
+                }]));
         });
         this.forgetPassword = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { email } = request.body.input;
@@ -140,12 +140,10 @@ let AuthenticationController = class AuthenticationController {
       `;
                 await SendEmail_1.SendEmail.send({ to: user.email, subject: "Reset Password Code", message: message });
                 await this.userService.update({
-                    where: {
-                        id: user.id,
-                    },
                     data: {
+                        id: user.id,
                         resetPasswordCode: {
-                            code: resetCode,
+                            code: `${resetCode}`,
                             expirationTime: Date.now() + 5 * 60 * 1000, // 5 minutes from the time of reset code generation
                             isVerified: false
                         }
@@ -173,10 +171,8 @@ let AuthenticationController = class AuthenticationController {
                 const { code, expirationTime, isVerified } = user.resetPasswordCode;
                 if (user.resetPasswordCode && code && bcrypt_1.default.compareSync(request.body.input.code.toString(), code) && expirationTime >= Date.now() && !isVerified) {
                     await this.userService.update({
-                        where: {
-                            id: user.id,
-                        },
                         data: {
+                            id: user.id,
                             resetPasswordCode: {
                                 code,
                                 expirationTime,
@@ -208,12 +204,10 @@ let AuthenticationController = class AuthenticationController {
                 const { expirationTime, isVerified } = user.resetPasswordCode;
                 if (expirationTime >= Date.now() && isVerified) {
                     await this.userService.update({
-                        where: {
-                            id: user.id,
-                        },
                         data: {
+                            id: user.id,
                             password: newPassword,
-                            resetPasswordCode: {},
+                            resetPasswordCode: undefined,
                             passwordUpdatedTime: new Date()
                         },
                         select: {
@@ -251,10 +245,8 @@ let AuthenticationController = class AuthenticationController {
                 if (this.isRefreshTokenExpiredSoon(refreshToken)) {
                     refreshToken = JWTGenerator_1.JWTGenerator.generateRefreshToken(user);
                     await this.userService.update({
-                        where: {
-                            id: user.id,
-                        },
                         data: {
+                            id: user.id,
                             refreshToken
                         },
                         select: {

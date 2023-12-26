@@ -56,33 +56,8 @@ let CourseController = class CourseController {
         this.createCourse = (0, express_async_handler_1.default)(async (request, response, next) => {
             var _a;
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
-            const { title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, topicId } = request.body.input;
             const createdCourse = await this.courseService.create({
-                data: {
-                    title,
-                    slug: title,
-                    shortDescription,
-                    description,
-                    language,
-                    level,
-                    imageCover,
-                    requirements,
-                    courseTeachings,
-                    price,
-                    discountPercentage,
-                    isApproved: false,
-                    isDraft: true,
-                    topic: {
-                        connect: {
-                            id: topicId
-                        }
-                    },
-                    instructor: {
-                        connect: {
-                            userId: (_a = request.user) === null || _a === void 0 ? void 0 : _a.id
-                        }
-                    }
-                },
+                data: Object.assign(Object.assign({}, request.body.input), { userId: (_a = request.user) === null || _a === void 0 ? void 0 : _a.id }),
                 select,
                 include,
             });
@@ -90,43 +65,8 @@ let CourseController = class CourseController {
         });
         this.updateCourse = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
-            const { title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, isApproved, isDraft, chapters, topicId } = request.body.input;
             const updatedCourse = await this.courseService.update({
-                where: {
-                    id: +request.params.id
-                },
-                data: {
-                    title: title || undefined,
-                    slug: title || undefined,
-                    shortDescription: shortDescription || undefined,
-                    description: description || undefined,
-                    language: language || undefined,
-                    level: level || undefined,
-                    imageCover: imageCover || undefined,
-                    requirements: requirements || undefined,
-                    courseTeachings: courseTeachings || undefined,
-                    price: price || undefined,
-                    discountPercentage: discountPercentage || undefined,
-                    isApproved: isApproved || undefined,
-                    isDraft: isDraft || undefined,
-                    chapters: chapters ? {
-                        update: chapters.map((chapters) => {
-                            return {
-                                where: {
-                                    id: chapters.id
-                                },
-                                data: {
-                                    order: chapters.order
-                                }
-                            };
-                        })
-                    } : undefined,
-                    topic: topicId ? {
-                        connect: {
-                            id: topicId
-                        }
-                    } : undefined,
-                },
+                data: Object.assign(Object.assign({}, request.body.input), { id: +request.params.id }),
                 select,
                 include
             });

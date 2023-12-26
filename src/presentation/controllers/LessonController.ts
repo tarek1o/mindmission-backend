@@ -9,7 +9,6 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class LessonController {
-
 	constructor(@inject('ILessonService') private lessonService: ILessonService) {}
 
 	getAllLessons = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
@@ -38,40 +37,16 @@ export class LessonController {
 
 	createLesson = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const {title, isFree, attachment, order, lessonType, chapterId} = request.body.input;
-		const createdLesson = await this.lessonService.create({
-			data: {
-				title,
-				slug: title,
-				isFree,
-				attachment,
-				order,
-				lessonType,
-				chapter: {
-					connect: {
-						id: chapterId
-					}
-				}
-			},
-			select,
-			include,
-		});
+		const createdLesson = await this.lessonService.create({data: request.body.input, select, include});
 		response.status(HttpStatusCode.Created).json(ResponseFormatter.formate(true, 'The lesson is created successfully', [createdLesson]));
 	});
 
 	updateLesson = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const {title, isFree, attachment, order, lessonType, chapterId} = request.body.input;
 		const updatedLesson = await this.lessonService.update({
-			where: {
-				id: +request.params.id
-			},
 			data: {
-				title: title || undefined,
-				slug: title,
-				isFree: isFree || undefined,
-				attachment: attachment || undefined,
-				lessonType: lessonType || undefined,	
+				...request.body.input,	
+				id: +request.params.id
 			},
 			select,
 			include,

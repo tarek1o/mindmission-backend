@@ -47,11 +47,7 @@ let RoleController = class RoleController {
         });
         this.createRole = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
-            const createdRole = await this.roleService.create({
-                data: request.body.input,
-                select,
-                include,
-            });
+            const createdRole = await this.roleService.create({ data: request.body.input, select, include });
             this.logService.log('ADD', 'ROLE', createdRole, request.user);
             response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The role is created successfully', [createdRole]));
         });
@@ -59,14 +55,7 @@ let RoleController = class RoleController {
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
             const { name, description, allowedModels } = request.body.input;
             const updatedRole = await this.roleService.update({
-                where: {
-                    id: +request.params.id
-                },
-                data: {
-                    name,
-                    description,
-                    allowedModels
-                },
+                data: Object.assign(Object.assign({}, request.body.input), { id: +request.params.id }),
                 select,
                 include,
             });

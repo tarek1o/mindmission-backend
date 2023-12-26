@@ -46,16 +46,8 @@ let InstructorController = class InstructorController {
         });
         this.updateInstructor = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
-            const { bref, specialization, skills } = request.body.input;
             const updatedInstructor = await this.instructorService.update({
-                where: {
-                    id: +request.params.id
-                },
-                data: {
-                    bref: bref || undefined,
-                    specialization: specialization || undefined,
-                    skills: skills || undefined,
-                },
+                data: Object.assign(Object.assign({}, request.body.input), { id: +request.params.id }),
                 select,
                 include,
             });

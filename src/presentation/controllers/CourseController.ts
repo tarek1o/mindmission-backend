@@ -10,7 +10,6 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class CourseController {
-
 	constructor(@inject('ICourseService') private courseService: ICourseService) {}
 
 	courseAggregates = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
@@ -52,32 +51,10 @@ export class CourseController {
 
 	createCourse = asyncHandler(async(request: ExtendedRequest, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const {title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, topicId} = request.body.input;
 		const createdCourse = await this.courseService.create({
 			data: {
-				title,
-				slug: title,
-        shortDescription,
-        description,
-        language,
-        level,
-        imageCover,
-        requirements,
-        courseTeachings,
-        price,
-        discountPercentage,
-        isApproved: false,
-				isDraft: true,
-        topic: {
-          connect: {
-            id: topicId
-          }
-        },
-        instructor: {
-          connect: {
-						userId: request.user?.id
-          }
-        }
+				...request.body.input,
+				userId: request.user?.id
 			},
 			select,
 			include,
@@ -87,42 +64,10 @@ export class CourseController {
 
 	updateCourse = asyncHandler(async(request: ExtendedRequest, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const {title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, isApproved, isDraft, chapters, topicId} = request.body.input;
 		const updatedCourse = await this.courseService.update({
-			where: {
-				id: +request.params.id
-			},
 			data: {
-				title : title || undefined,
-				slug: title || undefined,
-        shortDescription: shortDescription || undefined,
-        description: description || undefined,
-        language: language || undefined,
-        level: level || undefined,
-        imageCover: imageCover || undefined,
-        requirements: requirements || undefined,
-        courseTeachings: courseTeachings || undefined,
-        price: price || undefined,
-        discountPercentage: discountPercentage || undefined,
-        isApproved: isApproved || undefined,
-				isDraft: isDraft || undefined,
-				chapters: chapters ? {
-					update: chapters.map((chapters: {id: number, order: number}) => {
-						return {
-							where: {
-								id: chapters.id
-							},
-							data: {
-								order: chapters.order
-							}
-						}
-					})
-				} : undefined,
-        topic: topicId ? {
-          connect: {
-            id: topicId
-          }
-        } : undefined,
+				...request.body.input,
+				id: +request.params.id
 			},
 			select,
 			include

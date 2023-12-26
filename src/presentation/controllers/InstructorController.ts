@@ -10,7 +10,6 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class InstructorController {
-
 	constructor(@inject('IInstructorService') private instructorService: IInstructorService) {}
 
 	getAllInstructors = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
@@ -39,15 +38,10 @@ export class InstructorController {
 
 	updateInstructor = asyncHandler(async(request: ExtendedRequest, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const {bref, specialization, skills} = request.body.input;
 		const updatedInstructor = await this.instructorService.update({
-			where: {
-				id: +request.params.id
-			},
 			data: {
-				bref: bref || undefined,
-        specialization: specialization || undefined,
-        skills: skills || undefined,
+				...request.body.input,
+				id: +request.params.id,
 			},
 			select,
 			include,

@@ -32,12 +32,10 @@ let CourseService = class CourseService {
                 type: true
             }
         });
-        if (!topic) {
-            throw new APIError_1.default("This topic is not exist", HTTPStatusCode_1.default.BadRequest);
+        if (topic && topic.type === 'TOPIC') {
+            return true;
         }
-        if (topic.type !== 'TOPIC') {
-            throw new APIError_1.default(`Any course must belongs to topic not ${topic.type.toLowerCase()}`, HTTPStatusCode_1.default.BadRequest);
-        }
+        return false;
     }
     aggregate(args) {
         return this.courseRepository.aggregate(args);
@@ -55,31 +53,95 @@ let CourseService = class CourseService {
     }
     ;
     async create(args) {
-        var _a, _b;
-        args.data.slug = (0, slugify_1.default)(args.data.title, { lower: true, trim: true });
-        await this.isTrueTopic((_b = (_a = args.data.topic) === null || _a === void 0 ? void 0 : _a.connect) === null || _b === void 0 ? void 0 : _b.id);
-        return this.courseRepository.create(args);
+        const { title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, isDraft, userId, topicId } = args.data;
+        const slug = (0, slugify_1.default)(title, { lower: true, trim: true });
+        if (!await this.isTrueTopic(topicId)) {
+            throw new APIError_1.default("This topic may be not exist or may be exist but not a topic", HTTPStatusCode_1.default.BadRequest);
+        }
+        return this.courseRepository.create({
+            data: {
+                title,
+                slug,
+                shortDescription,
+                description,
+                language,
+                level,
+                imageCover,
+                requirements,
+                courseTeachings,
+                price,
+                isDraft,
+                instructor: {
+                    connect: {
+                        userId
+                    }
+                },
+                topic: {
+                    connect: {
+                        id: topicId
+                    }
+                }
+            },
+            select: args.select,
+            included: args.include
+        });
     }
     ;
     async update(args) {
-        var _a, _b;
-        if (args.data.title) {
-            args.data.slug = (0, slugify_1.default)(args.data.title.toString(), { lower: true, trim: true });
+        const { id, title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, isApproved, isDraft, chapters, topicId } = args.data;
+        const slug = title ? (0, slugify_1.default)(title.toString(), { lower: true, trim: true }) : undefined;
+        if (topicId && !await this.isTrueTopic(topicId)) {
+            throw new APIError_1.default("This topic may be not exist or may be exist but not a topic", HTTPStatusCode_1.default.BadRequest);
         }
-        if ((_b = (_a = args.data.topic) === null || _a === void 0 ? void 0 : _a.connect) === null || _b === void 0 ? void 0 : _b.id) {
-            await this.isTrueTopic(args.data.topic.connect.id);
-        }
-        if (args.data.chapters) {
+        if (chapters) {
             const count = await this.chapterService.count({
                 where: {
-                    courseId: args.where.id
+                    courseId: id
                 },
             });
-            if (count !== args.data.chapters.update.length) {
+            if (count !== chapters.length) {
                 throw new APIError_1.default("You should send all course's chapters during update the order of chapters", HTTPStatusCode_1.default.BadRequest);
             }
         }
-        return this.courseRepository.update(args);
+        return this.courseRepository.update({
+            where: {
+                id
+            },
+            data: {
+                title: title || undefined,
+                slug,
+                shortDescription: shortDescription || undefined,
+                description: description || undefined,
+                language: language || undefined,
+                level: level || undefined,
+                imageCover: imageCover || undefined,
+                requirements: requirements || undefined,
+                courseTeachings: courseTeachings || undefined,
+                price: price || undefined,
+                discountPercentage: discountPercentage || undefined,
+                isApproved: isApproved || undefined,
+                isDraft: isDraft || undefined,
+                chapters: chapters ? {
+                    update: chapters.map(({ id, order }) => {
+                        return {
+                            where: {
+                                id
+                            },
+                            data: {
+                                order
+                            }
+                        };
+                    })
+                } : undefined,
+                topic: topicId ? {
+                    connect: {
+                        id: topicId
+                    }
+                } : undefined,
+            },
+            select: args.select,
+            include: args.include
+        });
     }
     ;
     delete(id) {
