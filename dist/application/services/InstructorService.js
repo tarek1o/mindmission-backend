@@ -32,31 +32,39 @@ let InstructorService = class InstructorService {
     }
     ;
     async update(args) {
-        const { skills } = args.data;
-        if (skills) {
-            args.data.skills = {
-                upsert: skills.map((skill) => {
-                    const slug = (0, slugify_1.default)(skill.name, { lower: true, trim: true });
-                    return {
-                        where: {
-                            slug_instructorId: {
-                                instructorId: args.where.id,
-                                slug,
+        const { id, bref, specialization, skills } = args.data;
+        return this.instructorRepository.update({
+            where: {
+                id
+            },
+            data: {
+                bref: bref || undefined,
+                specialization: specialization || undefined,
+                skills: skills ? {
+                    upsert: skills.map(({ name }) => {
+                        const slug = (0, slugify_1.default)(name, { lower: true, trim: true });
+                        return {
+                            where: {
+                                slug_instructorId: {
+                                    instructorId: id,
+                                    slug,
+                                },
                             },
-                        },
-                        update: {
-                            name: skill.name,
-                            slug
-                        },
-                        create: {
-                            name: skill.name,
-                            slug
-                        }
-                    };
-                })
-            };
-        }
-        return this.instructorRepository.update(args);
+                            update: {
+                                name: name,
+                                slug
+                            },
+                            create: {
+                                name: name,
+                                slug
+                            }
+                        };
+                    })
+                } : undefined
+            },
+            select: args.select,
+            // include: args.include
+        });
     }
     ;
 };

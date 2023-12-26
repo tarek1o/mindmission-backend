@@ -68,77 +68,37 @@ let UserController = class UserController {
             response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The user is retrieved successfully', mappedUserResults));
         });
         this.createUser = (0, express_async_handler_1.default)(async (request, response, next) => {
-            const { firstName, lastName, email, password, mobilePhone, whatsAppNumber, bio, picture, roleId } = request.body.input;
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
-            const createdUser = await this.userService.create({
-                data: {
-                    firstName,
-                    lastName,
-                    email,
-                    password,
-                    bio,
-                    picture,
-                    mobilePhone,
-                    whatsAppNumber,
-                    role: {
-                        connect: {
-                            id: roleId,
-                        }
-                    },
-                },
-                select,
-                include,
-            });
+            const createdUser = await this.userService.create({ data: Object.assign(Object.assign({}, request.body.input), { role: { id: request.body.input.roleId } }), select, include });
             this.logService.log('ADD', 'USER', createdUser, request.user);
             const mappedUserResults = UserMapper_1.UserMapper.map([createdUser]);
             response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The user is created successfully', mappedUserResults));
         });
         this.updateUser = (0, express_async_handler_1.default)(async (request, response, next) => {
+            var _a, _b, _c, _d;
             const { firstName, lastName, bio, picture, mobilePhone, whatsAppNumber, isActive, isBlocked, isDeleted, roleId, personalLinks } = request.body.input;
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
             const updatedUser = await this.userService.update({
-                where: {
-                    id: +request.params.id
-                },
                 data: {
-                    firstName: firstName || undefined,
-                    lastName: lastName || undefined,
-                    bio: bio,
-                    picture: picture || undefined,
-                    mobilePhone: mobilePhone,
-                    whatsAppNumber: whatsAppNumber,
-                    isActive: isActive,
-                    isBlocked: isBlocked,
-                    isDeleted: isDeleted,
-                    role: roleId ? {
-                        connect: {
-                            id: roleId
-                        }
-                    } : undefined,
-                    personalLinks: personalLinks ? {
-                        upsert: personalLinks.map((link) => {
-                            return {
-                                where: {
-                                    userId_platform: {
-                                        userId: +request.params.id,
-                                        platform: link.platform.toUpperCase(),
-                                    }
-                                },
-                                update: {
-                                    link: link.link
-                                },
-                                create: {
-                                    platform: link.platform.toUpperCase(),
-                                    link: link.link
-                                }
-                            };
-                        })
-                    } : undefined
+                    id: +request.params.id,
+                    firstName,
+                    lastName,
+                    bio,
+                    picture,
+                    mobilePhone,
+                    whatsAppNumber,
+                    isActive,
+                    isBlocked,
+                    isDeleted,
+                    roleId,
+                    personalLinks
                 },
                 select,
                 include,
             });
-            this.logService.log('UPDATE', 'USER', updatedUser, request.user);
+            if ((((_b = (_a = request.user) === null || _a === void 0 ? void 0 : _a.role) === null || _b === void 0 ? void 0 : _b.slug) !== "student" && ((_d = (_c = request.user) === null || _c === void 0 ? void 0 : _c.role) === null || _d === void 0 ? void 0 : _d.slug) !== "instructor")) {
+                this.logService.log('UPDATE', 'USER', updatedUser, request.user);
+            }
             const mappedUserResults = UserMapper_1.UserMapper.map([updatedUser]);
             response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The user is updated successfully', mappedUserResults));
         });
@@ -146,50 +106,44 @@ let UserController = class UserController {
             const { email, newEmail, password } = request.body.input;
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
             const user = await this.isUserCredentialsRight(email, password);
-            if (user) {
-                const updatedUser = await this.userService.update({
-                    where: {
-                        id: user.id,
-                    },
-                    data: {
-                        email: newEmail,
-                        isEmailVerified: false
-                    },
-                    select,
-                    include,
-                });
-                const mappedUserResults = UserMapper_1.UserMapper.map([updatedUser]);
-                response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'Your email is updated successfully', [{
-                        user: mappedUserResults[0],
-                        token: JWTGenerator_1.JWTGenerator.generateAccessToken(updatedUser),
-                    }]));
-                return;
+            if (!user || user.id !== +request.params.id) {
+                throw new APIError_1.default('Your email or password may be incorrect', HTTPStatusCode_1.default.BadRequest);
             }
-            throw new APIError_1.default('Your email or password may be incorrect', HTTPStatusCode_1.default.BadRequest);
+            const updatedUser = await this.userService.update({
+                data: {
+                    id: user.id,
+                    email: newEmail,
+                    isEmailVerified: false
+                },
+                select,
+                include,
+            });
+            const mappedUserResults = UserMapper_1.UserMapper.map([updatedUser]);
+            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'Your email is updated successfully', [{
+                    user: mappedUserResults[0],
+                    token: JWTGenerator_1.JWTGenerator.generateAccessToken(updatedUser),
+                }]));
         });
         this.updateUserPassword = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { email, newPassword, password } = request.body.input;
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
             const user = await this.isUserCredentialsRight(email, password);
-            if (user) {
-                const updatedUser = await this.userService.update({
-                    where: {
-                        id: user.id
-                    },
-                    data: {
-                        password: newPassword
-                    },
-                    select,
-                    include,
-                });
-                const mappedUserResults = UserMapper_1.UserMapper.map([updatedUser]);
-                response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'Your password is updated successfully', [{
-                        user: mappedUserResults[0],
-                        token: JWTGenerator_1.JWTGenerator.generateAccessToken(updatedUser),
-                    }]));
-                return;
+            if (!user || user.id !== +request.params.id) {
+                throw new APIError_1.default('Your email or password may be incorrect', HTTPStatusCode_1.default.BadRequest);
             }
-            throw new APIError_1.default('Your email or password may be incorrect', HTTPStatusCode_1.default.BadRequest);
+            const updatedUser = await this.userService.update({
+                data: {
+                    id: user.id,
+                    password: newPassword
+                },
+                select,
+                include,
+            });
+            const mappedUserResults = UserMapper_1.UserMapper.map([updatedUser]);
+            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'Your password is updated successfully', [{
+                    user: mappedUserResults[0],
+                    token: JWTGenerator_1.JWTGenerator.generateAccessToken(updatedUser),
+                }]));
         });
         this.deleteUser = (0, express_async_handler_1.default)(async (request, response, next) => {
             const deletedUser = await this.userService.delete(+request.params.id);

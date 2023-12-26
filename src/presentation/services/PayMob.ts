@@ -107,7 +107,7 @@ export default abstract class PayMob {
 
   static isValidRequest(request: ExtendedRequest): boolean {
     const {hmac} = request.query;
-    const {id, pending, amount_cents, success, is_auth, is_capture, is_standalone_payment, is_voided, is_refunded, is_3d_secure, integration_id, has_parent_transaction, currency, created_at, error_occured, owner, order, source_data, data} = request.body.obj;
+    const {id, pending, amount_cents, success, is_auth, is_capture, is_standalone_payment, is_voided, is_refunded, is_3d_secure, integration_id, has_parent_transaction, currency, created_at, error_occured, owner, order, source_data} = request.body.obj;
     const concatenatedString = [
       amount_cents,
       created_at, 

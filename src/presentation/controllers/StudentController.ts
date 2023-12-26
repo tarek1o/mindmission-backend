@@ -10,7 +10,6 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class StudentController {
-
 	constructor(@inject('IStudentService') private studentService: IStudentService) {}
 
 	getAllStudents = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {

@@ -11,7 +11,6 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class CategoryController {
-
 	constructor(@inject('ICategoryService') private categoryService: ICategoryService, @inject('ILogService') private logService: ILogService) {}
 
 	getAllCategories = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
@@ -52,7 +51,7 @@ export class CategoryController {
 	updateCategory = asyncHandler(async(request: ExtendedRequest, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
 		const updatedCategory = await this.categoryService.update({data: {...request.body.input, id: +request.params.id}, select: {...select, type: true}, include});
-		this.logService.log('UPDATE', updatedCategory.type, {...request.body.input, id: +request.params.id, }, request.user);
+		this.logService.log('UPDATE', updatedCategory.type, {...request.body.input, id: +request.params.id}, request.user);
 		if(!select.type) {
 			Reflect.deleteProperty(updatedCategory, "type");
 		}

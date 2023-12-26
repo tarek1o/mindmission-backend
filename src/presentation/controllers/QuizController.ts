@@ -9,7 +9,6 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class QuizController {
-
 	constructor(@inject('IQuizService') private quizService: IQuizService) {}
 
 	getAllQuizzes = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
@@ -38,88 +37,19 @@ export class QuizController {
 
 	createQuiz = asyncHandler(async(request: Request, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const {title, requiredTime, description, questions, lessonId} = request.body.input;
-		const createdQuiz = await this.quizService.create({
-			data: {
-				title,
-				requiredTime,
-				description,
-				questions: {
-					createMany: {
-						data: questions.map((question: any, index: number) => {
-							return {
-								questionText: question.questionText,
-								choiceA: question.choiceA,
-								choiceB: question.choiceB,
-								choiceC: question.choiceC,
-								choiceD: question.choiceD,
-								correctAnswer: question.correctAnswer,
-								order: question.order || index + 1,
-								level: question.level
-							}
-						})
-					}
-				},
-				lesson: {
-					connect: {
-						id: lessonId
-					}
-				}
-			},
-			select,
-			include,
-		});
+		const createdQuiz = await this.quizService.create({data: request.body.input, select, include});
 		response.status(HttpStatusCode.Created).json(ResponseFormatter.formate(true, 'The quiz is created successfully', [createdQuiz]));
   });
 
 	updateQuiz = asyncHandler(async(request: Request, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const {title, requiredTime, description, questions, lessonId} = request.body.input;
 		const updatedQuiz = await this.quizService.update({
-			where: {
-				id: +request.params.id,
-			},
 			data: {
-				title: title || undefined,
-				requiredTime: requiredTime || undefined,
-				description: description || undefined,
-				questions: questions && questions.length > 0 ? {
-					upsert: questions.map((question: any, index: number) => {
-						return {
-							where: {
-								id: question.id || 0
-							},
-							update: {
-								questionText: question.questionText || undefined,
-								choiceA: question.choiceA || undefined,
-								choiceB: question.choiceB || undefined,
-								choiceC: question.choiceC || undefined,
-								choiceD: question.choiceD || undefined,
-								correctAnswer: question.correctAnswer || undefined,
-								order: question.order || undefined,
-								level: question.level || undefined,
-							},
-							create: {
-								questionText: question.questionText,
-								choiceA: question.choiceA,
-								choiceB: question.choiceB,
-								choiceC: question.choiceC,
-								choiceD: question.choiceD,
-								correctAnswer: question.correctAnswer,
-								order: question.order || index + 1,
-								level: question.level
-							}
-						}
-					}) 
-				} : undefined,
-				lesson: lessonId ? {
-					connect: {
-						id: lessonId
-					}
-				} : undefined
+				...request.body.input,
+				id: +request.params.id
 			},
 			select,
-			include,
+			include
 		});
 		response.status(HttpStatusCode.Created).json(ResponseFormatter.formate(true, 'The quiz is updated successfully', [updatedQuiz]));
   });

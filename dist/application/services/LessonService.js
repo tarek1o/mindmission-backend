@@ -34,11 +34,12 @@ let LessonService = class LessonService {
     }
     ;
     async create(args) {
-        args.data.slug = (0, slugify_1.default)(args.data.title.toString(), { lower: true, trim: true });
+        const { title, order, lessonType, attachment, isFree, chapterId } = args.data;
+        const slug = (0, slugify_1.default)(args.data.title.toString(), { lower: true, trim: true });
         const isOrderIsFound = await this.lessonRepository.findFirst({
             where: {
-                order: args.data.order,
-                chapterId: args.data.chapterId
+                order,
+                chapterId
             },
             select: {
                 id: true
@@ -47,14 +48,44 @@ let LessonService = class LessonService {
         if (isOrderIsFound) {
             throw new APIError_1.default("There is another lesson with the same order ", HTTPStatusCode_1.default.BadRequest);
         }
-        return this.lessonRepository.create(args);
+        return this.lessonRepository.create({
+            data: {
+                title,
+                slug,
+                order,
+                lessonType,
+                attachment,
+                isFree,
+                chapter: {
+                    connect: {
+                        id: chapterId
+                    }
+                }
+            },
+            select: args.select,
+            include: args.include
+        });
     }
+    ;
     async update(args) {
-        if (args.data.title) {
-            args.data.slug = (0, slugify_1.default)(args.data.title.toString(), { lower: true, trim: true });
-        }
-        return this.lessonRepository.update(args);
+        const { id, title, attachment, isFree, lessonType } = args.data;
+        const slug = title ? (0, slugify_1.default)(title.toString(), { lower: true, trim: true }) : undefined;
+        return this.lessonRepository.update({
+            where: {
+                id
+            },
+            data: {
+                title: title || undefined,
+                slug: slug || undefined,
+                attachment: attachment || undefined,
+                isFree: isFree || undefined,
+                lessonType: lessonType || undefined
+            },
+            select: args.select,
+            include: args.include
+        });
     }
+    ;
     delete(id) {
         return this.lessonRepository.delete(id);
     }

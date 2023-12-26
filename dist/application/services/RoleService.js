@@ -24,17 +24,21 @@ let RoleService = class RoleService {
     count(args) {
         return this.roleRepository.count(args);
     }
+    ;
     findMany(args) {
         return this.roleRepository.findMany(args);
     }
+    ;
     findUnique(args) {
         return this.roleRepository.findUnique(args);
     }
+    ;
     async create(args) {
-        args.data.slug = (0, slugify_1.default)(args.data.name, { trim: true, lower: true });
+        const { name, description, allowedModels } = args.data;
+        const slug = (0, slugify_1.default)(name, { trim: true, lower: true });
         const isExist = await this.findUnique({
             where: {
-                slug: args.data.slug
+                slug
             },
             select: {
                 id: true
@@ -43,25 +47,49 @@ let RoleService = class RoleService {
         if (isExist) {
             throw new APIError_1.default('This name already exists', HTTPStatusCode_1.default.BadRequest);
         }
-        return this.roleRepository.create(args);
+        return this.roleRepository.create({
+            data: {
+                name,
+                slug,
+                description,
+                allowedModels
+            },
+            select: args.select,
+            include: args.include
+        });
     }
+    ;
     async update(args) {
-        if (args.data.name) {
-            args.data.slug = (0, slugify_1.default)(args.data.name.toString(), { trim: true, lower: true });
+        const { id, name, description, allowedModels } = args.data;
+        const slug = name ? (0, slugify_1.default)(name.toString(), { trim: true, lower: true }) : undefined;
+        if (name) {
             const isExist = await this.findUnique({
                 where: {
-                    slug: args.data.slug
+                    slug
                 },
                 select: {
                     id: true
                 }
             });
-            if (isExist && isExist.id !== args.where.id) {
+            if (isExist && isExist.id !== id) {
                 throw new APIError_1.default('This name already exists', HTTPStatusCode_1.default.BadRequest);
             }
         }
-        return this.roleRepository.update(args);
+        return this.roleRepository.update({
+            where: {
+                id
+            },
+            data: {
+                name: name || undefined,
+                slug: slug || undefined,
+                description: description || undefined,
+                allowedModels: allowedModels || undefined
+            },
+            select: args.select,
+            include: args.include
+        });
     }
+    ;
     async delete(id) {
         const role = await this.findUnique({
             where: {
@@ -80,6 +108,7 @@ let RoleService = class RoleService {
         }
         return this.roleRepository.delete(id);
     }
+    ;
 };
 exports.RoleService = RoleService;
 exports.RoleService = RoleService = __decorate([

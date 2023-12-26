@@ -9,7 +9,6 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class VideoController {
-
 	constructor(@inject('IVideoService') private videoService: IVideoService) {}
 
 	getAllVideos = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
@@ -38,40 +37,16 @@ export class VideoController {
 
 	createVideo = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const {title, description, url, lessonId} = request.body.input;
-		const createdVideo = await this.videoService.create({
-			data: {
-				title,
-				description,
-				url,
-				lesson: {
-					connect: {
-						id: lessonId
-					}
-				}
-			},
-			select,
-			include,
-		});
+		const createdVideo = await this.videoService.create({data: request.body.input, select, include});
 		response.status(HttpStatusCode.Created).json(ResponseFormatter.formate(true, 'The video is created successfully', [createdVideo]));
 	});
 	
 	updateVideo = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const {title, description, url, lessonId} = request.body.input;
 		const updatedVideo = await this.videoService.update({
-			where: {
-				id: +request.params.id
-			},
 			data: {
-				title: title || undefined,
-				description: description || undefined,
-				url: url || undefined,
-				lesson: lessonId ? {
-					connect: {
-						id: lessonId
-					}
-				} : undefined
+				...request.body.input,
+				id: +request.params.id
 			},
 			select,
 			include,

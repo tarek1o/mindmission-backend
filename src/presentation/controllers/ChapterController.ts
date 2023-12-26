@@ -10,7 +10,6 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class ChapterController {
-
 	constructor(@inject('IChapterService') private chapterService: IChapterService) {}
 
 	getAllChapters = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
@@ -45,7 +44,7 @@ export class ChapterController {
 
 	updateChapter = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const updatedLesson = await this.chapterService.update({data: {...request.body.input, id: +request.params.id,}, select, include});
+		const updatedLesson = await this.chapterService.update({data: {...request.body.input, id: +request.params.id}, select, include});
 		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The chapter is updated successfully', [updatedLesson]));
 	});
 

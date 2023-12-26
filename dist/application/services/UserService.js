@@ -22,25 +22,11 @@ let UserService = class UserService {
         this.userRepository = userRepository;
         this.roleService = roleService;
     }
-    count(args) {
-        return this.userRepository.count(args);
-    }
-    findMany(args) {
-        return this.userRepository.findMany(args);
-    }
-    findUnique(args) {
-        return this.userRepository.findUnique(args);
-    }
-    findFirst(args) {
-        return this.userRepository.findFirst(args);
-    }
-    async create(args) {
-        var _a, _b, _c, _d, _e, _f, _g;
-        args.data.password = bcrypt_1.default.hashSync(args.data.password, 10);
-        const isEmailExist = await this.findFirst({
+    async isEmailExist(email, id) {
+        const user = await this.findFirst({
             where: {
                 email: {
-                    equals: args.data.email,
+                    equals: email,
                     mode: 'insensitive'
                 }
             },
@@ -48,68 +34,88 @@ let UserService = class UserService {
                 id: true
             }
         });
-        if (isEmailExist) {
+        if (user && (id ? user.id !== id : true)) {
+            return true;
+        }
+        ;
+        return false;
+    }
+    ;
+    count(args) {
+        return this.userRepository.count(args);
+    }
+    ;
+    findMany(args) {
+        return this.userRepository.findMany(args);
+    }
+    ;
+    findUnique(args) {
+        return this.userRepository.findUnique(args);
+    }
+    ;
+    findFirst(args) {
+        return this.userRepository.findFirst(args);
+    }
+    ;
+    async create(args) {
+        const { firstName, lastName, email, password, mobilePhone, whatsAppNumber, bio, picture, role, refreshToken, instructor } = args.data;
+        if (await this.isEmailExist(email)) {
             throw new APIError_1.default('This email already exists', HTTPStatusCode_1.default.BadRequest);
         }
         ;
-        if ((_b = (_a = args.data.role) === null || _a === void 0 ? void 0 : _a.connect) === null || _b === void 0 ? void 0 : _b.id) {
-            const isRoleExist = await this.roleService.findUnique({
-                where: {
-                    id: (_d = (_c = args.data.role) === null || _c === void 0 ? void 0 : _c.connect) === null || _d === void 0 ? void 0 : _d.id
-                },
-                select: {
-                    id: true,
-                    slug: true
-                }
-            });
-            if (!isRoleExist) {
-                throw new APIError_1.default('This role does not exist', HTTPStatusCode_1.default.BadRequest);
+        const isRoleExist = await this.roleService.findUnique({
+            where: Object.assign({}, role),
+            select: {
+                id: true,
+                slug: true
             }
-            if (isRoleExist.slug === 'student') {
-                args.data.student = {
-                    create: (_e = args.data.student) === null || _e === void 0 ? void 0 : _e.create
-                };
-            }
-            else if (isRoleExist.slug === 'instructor') {
-                args.data.instructor = {
-                    create: (_f = args.data.instructor) === null || _f === void 0 ? void 0 : _f.create
-                };
-            }
-            else {
-                args.data.admin = {
-                    create: (_g = args.data.admin) === null || _g === void 0 ? void 0 : _g.create
-                };
-            }
+        });
+        if (!isRoleExist) {
+            throw new APIError_1.default('This role does not exist', HTTPStatusCode_1.default.BadRequest);
         }
-        return this.userRepository.create(args);
+        return this.userRepository.create({
+            data: {
+                firstName,
+                lastName,
+                email,
+                password: bcrypt_1.default.hashSync(password, 10),
+                mobilePhone,
+                whatsAppNumber,
+                bio,
+                picture,
+                refreshToken,
+                role: {
+                    connect: Object.assign({}, role)
+                },
+                student: isRoleExist.slug === "student" ? {
+                    create: {}
+                } : undefined,
+                instructor: isRoleExist.slug === "instructor" ? {
+                    create: Object.assign({}, instructor)
+                } : undefined,
+                admin: (isRoleExist.slug !== "instructor" && isRoleExist.slug !== "student") ? {
+                    create: {}
+                } : undefined,
+            },
+            select: args.select,
+            include: args.include
+        });
     }
+    ;
     async update(args) {
-        var _a, _b, _c, _d, _e, _f;
-        if (args.data.password) {
-            args.data.password = bcrypt_1.default.hashSync(args.data.password.toString(), 10);
+        var _a, _b;
+        const { id, firstName, lastName, email, isEmailVerified, password, passwordUpdatedTime, resetPasswordCode, bio, picture, mobilePhone, whatsAppNumber, refreshToken, isActive, isBlocked, isDeleted, roleId, personalLinks } = args.data;
+        if (resetPasswordCode && resetPasswordCode.code && !resetPasswordCode.isVerified) {
+            resetPasswordCode.code = bcrypt_1.default.hashSync(args.data.resetPasswordCode.code.toString(), 10);
         }
-        if (args.data.resetPasswordCode && args.data.resetPasswordCode.code && !args.data.resetPasswordCode.isVerified) {
-            args.data.resetPasswordCode.code = bcrypt_1.default.hashSync(args.data.resetPasswordCode.code.toString(), 10);
+        if (email && await this.isEmailExist(email)) {
+            throw new APIError_1.default('This email already exists', HTTPStatusCode_1.default.BadRequest);
         }
-        if (args.data.email) {
-            const isEmailExist = await this.findFirst({
-                where: {
-                    email: {
-                        equals: args.data.email.toString(),
-                        mode: 'insensitive'
-                    }
-                },
-                select: {
-                    id: true
-                }
-            });
-            if (isEmailExist && isEmailExist.id !== args.where.id) {
-                throw new APIError_1.default('This email already exists', HTTPStatusCode_1.default.BadRequest);
-            }
-        }
-        if (args.data.personalLinks) {
+        if (personalLinks) {
             const currentUser = await this.findUnique({
-                where: args.where,
+                where: {
+                    id
+                },
                 select: {
                     role: {
                         select: {
@@ -122,10 +128,10 @@ let UserService = class UserService {
                 throw new APIError_1.default('Only students and instructors that can have personal links', HTTPStatusCode_1.default.BadRequest);
             }
         }
-        if ((_d = (_c = args.data.role) === null || _c === void 0 ? void 0 : _c.connect) === null || _d === void 0 ? void 0 : _d.id) {
+        if (roleId) {
             const isRoleExist = await this.roleService.findUnique({
                 where: {
-                    id: (_f = (_e = args.data.role) === null || _e === void 0 ? void 0 : _e.connect) === null || _f === void 0 ? void 0 : _f.id
+                    id: roleId
                 },
                 select: {
                     id: true,
@@ -136,7 +142,9 @@ let UserService = class UserService {
                 throw new APIError_1.default('This role does not exist', HTTPStatusCode_1.default.BadRequest);
             }
             const currentUser = await this.findUnique({
-                where: args.where,
+                where: {
+                    id: args.data.id
+                },
                 select: {
                     role: {
                         select: {
@@ -158,11 +166,60 @@ let UserService = class UserService {
                 throw new APIError_1.default(`The ${previousRole} role cannot be changed to ${currentRole} role because each one has different profile settings`, HTTPStatusCode_1.default.BadRequest);
             }
         }
-        return this.userRepository.update(args);
+        return this.userRepository.update({
+            where: {
+                id
+            },
+            data: {
+                firstName: firstName || undefined,
+                lastName: lastName || undefined,
+                email: email || undefined,
+                isEmailVerified: isEmailVerified || undefined,
+                password: password ? bcrypt_1.default.hashSync(password.toString(), 10) : undefined,
+                resetPasswordCode: resetPasswordCode || undefined,
+                passwordUpdatedTime: passwordUpdatedTime || undefined,
+                bio: bio,
+                picture: picture || undefined,
+                mobilePhone: mobilePhone || undefined,
+                whatsAppNumber: whatsAppNumber || undefined,
+                refreshToken: refreshToken || undefined,
+                isActive: isActive || undefined,
+                isBlocked: isBlocked || undefined,
+                isDeleted: isDeleted || undefined,
+                role: roleId ? {
+                    connect: {
+                        id: roleId
+                    }
+                } : undefined,
+                personalLinks: personalLinks ? {
+                    upsert: personalLinks.map(({ platform, link }) => {
+                        return {
+                            where: {
+                                userId_platform: {
+                                    userId: id,
+                                    platform: platform.toUpperCase(),
+                                }
+                            },
+                            update: {
+                                link
+                            },
+                            create: {
+                                platform: platform.toUpperCase(),
+                                link
+                            }
+                        };
+                    })
+                } : undefined
+            },
+            select: args.select,
+            include: args.include
+        });
     }
+    ;
     delete(id) {
         return this.userRepository.delete(id);
     }
+    ;
 };
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([

@@ -11,7 +11,6 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class RoleController {
-
 	constructor(@inject('IRoleService') private roleService: IRoleService, @inject('ILogService') private logService: ILogService) {}
 
 	getAllRoles = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
@@ -40,11 +39,7 @@ export class RoleController {
 
 	createRole = asyncHandler(async(request: ExtendedRequest, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const createdRole = await this.roleService.create({
-			data: request.body.input,
-			select,
-			include,
-		});
+		const createdRole = await this.roleService.create({data: request.body.input, select, include});
 		this.logService.log('ADD', 'ROLE', createdRole, request.user);
 		response.status(HttpStatusCode.Created).json(ResponseFormatter.formate(true, 'The role is created successfully', [createdRole]));
 	});
@@ -53,13 +48,9 @@ export class RoleController {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
 		const {name, description, allowedModels} = request.body.input;
 		const updatedRole = await this.roleService.update({
-			where: {
-				id: +request.params.id
-			},
 			data: {
-				name,
-				description,
-				allowedModels
+				...request.body.input,
+				id: +request.params.id
 			},
 			select,
 			include,

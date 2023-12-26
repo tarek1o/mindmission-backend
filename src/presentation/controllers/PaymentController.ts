@@ -15,7 +15,6 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class PaymentController {
-
 	constructor(@inject('IPaymentService') private paymentService: IPaymentService, @inject('IStudentService') private studentService: IStudentService) {}
 
   private async paymentConfirmation(paymentId: number) {
