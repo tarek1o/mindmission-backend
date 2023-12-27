@@ -16,8 +16,8 @@ exports.PaymentController = void 0;
 const inversify_1 = require("inversify");
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const client_1 = require("@prisma/client");
-const PayMob_1 = __importDefault(require("../services/PayMob"));
-const PayPal_1 = __importDefault(require("../services/PayPal"));
+const PayMob_1 = require("../services/PayMob");
+const PayPal_1 = require("../services/PayPal");
 const RequestManager_1 = require("../services/RequestManager");
 const ResponseFormatter_1 = require("../responseFormatter/ResponseFormatter");
 const APIError_1 = __importDefault(require("../errorHandlers/APIError"));
@@ -63,19 +63,19 @@ let PaymentController = class PaymentController {
             const orderItems = payment.paymentUnits;
             let res;
             if (request.body.input.paymentMethod === client_1.PaymentMethod.CARD) {
-                const paymentToken = await PayMob_1.default.createPaymentOrder(payment.id, payment.totalPrice, payment.currency, payment.discount, orderItems);
+                const paymentToken = await PayMob_1.PayMob.createPaymentOrder(payment.id, payment.totalPrice, payment.currency, payment.discount, orderItems);
                 res = ResponseFormatter_1.ResponseFormatter.formate(true, 'The payment token is created successfully', [{ payment, paymentToken }]);
             }
             else {
-                const paymentSessionId = await PayPal_1.default.createPaymentOrder(payment.id, payment.totalPrice, "USD", payment.discount, orderItems);
+                const paymentSessionId = await PayPal_1.PayPal.createPaymentOrder(payment.id, payment.totalPrice, "USD", payment.discount, orderItems);
                 res = ResponseFormatter_1.ResponseFormatter.formate(true, 'The payment session is created successfully', [{ payment, paymentSessionId }]);
             }
             this.paymentService.deleteNotCompletedPayment(payment.id);
             response.status(HTTPStatusCode_1.default.Created).json(res);
         });
         this.payMobPaymentConfirmation = (0, express_async_handler_1.default)(async (request, response, next) => {
-            if (PayMob_1.default.isValidRequest(request)) {
-                const paymentId = PayMob_1.default.getPaymentId(request);
+            if (PayMob_1.PayMob.isValidRequest(request)) {
+                const paymentId = PayMob_1.PayMob.getPaymentId(request);
                 await this.paymentConfirmation(paymentId);
                 response.status(HTTPStatusCode_1.default.OK).send(ResponseFormatter_1.ResponseFormatter.formate(true, "The payment is confirmed successfully"));
                 return;
@@ -83,8 +83,8 @@ let PaymentController = class PaymentController {
             response.status(HTTPStatusCode_1.default.BadRequest).send(ResponseFormatter_1.ResponseFormatter.formate(false, "Invalid PayMob Request"));
         });
         this.payPalPaymentConfirmation = (0, express_async_handler_1.default)(async (request, response, next) => {
-            if (await PayPal_1.default.isValidRequest(request)) {
-                const paymentId = PayPal_1.default.getPaymentId(request);
+            if (await PayPal_1.PayPal.isValidRequest(request)) {
+                const paymentId = PayPal_1.PayPal.getPaymentId(request);
                 await this.paymentConfirmation(paymentId);
                 response.status(HTTPStatusCode_1.default.OK).send(ResponseFormatter_1.ResponseFormatter.formate(true, "The payment is confirmed successfully"));
                 return;

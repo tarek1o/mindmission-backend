@@ -5,7 +5,7 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 import APIError from '../errorHandlers/APIError';
 import CurrencyConvertor from './CurrencyConvertor';
 
-export default class PayPal {
+export class PayPal {
   private static tokenURL: string = process.env.PayPal_Token_URL as string;
   private static orderURL: string = process.env.PayPal_Order_URL as string;
   private static webhookSignatureURL: string = process.env.PayPal_Webhook_Signature_URL as string;

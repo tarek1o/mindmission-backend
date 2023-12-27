@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PayMob = void 0;
 const crypto_1 = __importDefault(require("crypto"));
 const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
 const APIError_1 = __importDefault(require("../errorHandlers/APIError"));
@@ -137,11 +138,11 @@ class PayMob {
     }
     ;
 }
+exports.PayMob = PayMob;
 PayMob.tokenURL = process.env.PayMob_Token_URL;
 PayMob.orderURL = process.env.PayMob_Order_URL;
 PayMob.paymentKeysURL = process.env.PayMob_Payment_Keys_URL;
 PayMob.APIKey = process.env.PayMob_API_Key;
 PayMob.integrationId = +process.env.PayMob_Integration_Id;
 PayMob.HMAC = process.env.PayMob_HMAC;
-exports.default = PayMob;
 //# sourceMappingURL=PayMob.js.map

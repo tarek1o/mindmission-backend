@@ -3,8 +3,8 @@ import { inject, injectable } from "inversify";
 import asyncHandler from'express-async-handler';
 import { PaymentMethod } from "@prisma/client";
 import { ExtendedPaymentUnit } from "../../application/types/ExtendedPaymentUnit";
-import PayMob from "../services/PayMob";
-import PayPal from "../services/PayPal";
+import {PayMob} from "../services/PayMob";
+import {PayPal} from "../services/PayPal";
 import { ExtendedRequest } from "../types/ExtendedRequest";
 import {IPaymentService} from "../../application/interfaces/IServices/IPaymentService"
 import { IStudentService } from "../../application/interfaces/IServices/IStudentService";

@@ -5,7 +5,7 @@ import { ExtendedRequest } from "../types/ExtendedRequest";
 import HTTPStatusCode from "../enums/HTTPStatusCode";
 import APIError from "../errorHandlers/APIError";
 
-export default abstract class PayMob {
+export abstract class PayMob {
   private static tokenURL: string = process.env.PayMob_Token_URL as string;
   private static orderURL: string = process.env.PayMob_Order_URL as string;
   private static paymentKeysURL: string = process.env.PayMob_Payment_Keys_URL as string;
