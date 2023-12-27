@@ -42,7 +42,7 @@ export class MessageController {
     const {name, email, message} = request.body.input;
 		const {select, include} = RequestManager.findOptionsWrapper(request);
 		const createdMessage = await this.messageService.create({data: {name, email, message}, select, include});
-		response.status(HttpStatusCode.Created).json(ResponseFormatter.formate(true, 'The Message is created successfully', [createdMessage]));
+		response.status(HttpStatusCode.Created).json(ResponseFormatter.formate(true, 'Your message is received successfully', [createdMessage]));
 	});
 
 	updateMessage = asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => {
@@ -71,7 +71,7 @@ export class MessageController {
 			include,
 		});
     this.logService.log("UPDATE", "MESSAGE", {id: +request.params.id, ...request.body.input}, request.user);
-		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The Message is updated successfully', [updatedMessage]));
+		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The Message is replied successfully', [updatedMessage]));
 	});
 
 	deleteMessage = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {

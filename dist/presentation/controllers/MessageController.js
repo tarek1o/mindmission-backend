@@ -50,7 +50,7 @@ let MessageController = class MessageController {
             const { name, email, message } = request.body.input;
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
             const createdMessage = await this.messageService.create({ data: { name, email, message }, select, include });
-            response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The Message is created successfully', [createdMessage]));
+            response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'Your message is received successfully', [createdMessage]));
         });
         this.updateMessage = (0, express_async_handler_1.default)(async (request, response, next) => {
             var _a;
@@ -79,7 +79,7 @@ let MessageController = class MessageController {
                 include,
             });
             this.logService.log("UPDATE", "MESSAGE", Object.assign({ id: +request.params.id }, request.body.input), request.user);
-            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The Message is updated successfully', [updatedMessage]));
+            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The Message is replied successfully', [updatedMessage]));
         });
         this.deleteMessage = (0, express_async_handler_1.default)(async (request, response, next) => {
             await this.messageService.delete(+request.params.id);
