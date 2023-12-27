@@ -15,6 +15,7 @@ import videoRoutes from "./routes/videoRoutes";
 import quizRoutes from "./routes/quizRoutes";
 import paymentRoutes from "./routes/paymentRoutes";
 import couponRoutes from "./routes/couponRoutes";
+import messageRoutes from "./routes/messageRoutes";
 import whatsAppRoute from "./routes/whatsAppRoutes"
 
 export const routeMounting = (app: Application) => {
@@ -34,5 +35,6 @@ export const routeMounting = (app: Application) => {
   app.use(`${process.env.apiVersion}/quizzes`, quizRoutes);
   app.use(`${process.env.apiVersion}/payments`, paymentRoutes);
   app.use(`${process.env.apiVersion}/coupons`, couponRoutes);
+  app.use(`${process.env.apiVersion}/messages`, messageRoutes);
   // app.use(`${process.env.apiVersion}/whatsApp`, whatsAppRoute);
 }

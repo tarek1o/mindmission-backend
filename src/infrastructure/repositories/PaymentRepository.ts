@@ -1,4 +1,4 @@
-import { Prisma, Payment } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { injectable } from "inversify";
 import { IPaymentRepository } from "../../application/interfaces/IRepositories/IPaymentRepository";
 import prisma from "../../domain/db";

@@ -152,6 +152,10 @@ export const upsertMainItemsIntoDB = async () => {
       modelName: AllowedModels.Coupons,
       permissions: [Permissions.Read, Permissions.Create, Permissions.Update, Permissions.Delete]
     },
+    {
+      modelName: AllowedModels.Messages,
+      permissions: [Permissions.Read, Permissions.Update, Permissions.Delete]
+    },
   ];
 
   await Promise.all([

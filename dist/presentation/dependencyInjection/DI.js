@@ -17,5 +17,6 @@ require("./classes/articleDI");
 require("./classes/quizDI");
 require("./classes/paymentDI");
 require("./classes/couponDI");
+require("./classes/messageDI");
 exports.default = DIContainer_1.container;
 //# sourceMappingURL=DI.js.map

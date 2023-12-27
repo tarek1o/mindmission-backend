@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PayPal = void 0;
 const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
 const APIError_1 = __importDefault(require("../errorHandlers/APIError"));
 const CurrencyConvertor_1 = __importDefault(require("./CurrencyConvertor"));
@@ -84,11 +85,11 @@ class PayPal {
     }
     ;
 }
+exports.PayPal = PayPal;
 PayPal.tokenURL = process.env.PayPal_Token_URL;
 PayPal.orderURL = process.env.PayPal_Order_URL;
 PayPal.webhookSignatureURL = process.env.PayPal_Webhook_Signature_URL;
 PayPal.webhookId = process.env.PayPal_Webhook_Id;
 PayPal.clientId = process.env.PayPal_Client_Id;
 PayPal.secretKey = process.env.PayPal_Secret_Key;
-exports.default = PayPal;
 //# sourceMappingURL=PayPal.js.map
