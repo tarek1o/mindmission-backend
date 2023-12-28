@@ -39,7 +39,8 @@ let ChapterService = class ChapterService {
     }
     ;
     async create(args) {
-        const { courseId, order, title, description } = args.data;
+        const { title, description, order, courseId } = args.data;
+        const slug = (0, slugify_1.default)(title, { lower: true, trim: true });
         const isOrderExist = await this.findFirst({
             where: {
                 courseId: courseId,
@@ -54,9 +55,10 @@ let ChapterService = class ChapterService {
         }
         return this.chapterRepository.create({
             data: {
-                title: title,
-                order: order,
-                description: description,
+                title,
+                slug,
+                order,
+                description,
                 course: {
                     connect: {
                         id: courseId

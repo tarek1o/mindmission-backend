@@ -66,8 +66,8 @@ export class CouponController {
 	});
 
 	deleteCoupon = asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => {
-		await this.couponService.delete(+request.params.id);
-		this.logService.log("DELETE", "COUPON", {id: +request.params.id}, request.user);
+		const deletedCoupon = await this.couponService.delete(+request.params.id);
+		this.logService.log("DELETE", "COUPON", deletedCoupon, request.user);
 		response.status(HttpStatusCode.NoContent).json();
 	});
 }

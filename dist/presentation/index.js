@@ -20,6 +20,28 @@ app.use(express_1.default.json({ limit: "50kb" }));
 app.use((0, logger_1.default)());
 app.use((0, compression_1.default)());
 // upsertMainItemsIntoDB();
+// (async () => {
+//   const avgCourseRatings = await prisma.course.findUnique({
+//     where: {
+//       id: 1
+//     },
+//     select: {
+//       chapters: {
+//         where: {
+//           lessons: {
+//             every: {
+//               lessonType: 'VIDEO',
+//             }
+//           }
+//         },
+//         select: {
+//           lessons: true
+//         }
+//       }
+//     }
+//   });
+//   console.log(avgCourseRatings?.chapters[0].lessons);
+// })();
 (0, routeMounting_1.routeMounting)(app);
 app.all('*', NotFoundRoutesHandler_1.default.catchRoute);
 app.use(GlobalErrorHandler_1.default.catchError);

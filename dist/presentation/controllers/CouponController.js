@@ -67,8 +67,8 @@ let CouponController = class CouponController {
             response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The Coupon is updated successfully', [updatedCoupon]));
         });
         this.deleteCoupon = (0, express_async_handler_1.default)(async (request, response, next) => {
-            await this.couponService.delete(+request.params.id);
-            this.logService.log("DELETE", "COUPON", { id: +request.params.id }, request.user);
+            const deletedCoupon = await this.couponService.delete(+request.params.id);
+            this.logService.log("DELETE", "COUPON", deletedCoupon, request.user);
             response.status(HTTPStatusCode_1.default.NoContent).json();
         });
     }

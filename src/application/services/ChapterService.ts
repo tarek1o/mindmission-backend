@@ -29,7 +29,8 @@ export class ChapterService implements IChapterService {
 	};
 
   async create(args: {data: CreateChapter, select?: Prisma.ChapterSelect, include?: Prisma.ChapterInclude}): Promise<Chapter> {
-		const {courseId, order, title, description} = args.data;
+		const {title, description, order, courseId} = args.data;
+		const slug = slugify(title, {lower: true, trim: true});
 		const isOrderExist = await this.findFirst({
 			where: {
 				courseId: courseId,
@@ -44,9 +45,10 @@ export class ChapterService implements IChapterService {
 		}
 		return this.chapterRepository.create({
 			data: {
-				title: title,
-				order: order,
-				description: description,
+				title,
+				slug,
+				order,
+				description,
 				course: {
 					connect: {
 						id: courseId

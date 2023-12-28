@@ -74,8 +74,9 @@ export class MessageController {
 		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The Message is replied successfully', [updatedMessage]));
 	});
 
-	deleteMessage = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
-		await this.messageService.delete(+request.params.id);
+	deleteMessage = asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => {
+		const deletedMessage = await this.messageService.delete(+request.params.id);
+    this.logService.log("DELETE", "MESSAGE", deletedMessage, request.user);
 		response.status(HttpStatusCode.NoContent).json();
 	});
 }

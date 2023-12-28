@@ -23,9 +23,10 @@ const ResponseFormatter_1 = require("../responseFormatter/ResponseFormatter");
 const APIError_1 = __importDefault(require("../errorHandlers/APIError"));
 const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
 let PaymentController = class PaymentController {
-    constructor(paymentService, studentService) {
+    constructor(paymentService, studentService, logService) {
         this.paymentService = paymentService;
         this.studentService = studentService;
+        this.logService = logService;
         this.getAllPayments = (0, express_async_handler_1.default)(async (request, response, next) => {
             const findOptions = RequestManager_1.RequestManager.findOptionsWrapper(request);
             const promiseResult = await Promise.all([
@@ -92,7 +93,8 @@ let PaymentController = class PaymentController {
             response.status(HTTPStatusCode_1.default.BadRequest).send(ResponseFormatter_1.ResponseFormatter.formate(false, "Invalid PayPal Request"));
         });
         this.deletePayment = (0, express_async_handler_1.default)(async (request, response, next) => {
-            await this.paymentService.delete(+request.params.id);
+            const deletedPayment = await this.paymentService.delete(+request.params.id);
+            this.logService.log('DELETE', "PAYMENT", deletedPayment, request.user);
             response.status(HTTPStatusCode_1.default.NoContent).json();
         });
     }
@@ -123,6 +125,7 @@ exports.PaymentController = PaymentController;
 exports.PaymentController = PaymentController = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)('IPaymentService')),
-    __param(1, (0, inversify_1.inject)('IStudentService'))
+    __param(1, (0, inversify_1.inject)('IStudentService')),
+    __param(2, (0, inversify_1.inject)('ILogService'))
 ], PaymentController);
 //# sourceMappingURL=PaymentController.js.map

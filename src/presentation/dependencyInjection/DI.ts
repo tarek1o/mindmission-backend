@@ -15,6 +15,7 @@ import './classes/articleDI';
 import './classes/quizDI';
 import './classes/paymentDI';
 import './classes/couponDI';
+import './classes/commentDI';
 import './classes/messageDI';
 
 export default container;

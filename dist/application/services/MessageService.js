@@ -27,7 +27,7 @@ let MessageService = class MessageService {
         return this.messageRepository.findUnique(args);
     }
     ;
-    async create(args) {
+    create(args) {
         const { name, email, message } = args.data;
         return this.messageRepository.create({
             data: {
@@ -40,7 +40,7 @@ let MessageService = class MessageService {
         });
     }
     ;
-    async update(args) {
+    update(args) {
         const { id, subject, reply, replierId } = args.data;
         return this.messageRepository.update({
             where: {

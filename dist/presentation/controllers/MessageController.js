@@ -82,7 +82,8 @@ let MessageController = class MessageController {
             response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The Message is replied successfully', [updatedMessage]));
         });
         this.deleteMessage = (0, express_async_handler_1.default)(async (request, response, next) => {
-            await this.messageService.delete(+request.params.id);
+            const deletedMessage = await this.messageService.delete(+request.params.id);
+            this.logService.log("DELETE", "MESSAGE", deletedMessage, request.user);
             response.status(HTTPStatusCode_1.default.NoContent).json();
         });
     }

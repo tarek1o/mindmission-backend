@@ -155,6 +155,7 @@ model Rating {
   updatedAt             DateTime?    @updatedAt
   @@unique([studentId, courseId, instructorId])
 }
+
 model Category {
   id              Int              @id @default(autoincrement())
   name            String
@@ -188,6 +189,7 @@ model Course {
   courseTeachings    String[]
   price              Float
   discountPercentage Float          @default(0)
+  hasCertificate     Boolean        @default(false)
   isApproved         Boolean        @default(false)
   isDraft            Boolean        @default(true)
   publishedAt        DateTime?
@@ -218,9 +220,9 @@ enum CourseLevel {
 model Chapter {
   id                Int            @id @default(autoincrement())
   title             String
+  slug              String
   description       String?
   order             Int
-  slug              String
   lessons           Lesson[]
   courseId          Int
   course            Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
@@ -374,8 +376,8 @@ model Coupon {
 model Comment {
   id                Int            @id @default(autoincrement())
   content           String
-  partentId         Int?
-  partent           Comment?       @relation("replies", fields: [partentId], references: [id], onDelete: Cascade)           
+  parentId          Int?
+  parent            Comment?       @relation("replies", fields: [parentId], references: [id], onDelete: Cascade)           
   replies           Comment[]      @relation("replies")
   lessonId          Int
   lesson            Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
@@ -409,18 +411,22 @@ model Log {
   createdAt         DateTime       @default(now())
 }
 
+enum OperationType {
+  ADD
+  UPDATE
+  DELETE
+}
+
 enum LogModel {
   ROLE
   USER
   CATEGORY
   SUBCATEGORY
   TOPIC
+  COURSE
+  PAYMENT
+  RATING
   COUPON
+  COMMENT
   MESSAGE
-}
-
-enum OperationType {
-  ADD
-  UPDATE
-  DELETE
 }
