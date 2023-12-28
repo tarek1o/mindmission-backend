@@ -16,6 +16,7 @@ require("./classes/videoDI");
 require("./classes/articleDI");
 require("./classes/quizDI");
 require("./classes/paymentDI");
+require("./classes/ratingDI");
 require("./classes/couponDI");
 require("./classes/commentDI");
 require("./classes/messageDI");

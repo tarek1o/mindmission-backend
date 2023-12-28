@@ -19,6 +19,7 @@ const articleRoutes_1 = __importDefault(require("./routes/articleRoutes"));
 const videoRoutes_1 = __importDefault(require("./routes/videoRoutes"));
 const quizRoutes_1 = __importDefault(require("./routes/quizRoutes"));
 const paymentRoutes_1 = __importDefault(require("./routes/paymentRoutes"));
+const ratingRoutes_1 = __importDefault(require("./routes/ratingRoutes"));
 const couponRoutes_1 = __importDefault(require("./routes/couponRoutes"));
 const commentRoutes_1 = __importDefault(require("./routes/commentRoutes"));
 const messageRoutes_1 = __importDefault(require("./routes/messageRoutes"));
@@ -38,6 +39,7 @@ const routeMounting = (app) => {
     app.use(`${process.env.apiVersion}/videos`, videoRoutes_1.default);
     app.use(`${process.env.apiVersion}/quizzes`, quizRoutes_1.default);
     app.use(`${process.env.apiVersion}/payments`, paymentRoutes_1.default);
+    app.use(`${process.env.apiVersion}/ratings`, ratingRoutes_1.default);
     app.use(`${process.env.apiVersion}/coupons`, couponRoutes_1.default);
     app.use(`${process.env.apiVersion}/comments`, commentRoutes_1.default);
     app.use(`${process.env.apiVersion}/messages`, messageRoutes_1.default);
