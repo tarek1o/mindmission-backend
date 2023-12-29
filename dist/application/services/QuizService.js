@@ -15,12 +15,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.QuizService = void 0;
 const client_1 = require("@prisma/client");
 const inversify_1 = require("inversify");
+const Transaction_1 = require("../../infrastructure/Services/Transaction");
 const APIError_1 = __importDefault(require("../../presentation/errorHandlers/APIError"));
 const HTTPStatusCode_1 = __importDefault(require("../../presentation/enums/HTTPStatusCode"));
 let QuizService = class QuizService {
-    constructor(quizRepository, lessonService) {
+    constructor(quizRepository, lessonService, courseService) {
         this.quizRepository = quizRepository;
         this.lessonService = lessonService;
+        this.courseService = courseService;
     }
     async isLessonTypeIsQuiz(lessonId) {
         const lesson = await this.lessonService.findUnique({
@@ -35,6 +37,48 @@ let QuizService = class QuizService {
             return true;
         }
         return false;
+    }
+    async updateCourseInfo(quizId, operationType, requiredTime) {
+        const quiz = await this.findUnique({
+            where: {
+                id: quizId
+            },
+            select: {
+                requiredTime: true,
+                lesson: {
+                    select: {
+                        chapter: {
+                            select: {
+                                course: {
+                                    select: {
+                                        id: true,
+                                        hours: true,
+                                        quizzes: true,
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        if (!quiz) {
+            throw new APIError_1.default("This quiz is not exist", HTTPStatusCode_1.default.BadRequest);
+        }
+        let { id, hours, quizzes } = quiz.lesson.chapter.course;
+        if (requiredTime && operationType === 'update') {
+            requiredTime -= quiz.requiredTime;
+        }
+        if (operationType === 'delete') {
+            requiredTime = -quiz.requiredTime;
+        }
+        await this.courseService.update({
+            data: {
+                id,
+                hours: hours + requiredTime,
+                quizzes: operationType === "create" ? quizzes + 1 : (operationType === "delete" ? quizzes - 1 : undefined)
+            }
+        });
     }
     count(args) {
         return this.quizRepository.count(args);
@@ -53,35 +97,39 @@ let QuizService = class QuizService {
         if (await this.isLessonTypeIsQuiz(lessonId)) {
             throw new APIError_1.default("This lesson may be not exist or may be exist but its type is not a quiz", HTTPStatusCode_1.default.BadRequest);
         }
-        return this.quizRepository.create({
-            data: {
-                title,
-                requiredTime,
-                description,
-                questions: {
-                    createMany: {
-                        data: questions.map((question, index) => {
-                            return {
-                                questionText: question.questionText,
-                                choiceA: question.choiceA,
-                                choiceB: question.choiceB,
-                                choiceC: question.choiceC,
-                                choiceD: question.choiceD,
-                                correctAnswer: question.correctAnswer,
-                                order: question.order || index + 1,
-                                level: question.level
-                            };
-                        })
+        return Transaction_1.Transaction.transact(async () => {
+            const createdQuiz = await this.quizRepository.create({
+                data: {
+                    title,
+                    requiredTime,
+                    description,
+                    questions: {
+                        createMany: {
+                            data: questions.map((question, index) => {
+                                return {
+                                    questionText: question.questionText,
+                                    choiceA: question.choiceA,
+                                    choiceB: question.choiceB,
+                                    choiceC: question.choiceC,
+                                    choiceD: question.choiceD,
+                                    correctAnswer: question.correctAnswer,
+                                    order: question.order || index + 1,
+                                    level: question.level
+                                };
+                            })
+                        }
+                    },
+                    lesson: {
+                        connect: {
+                            id: lessonId
+                        }
                     }
                 },
-                lesson: {
-                    connect: {
-                        id: lessonId
-                    }
-                }
-            },
-            select: args.select,
-            include: args.include
+                select: args.select,
+                include: args.include
+            });
+            await this.updateCourseInfo(createdQuiz.id, 'create', requiredTime);
+            return createdQuiz;
         });
     }
     ;
@@ -90,56 +138,64 @@ let QuizService = class QuizService {
         if (lessonId && !await this.isLessonTypeIsQuiz(lessonId)) {
             throw new APIError_1.default("This lesson may be not exist or may be exist but its type is not a quiz", HTTPStatusCode_1.default.BadRequest);
         }
-        return this.quizRepository.update({
-            where: {
-                id,
-            },
-            data: {
-                title: title || undefined,
-                requiredTime: requiredTime || undefined,
-                description: description || undefined,
-                questions: questions && questions.length > 0 ? {
-                    upsert: questions.map((question, index) => {
-                        return {
-                            where: {
-                                id: question.id || 0
-                            },
-                            update: {
-                                questionText: question.questionText || undefined,
-                                choiceA: question.choiceA || undefined,
-                                choiceB: question.choiceB || undefined,
-                                choiceC: question.choiceC || undefined,
-                                choiceD: question.choiceD || undefined,
-                                correctAnswer: question.correctAnswer || undefined,
-                                order: question.order || undefined,
-                                level: question.level || undefined,
-                            },
-                            create: {
-                                questionText: question.questionText,
-                                choiceA: question.choiceA,
-                                choiceB: question.choiceB,
-                                choiceC: question.choiceC,
-                                choiceD: question.choiceD,
-                                correctAnswer: question.correctAnswer,
-                                order: question.order || index + 1,
-                                level: question.level
-                            }
-                        };
-                    })
-                } : undefined,
-                lesson: lessonId ? {
-                    connect: {
-                        id: lessonId
-                    }
-                } : undefined
-            },
-            select: args.select,
-            include: args.include
+        return Transaction_1.Transaction.transact(async () => {
+            if (requiredTime) {
+                await this.updateCourseInfo(id, 'update', requiredTime);
+            }
+            return this.quizRepository.update({
+                where: {
+                    id,
+                },
+                data: {
+                    title: title || undefined,
+                    requiredTime: requiredTime || undefined,
+                    description: description || undefined,
+                    questions: questions && questions.length > 0 ? {
+                        upsert: questions.map((question, index) => {
+                            return {
+                                where: {
+                                    id: question.id || 0
+                                },
+                                update: {
+                                    questionText: question.questionText || undefined,
+                                    choiceA: question.choiceA || undefined,
+                                    choiceB: question.choiceB || undefined,
+                                    choiceC: question.choiceC || undefined,
+                                    choiceD: question.choiceD || undefined,
+                                    correctAnswer: question.correctAnswer || undefined,
+                                    order: question.order || undefined,
+                                    level: question.level || undefined,
+                                },
+                                create: {
+                                    questionText: question.questionText,
+                                    choiceA: question.choiceA,
+                                    choiceB: question.choiceB,
+                                    choiceC: question.choiceC,
+                                    choiceD: question.choiceD,
+                                    correctAnswer: question.correctAnswer,
+                                    order: question.order || index + 1,
+                                    level: question.level
+                                }
+                            };
+                        })
+                    } : undefined,
+                    lesson: lessonId ? {
+                        connect: {
+                            id: lessonId
+                        }
+                    } : undefined
+                },
+                select: args.select,
+                include: args.include
+            });
         });
     }
     ;
-    delete(id) {
-        return this.quizRepository.delete(id);
+    async delete(id) {
+        return Transaction_1.Transaction.transact(async () => {
+            await this.updateCourseInfo(id, 'delete');
+            return this.quizRepository.delete(id);
+        });
     }
     ;
 };
@@ -147,6 +203,7 @@ exports.QuizService = QuizService;
 exports.QuizService = QuizService = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)('IQuizRepository')),
-    __param(1, (0, inversify_1.inject)('ILessonService'))
+    __param(1, (0, inversify_1.inject)('ILessonService')),
+    __param(2, (0, inversify_1.inject)('ICourseService'))
 ], QuizService);
 //# sourceMappingURL=QuizService.js.map

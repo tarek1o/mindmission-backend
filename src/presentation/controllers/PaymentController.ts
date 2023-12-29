@@ -8,6 +8,7 @@ import {PayPal} from "../services/PayPal";
 import { ExtendedRequest } from "../types/ExtendedRequest";
 import {IPaymentService} from "../../application/interfaces/IServices/IPaymentService"
 import { IStudentService } from "../../application/interfaces/IServices/IStudentService";
+import { ILogService } from "../../application/interfaces/IServices/ILogService";
 import { RequestManager } from "../services/RequestManager";
 import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
 import APIError from "../errorHandlers/APIError";
@@ -15,7 +16,7 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class PaymentController {
-	constructor(@inject('IPaymentService') private paymentService: IPaymentService, @inject('IStudentService') private studentService: IStudentService) {}
+	constructor(@inject('IPaymentService') private paymentService: IPaymentService, @inject('IStudentService') private studentService: IStudentService, @inject('ILogService') private logService: ILogService) {}
 
   private async paymentConfirmation(paymentId: number) {
 		const updatedPayment = await this.paymentService.update({
@@ -114,7 +115,8 @@ export class PaymentController {
   });
 
 	deletePayment = asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => {
-		await this.paymentService.delete(+request.params.id);
+		const deletedPayment = await this.paymentService.delete(+request.params.id);
+		this.logService.log('DELETE', "PAYMENT", deletedPayment, request.user);
 		response.status(HttpStatusCode.NoContent).json();
 	});
 }

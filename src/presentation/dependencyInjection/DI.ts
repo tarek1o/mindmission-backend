@@ -14,7 +14,9 @@ import './classes/videoDI';
 import './classes/articleDI';
 import './classes/quizDI';
 import './classes/paymentDI';
+import './classes/ratingDI';
 import './classes/couponDI';
+import './classes/commentDI';
 import './classes/messageDI';
 
 export default container;

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
 import asyncHandler from'express-async-handler';
 import { ICourseService } from "../../application/interfaces/IServices/ICourseService";
+import { ILogService } from "../../application/interfaces/IServices/ILogService";
 import { ExtendedRequest } from "../types/ExtendedRequest";
 import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
 import { RequestManager } from "../services/RequestManager";
@@ -10,7 +11,7 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class CourseController {
-	constructor(@inject('ICourseService') private courseService: ICourseService) {}
+	constructor(@inject('ICourseService') private courseService: ICourseService, @inject('ILogService') private logService: ILogService) {}
 
 	courseAggregates = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const {where, skip, take, orderBy} = RequestManager.findOptionsWrapper(request);
@@ -54,6 +55,10 @@ export class CourseController {
 		const createdCourse = await this.courseService.create({
 			data: {
 				...request.body.input,
+				hours: undefined, 
+				lectures: undefined, 
+				articles: undefined, 
+				quizzes: undefined,
 				userId: request.user?.id
 			},
 			select,
@@ -72,11 +77,13 @@ export class CourseController {
 			select,
 			include
 		});
+		this.logService.log('UPDATE', 'COURSE', {...request.body.input, id: +request.params.id}, request.user);
 		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The course is updated successfully', [updatedCourse]));
 	});
 
 	deleteCourse = asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => {
-		await this.courseService.delete(+request.params.id);
+		const deletedCourse = await this.courseService.delete(+request.params.id);
+		this.logService.log('DELETE', 'COURSE', deletedCourse, request.user);
 		response.status(HttpStatusCode.NoContent).json();
 	});
 }

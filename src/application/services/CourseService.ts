@@ -81,7 +81,7 @@ export class CourseService implements ICourseService {
 	};
 
 	async update(args: {data: UpdateCourse, select?: Prisma.CourseSelect, include?: Prisma.CourseInclude}): Promise<Course> {
-    const {id, title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, isApproved, isDraft, chapters, topicId} = args.data;
+    let {id, title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, hours, lectures, articles, quizzes, isApproved, isDraft, chapters, topicId} = args.data;
 		const slug = title ? slugify(title.toString(), {lower: true, trim: true}) : undefined;
 		if(topicId && !await this.isTrueTopic(topicId)) {
 			throw new APIError("This topic may be not exist or may be exist but not a topic", HttpStatusCode.BadRequest);
@@ -113,6 +113,10 @@ export class CourseService implements ICourseService {
         courseTeachings: courseTeachings || undefined,
         price: price || undefined,
         discountPercentage: discountPercentage || undefined,
+				hours,
+				lectures,
+				articles,
+				quizzes,
         isApproved: isApproved || undefined,
 				isDraft: isDraft || undefined,
 				chapters: chapters ? {

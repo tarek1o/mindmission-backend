@@ -20,8 +20,9 @@ const RequestManager_1 = require("../services/RequestManager");
 const APIError_1 = __importDefault(require("../errorHandlers/APIError"));
 const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
 let CourseController = class CourseController {
-    constructor(courseService) {
+    constructor(courseService, logService) {
         this.courseService = courseService;
+        this.logService = logService;
         this.courseAggregates = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { where, skip, take, orderBy } = RequestManager_1.RequestManager.findOptionsWrapper(request);
             const aggregate = RequestManager_1.RequestManager.aggregateOptionsWrapper(request);
@@ -57,7 +58,7 @@ let CourseController = class CourseController {
             var _a;
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
             const createdCourse = await this.courseService.create({
-                data: Object.assign(Object.assign({}, request.body.input), { userId: (_a = request.user) === null || _a === void 0 ? void 0 : _a.id }),
+                data: Object.assign(Object.assign({}, request.body.input), { hours: undefined, lectures: undefined, articles: undefined, quizzes: undefined, userId: (_a = request.user) === null || _a === void 0 ? void 0 : _a.id }),
                 select,
                 include,
             });
@@ -70,10 +71,12 @@ let CourseController = class CourseController {
                 select,
                 include
             });
+            this.logService.log('UPDATE', 'COURSE', Object.assign(Object.assign({}, request.body.input), { id: +request.params.id }), request.user);
             response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The course is updated successfully', [updatedCourse]));
         });
         this.deleteCourse = (0, express_async_handler_1.default)(async (request, response, next) => {
-            await this.courseService.delete(+request.params.id);
+            const deletedCourse = await this.courseService.delete(+request.params.id);
+            this.logService.log('DELETE', 'COURSE', deletedCourse, request.user);
             response.status(HTTPStatusCode_1.default.NoContent).json();
         });
     }
@@ -81,6 +84,7 @@ let CourseController = class CourseController {
 exports.CourseController = CourseController;
 exports.CourseController = CourseController = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)('ICourseService'))
+    __param(0, (0, inversify_1.inject)('ICourseService')),
+    __param(1, (0, inversify_1.inject)('ILogService'))
 ], CourseController);
 //# sourceMappingURL=CourseController.js.map

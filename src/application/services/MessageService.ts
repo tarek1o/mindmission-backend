@@ -20,7 +20,7 @@ export class MessageService implements IMessageService {
 		return this.messageRepository.findUnique(args);
 	};
 
-  async create(args: {data: CreateMessage, select?: Prisma.MessageSelect, include?: Prisma.MessageInclude}): Promise<Message> {
+  create(args: {data: CreateMessage, select?: Prisma.MessageSelect, include?: Prisma.MessageInclude}): Promise<Message> {
 		const {name, email, message} = args.data;		
 		return this.messageRepository.create({
 			data: {
@@ -33,7 +33,7 @@ export class MessageService implements IMessageService {
     });
 	};
 
-	async update(args: {data: UpdateMessage, select?: Prisma.MessageSelect, include?: Prisma.MessageInclude}): Promise<Message> {
+	update(args: {data: UpdateMessage, select?: Prisma.MessageSelect, include?: Prisma.MessageInclude}): Promise<Message> {
 		const {id, subject, reply, replierId} = args.data;
 		return this.messageRepository.update({
 			where: {

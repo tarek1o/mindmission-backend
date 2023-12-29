@@ -5,10 +5,10 @@ import { PrismaClientKnownRequestError, PrismaClientValidationError } from '@pri
 
 abstract class GlobalErrorHandler {
 	private static sendErrorForDev = (error: APIError, response: Response) => response.status(error.statusCode).json({
-		status: error.status,
 		name: error.name,
+		status: error.status,
 		message: error.message,
-		stack: error.stack,
+		stack: error.stack
 	});
 
 	private static sendErrorForProd = (error: APIError, response: Response) => response.status(error.statusCode).json({
@@ -17,7 +17,7 @@ abstract class GlobalErrorHandler {
 	});
 
 	static catchError(error: APIError, request: Request, response: Response, next: NextFunction): void {
-		error.status = 'Error';
+		error.status = error.status || 'Error';
 		if(!error.statusCode) {
 			error.statusCode = HttpStatusCode.InternalServerError;
 		}

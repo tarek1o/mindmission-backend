@@ -19,6 +19,9 @@ exports.addVideoValidation = [
     (0, express_validator_1.body)("input.url")
         .notEmpty().withMessage("Video URL is required")
         .isURL().withMessage("Video URL must be a url formate"),
+    (0, express_validator_1.body)("input.time")
+        .notEmpty().withMessage("Time is required")
+        .isInt({ min: 1 }).withMessage("Time must be an integer number more than or equal to 1"),
     (0, express_validator_1.body)("input.lessonId")
         .notEmpty().withMessage("LessonId is required")
         .isInt({ min: 1 }).withMessage("LessonId must be an integer number more than or equal to 1"),
@@ -37,6 +40,9 @@ exports.updateVideoValidation = [
     (0, express_validator_1.body)("input.url")
         .optional()
         .isURL().withMessage("Video URL must be a url formate"),
+    (0, express_validator_1.body)("input.time")
+        .optional()
+        .isInt({ min: 1 }).withMessage("Time must be an integer number more than or equal to 1"),
     (0, express_validator_1.body)("input.lessonId")
         .optional()
         .isInt({ min: 1 }).withMessage("LessonId must be an integer number more than or equal to 1"),

@@ -20,19 +20,7 @@ export class InstructorRepository implements IInstructorRepository {
     return prisma.instructor.findUnique(args);
   }
 
-  create(args: Prisma.InstructorCreateArgs): Promise<ExtendedInstructor> {
-    return prisma.instructor.create(args);
-  }
-
   update(args: Prisma.InstructorUpdateArgs): Promise<ExtendedInstructor> {
     return prisma.instructor.update(args);
-  }
-
-  delete(id: number): Promise<ExtendedInstructor> {
-    return prisma.instructor.delete({
-      where: {
-        id,
-      }
-    });
   }
 }
