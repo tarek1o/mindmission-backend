@@ -8,7 +8,7 @@ const library_1 = require("@prisma/client/runtime/library");
 class GlobalErrorHandler {
     static catchError(error, request, response, next) {
         var _a;
-        error.status = 'Error';
+        error.status = error.status || 'Error';
         if (!error.statusCode) {
             error.statusCode = HTTPStatusCode_1.default.InternalServerError;
         }
@@ -27,10 +27,10 @@ class GlobalErrorHandler {
     ;
 }
 GlobalErrorHandler.sendErrorForDev = (error, response) => response.status(error.statusCode).json({
-    status: error.status,
     name: error.name,
+    status: error.status,
     message: error.message,
-    stack: error.stack,
+    stack: error.stack
 });
 GlobalErrorHandler.sendErrorForProd = (error, response) => response.status(error.statusCode).json({
     status: error.status,
