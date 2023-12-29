@@ -29,6 +29,10 @@ export type UpdateCourse = {
   discountPercentage?: number;
   isApproved?: boolean;
   isDraft?: boolean;
+  hours?: number;
+  lectures?: number;
+  articles?: number;
+  quizzes?: number;
   chapters?: {id: number, order: number}[];
   topicId?: number;
 }

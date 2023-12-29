@@ -12,6 +12,10 @@ export const addArticleValidation = [
     .notEmpty().withMessage("Article content is required")
     .isString().withMessage("Article Content must be string"),
 
+  body("input.readingTime")
+    .notEmpty().withMessage("Reading Time is required")
+    .isInt({min: 1}).withMessage("Reading Time must be a positive integer number"),
+
   body("input.lessonId")
     .notEmpty().withMessage("LessonId is required")
     .isInt({min: 1}).withMessage("LessonId must be an integer number more than or equal to 1"),
@@ -29,6 +33,10 @@ export const updateArticleValidation = [
   body("input.content")
     .optional()
     .isString().withMessage("Article Content must be string"),
+    
+  body("input.readingTime")
+    .optional()
+    .isInt({min: 1}).withMessage("Reading Time must be a positive integer number"),
 
   body("input.lessonId")
     .optional()

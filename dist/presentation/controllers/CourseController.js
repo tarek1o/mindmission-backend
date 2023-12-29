@@ -58,7 +58,7 @@ let CourseController = class CourseController {
             var _a;
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
             const createdCourse = await this.courseService.create({
-                data: Object.assign(Object.assign({}, request.body.input), { userId: (_a = request.user) === null || _a === void 0 ? void 0 : _a.id }),
+                data: Object.assign(Object.assign({}, request.body.input), { hours: undefined, lectures: undefined, articles: undefined, quizzes: undefined, userId: (_a = request.user) === null || _a === void 0 ? void 0 : _a.id }),
                 select,
                 include,
             });

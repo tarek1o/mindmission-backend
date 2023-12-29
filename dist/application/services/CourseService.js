@@ -88,7 +88,7 @@ let CourseService = class CourseService {
     }
     ;
     async update(args) {
-        const { id, title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, isApproved, isDraft, chapters, topicId } = args.data;
+        let { id, title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, hours, lectures, articles, quizzes, isApproved, isDraft, chapters, topicId } = args.data;
         const slug = title ? (0, slugify_1.default)(title.toString(), { lower: true, trim: true }) : undefined;
         if (topicId && !await this.isTrueTopic(topicId)) {
             throw new APIError_1.default("This topic may be not exist or may be exist but not a topic", HTTPStatusCode_1.default.BadRequest);
@@ -119,6 +119,10 @@ let CourseService = class CourseService {
                 courseTeachings: courseTeachings || undefined,
                 price: price || undefined,
                 discountPercentage: discountPercentage || undefined,
+                hours,
+                lectures,
+                articles,
+                quizzes,
                 isApproved: isApproved || undefined,
                 isDraft: isDraft || undefined,
                 chapters: chapters ? {

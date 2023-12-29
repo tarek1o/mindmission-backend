@@ -55,6 +55,10 @@ export class CourseController {
 		const createdCourse = await this.courseService.create({
 			data: {
 				...request.body.input,
+				hours: undefined, 
+				lectures: undefined, 
+				articles: undefined, 
+				quizzes: undefined,
 				userId: request.user?.id
 			},
 			select,

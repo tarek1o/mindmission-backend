@@ -193,6 +193,10 @@ model Course {
   isApproved         Boolean        @default(false)
   isDraft            Boolean        @default(true)
   publishedAt        DateTime?
+  hours              Int            @default(0)
+  lectures           Int            @default(0)
+  articles           Int            @default(0)
+  quizzes            Int            @default(0)
   chapters           Chapter[]
   ratings            Rating[]       
   enrolledStudents   Student[]      @relation("enrolled")
@@ -260,6 +264,7 @@ model Video {
   id              Int            @id @default(autoincrement())
   title           String
   description     String?
+  time            Int
   url             String
   lessonId        Int            @unique
   lesson          Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
@@ -271,6 +276,7 @@ model Article {
   id              Int            @id @default(autoincrement())
   title           String
   content         String
+  readingTime     Int
   lessonId        Int            @unique
   lesson          Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   createdAt       DateTime       @default(now())
@@ -427,6 +433,6 @@ enum LogModel {
   PAYMENT
   RATING
   COUPON
-  COMMENT
   MESSAGE
+  COMMENT
 }

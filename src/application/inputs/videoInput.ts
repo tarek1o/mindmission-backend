@@ -2,6 +2,7 @@ export type CreateVideo = {
   title: string, 
   description?: string; 
   url: string;
+  time: number;
   lessonId: number;
 };
 
@@ -10,5 +11,6 @@ export type UpdateVideo = {
   title?: string, 
   description?: string; 
   url?: string;
+  time?: number;
   lessonId?: number;
 };
