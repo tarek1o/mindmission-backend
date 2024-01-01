@@ -6,12 +6,15 @@ import prisma from "../../domain/db";
 @injectable()
 export class LogRepository implements ILogRepository {
   constructor() {}
+  
   count(args: Prisma.LogCountArgs): Promise<number> {
     return prisma.log.count(args);
   }
+  
   findMany(args: Prisma.LogFindManyArgs): Promise<Log[]> {
     return prisma.log.findMany(args);
   }
+
   findUnique(args: Prisma.LogFindUniqueArgs): Promise<Log | null> {
     return prisma.log.findUnique(args);
   }

@@ -12,33 +12,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChapterRepository = void 0;
 const inversify_1 = require("inversify");
 const db_1 = __importDefault(require("../../domain/db"));
-let ChapterRepository = class ChapterRepository {
-    constructor() { }
-    count(args) {
-        return db_1.default.chapter.count(args);
-    }
-    findMany(args) {
-        return db_1.default.chapter.findMany(args);
-    }
-    findUnique(args) {
-        return db_1.default.chapter.findUnique(args);
+const BaseRepository_1 = require("./Base/BaseRepository");
+let ChapterRepository = class ChapterRepository extends BaseRepository_1.BaseRepository {
+    constructor() {
+        super("Chapter");
     }
     findFirst(args) {
         return db_1.default.chapter.findFirst(args);
     }
-    create(args) {
-        return db_1.default.chapter.create(args);
-    }
-    update(args) {
-        return db_1.default.chapter.update(args);
-    }
-    delete(id) {
-        return db_1.default.chapter.delete({
-            where: {
-                id,
-            }
-        });
-    }
+    ;
 };
 exports.ChapterRepository = ChapterRepository;
 exports.ChapterRepository = ChapterRepository = __decorate([

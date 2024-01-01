@@ -1,5 +1,5 @@
 import { Video } from "@prisma/client";
-import { IRepository } from "./Base/IRepository";
+import { IBaseRepository } from "./Base/IBaseRepository";
 
-export interface IVideoRepository extends IRepository<Video> {
+export interface IVideoRepository extends IBaseRepository<Video> {
 }

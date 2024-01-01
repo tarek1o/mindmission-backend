@@ -1,6 +1,6 @@
 import { Course, Prisma} from "@prisma/client";
-import { IRepository } from "./Base/IRepository";
+import { IBaseRepository } from "./Base/IBaseRepository";
 
-export interface ICourseRepository extends IRepository<Course> {
+export interface ICourseRepository extends IBaseRepository<Course> {
   aggregate(args: Prisma.CourseAggregateArgs): Prisma.PrismaPromise<Prisma.GetCourseAggregateType<any>>
 }

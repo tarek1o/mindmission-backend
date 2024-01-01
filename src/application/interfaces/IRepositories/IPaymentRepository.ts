@@ -1,5 +1,5 @@
-import { IRepository } from "./Base/IRepository";
+import { IBaseRepository } from "./Base/IBaseRepository";
 import { ExtendedPayment } from "../../types/ExtendedPayment";
 
-export interface IPaymentRepository extends IRepository<ExtendedPayment> {
+export interface IPaymentRepository extends IBaseRepository<ExtendedPayment> {
 }

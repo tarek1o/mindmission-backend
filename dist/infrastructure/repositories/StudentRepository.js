@@ -26,18 +26,8 @@ let StudentRepository = class StudentRepository {
     findFirst(args) {
         return db_1.default.student.findFirst(args);
     }
-    create(args) {
-        return db_1.default.student.create(args);
-    }
     update(args) {
         return db_1.default.student.update(args);
-    }
-    delete(id) {
-        return db_1.default.student.delete({
-            where: {
-                id,
-            }
-        });
     }
 };
 exports.StudentRepository = StudentRepository;

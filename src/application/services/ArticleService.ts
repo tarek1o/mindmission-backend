@@ -112,7 +112,7 @@ export class ArticleService implements IArticleService {
 			await this.updateCourseInfo(createdArticle.id, 'create', readingTime);
 			return createdArticle;
 		});
-	}
+	};
 
 	async update(args: {data: UpdateArticle, select?: Prisma.ArticleSelect, include?: Prisma.ArticleInclude}): Promise<Article> {
 		const {id, title, content, readingTime, lessonId} = args.data;
@@ -141,7 +141,7 @@ export class ArticleService implements IArticleService {
 				include: args.include
 			});
 		});
-	}
+	};
 
 	async delete(id: number): Promise<Article> {
 		return Transaction.transact<Article>(async () => {

@@ -5,36 +5,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoleRepository = void 0;
 const inversify_1 = require("inversify");
-const db_1 = __importDefault(require("../../domain/db"));
-let RoleRepository = class RoleRepository {
-    constructor() { }
-    count(args) {
-        return db_1.default.role.count(args);
-    }
-    findMany(args) {
-        return db_1.default.role.findMany(args);
-    }
-    findUnique(args) {
-        return db_1.default.role.findUnique(args);
-    }
-    create(args) {
-        return db_1.default.role.create(args);
-    }
-    update(args) {
-        return db_1.default.role.update(args);
-    }
-    delete(id) {
-        return db_1.default.role.delete({
-            where: {
-                id,
-            }
-        });
+const BaseRepository_1 = require("./Base/BaseRepository");
+let RoleRepository = class RoleRepository extends BaseRepository_1.BaseRepository {
+    constructor() {
+        super("Role");
     }
 };
 exports.RoleRepository = RoleRepository;

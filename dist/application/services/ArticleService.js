@@ -123,6 +123,7 @@ let ArticleService = class ArticleService {
             return createdArticle;
         });
     }
+    ;
     async update(args) {
         const { id, title, content, readingTime, lessonId } = args.data;
         if (lessonId && !await this.isLessonTypeIsArticle(lessonId)) {
@@ -151,6 +152,7 @@ let ArticleService = class ArticleService {
             });
         });
     }
+    ;
     async delete(id) {
         return Transaction_1.Transaction.transact(async () => {
             await this.updateCourseInfo(id, 'delete');

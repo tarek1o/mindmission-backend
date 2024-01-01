@@ -1,5 +1,5 @@
 import { Coupon } from "@prisma/client";
-import { IRepository } from "./Base/IRepository";
+import { IBaseRepository } from "./Base/IBaseRepository";
 
-export interface ICouponRepository extends IRepository<Coupon> {
+export interface ICouponRepository extends IBaseRepository<Coupon> {
 }
