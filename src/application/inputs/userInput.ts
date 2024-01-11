@@ -36,6 +36,7 @@ export type UpdateUser = {
   bio?: string;
   picture?: string;
   refreshToken?: string;
+  isOnline?: boolean;
   isActive?: boolean;
   isBlocked?: boolean;
   isDeleted?: boolean;

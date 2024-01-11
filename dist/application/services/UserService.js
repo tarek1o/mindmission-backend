@@ -104,7 +104,7 @@ let UserService = class UserService {
     ;
     async update(args) {
         var _a, _b;
-        const { id, firstName, lastName, email, isEmailVerified, password, passwordUpdatedTime, resetPasswordCode, bio, picture, mobilePhone, whatsAppNumber, refreshToken, isActive, isBlocked, isDeleted, roleId, personalLinks } = args.data;
+        const { id, firstName, lastName, email, isEmailVerified, password, passwordUpdatedTime, resetPasswordCode, bio, picture, mobilePhone, whatsAppNumber, refreshToken, isOnline, isActive, isBlocked, isDeleted, roleId, personalLinks } = args.data;
         if (resetPasswordCode && resetPasswordCode.code && !resetPasswordCode.isVerified) {
             resetPasswordCode.code = bcrypt_1.default.hashSync(args.data.resetPasswordCode.code.toString(), 10);
         }
@@ -183,9 +183,10 @@ let UserService = class UserService {
                 mobilePhone: mobilePhone || undefined,
                 whatsAppNumber: whatsAppNumber || undefined,
                 refreshToken: refreshToken || undefined,
-                isActive: isActive || undefined,
-                isBlocked: isBlocked || undefined,
-                isDeleted: isDeleted || undefined,
+                isOnline: isOnline,
+                isActive: isActive,
+                isBlocked: isBlocked,
+                isDeleted: isDeleted,
                 role: roleId ? {
                     connect: {
                         id: roleId
@@ -209,7 +210,8 @@ let UserService = class UserService {
                             }
                         };
                     })
-                } : undefined
+                } : undefined,
+                lastSeen: isOnline === false ? new Date() : undefined
             },
             select: args.select,
             include: args.include

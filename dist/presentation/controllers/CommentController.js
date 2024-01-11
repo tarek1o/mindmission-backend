@@ -15,8 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommentController = void 0;
 const inversify_1 = require("inversify");
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
-const ResponseFormatter_1 = require("../responseFormatter/ResponseFormatter");
 const RequestManager_1 = require("../services/RequestManager");
+const ResponseFormatter_1 = require("../responseFormatter/ResponseFormatter");
 const APIError_1 = __importDefault(require("../errorHandlers/APIError"));
 const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
 let CommentController = class CommentController {
@@ -53,7 +53,7 @@ let CommentController = class CommentController {
         });
         this.updateComment = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
-            const updatedLesson = await this.commentService.update({ data: Object.assign(Object.assign({}, request.body.input), { id: +request.params.id }), select, include });
+            const updatedLesson = await this.commentService.update({ data: { id: +request.params.id, content: request.body.input.content }, select, include });
             response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The comment is updated successfully', [updatedLesson]));
         });
         this.deleteComment = (0, express_async_handler_1.default)(async (request, response, next) => {
