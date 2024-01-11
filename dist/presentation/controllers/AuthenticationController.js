@@ -13,19 +13,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthenticationController = void 0;
+const client_1 = require("@prisma/client");
 const inversify_1 = require("inversify");
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const SendEmail_1 = require("../services/SendEmail");
 const JWTGenerator_1 = require("../services/JWTGenerator");
 const RequestManager_1 = require("../services/RequestManager");
+const Notifier_1 = require("../services/Notifier");
+const NotificationEvent_1 = require("../enums/NotificationEvent");
 const UserMapper_1 = require("../mapping/UserMapper");
 const ResponseFormatter_1 = require("../responseFormatter/ResponseFormatter");
 const APIError_1 = __importDefault(require("../errorHandlers/APIError"));
 const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
 let AuthenticationController = class AuthenticationController {
-    constructor(userService) {
+    constructor(userService, onlineUserService) {
         this.userService = userService;
+        this.onlineUserService = onlineUserService;
         this.isRefreshTokenExpiredSoon = (refreshToken) => {
             const { exp } = JWTGenerator_1.JWTGenerator.decode(refreshToken);
             if (exp) {
@@ -261,11 +265,52 @@ let AuthenticationController = class AuthenticationController {
                     refreshToken
                 }]));
         });
+        Notifier_1.notifier.on(NotificationEvent_1.SubscribeOn.Connection, (socket) => {
+            socket.on(NotificationEvent_1.SubscribeOn.Login, async (userId) => {
+                try {
+                    await this.onlineUserService.create({
+                        data: {
+                            socketId: socket.id,
+                            userId
+                        },
+                        select: {
+                            id: true,
+                        }
+                    });
+                    // const onlineUserCount = await this.getOnlineUserCount();
+                    // notifier.emit(NotifyEvent.OnlineUserCount, onlineUserCount);
+                    socket.on(NotificationEvent_1.SubscribeOn.Disconnect, async () => {
+                        try {
+                            await this.onlineUserService.delete(socket.id);
+                            // const onlineUserCount = await this.getOnlineUserCount();
+                            // notifier.emit(NotifyEvent.OnlineUserCount, onlineUserCount);
+                        }
+                        catch (error) {
+                            // Do an action during error
+                        }
+                    });
+                }
+                catch (error) {
+                    // Do an action during error
+                }
+            });
+        });
+    }
+    ;
+    async getOnlineUserCount() {
+        const onlineUsers = await this.onlineUserService.findMany({
+            select: {
+                userId: true,
+            },
+            distinct: client_1.Prisma.OnlineUserScalarFieldEnum.userId,
+        });
+        return onlineUsers.length;
     }
 };
 exports.AuthenticationController = AuthenticationController;
 exports.AuthenticationController = AuthenticationController = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)('IUserService'))
+    __param(0, (0, inversify_1.inject)('IUserService')),
+    __param(1, (0, inversify_1.inject)('IOnlineUserService'))
 ], AuthenticationController);
 //# sourceMappingURL=AuthenticationController.js.map

@@ -24,19 +24,7 @@ export class StudentRepository implements IStudentRepository {
     return prisma.student.findFirst(args);
   }
 
-  create(args: Prisma.StudentCreateArgs): Promise<ExtendedStudent> {
-    return prisma.student.create(args);
-  }
-
   update(args: Prisma.StudentUpdateArgs): Promise<ExtendedStudent> {
     return prisma.student.update(args);
-  }
-
-  delete(id: number): Promise<ExtendedStudent> {
-    return prisma.student.delete({
-      where: {
-        id,
-      }
-    });
   }
 }

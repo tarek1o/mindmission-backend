@@ -12,24 +12,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommentService = void 0;
 const inversify_1 = require("inversify");
 let CommentService = class CommentService {
-    constructor(CommentRepository) {
-        this.CommentRepository = CommentRepository;
+    constructor(commentRepository) {
+        this.commentRepository = commentRepository;
     }
     count(args) {
-        return this.CommentRepository.count(args);
+        return this.commentRepository.count(args);
     }
     ;
     findMany(args) {
-        return this.CommentRepository.findMany(args);
+        return this.commentRepository.findMany(args);
     }
     ;
     findUnique(args) {
-        return this.CommentRepository.findUnique(args);
+        return this.commentRepository.findUnique(args);
     }
     ;
     create(args) {
         const { content, lessonId, parentId, userId } = args.data;
-        return this.CommentRepository.create({
+        return this.commentRepository.create({
             data: {
                 content,
                 lesson: {
@@ -55,7 +55,7 @@ let CommentService = class CommentService {
     ;
     update(args) {
         const { id, content } = args.data;
-        return this.CommentRepository.update({
+        return this.commentRepository.update({
             where: {
                 id
             },
@@ -68,7 +68,7 @@ let CommentService = class CommentService {
     }
     ;
     delete(id) {
-        return this.CommentRepository.delete(id);
+        return this.commentRepository.delete(id);
     }
     ;
 };

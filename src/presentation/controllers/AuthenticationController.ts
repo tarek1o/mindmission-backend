@@ -1,12 +1,16 @@
 import { Request, Response, NextFunction } from "express";
-import { User } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { inject, injectable } from "inversify";
 import asyncHandler from'express-async-handler';
 import bcrypt from "bcrypt"
 import { IUserService } from "../../application/interfaces/IServices/IUserService";
+import { IOnlineUserService } from "../../application/interfaces/IServices/IOnlineUserService";
+import { ExtendedUser } from "../../application/types/ExtendedUser";
 import { SendEmail } from "../services/SendEmail";
 import { JWTGenerator } from "../services/JWTGenerator";
 import { RequestManager } from "../services/RequestManager";
+import { notifier } from "../services/Notifier";
+import { NotifyFor, SubscribeOn } from "../enums/NotificationEvent";
 import { UserMapper } from "../mapping/UserMapper";
 import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
 import APIError from "../errorHandlers/APIError";
@@ -14,7 +18,47 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class AuthenticationController {
-	constructor(@inject('IUserService') private userService: IUserService) {}
+	constructor(@inject('IUserService') private userService: IUserService, @inject('IOnlineUserService') private onlineUserService: IOnlineUserService) {
+    notifier.on(SubscribeOn.Connection, (socket) => {
+      socket.on(SubscribeOn.Login, async (userId: number) => {
+        try {
+          await this.onlineUserService.create({
+            data: {
+              socketId: socket.id,
+              userId
+            },
+            select: {
+              id: true,
+            }
+          });
+          // const onlineUserCount = await this.getOnlineUserCount();
+          // notifier.emit(NotifyEvent.OnlineUserCount, onlineUserCount);
+          socket.on(SubscribeOn.Disconnect, async() => {
+            try {
+              await this.onlineUserService.delete(socket.id);
+              // const onlineUserCount = await this.getOnlineUserCount();
+              // notifier.emit(NotifyEvent.OnlineUserCount, onlineUserCount);
+            }catch(error) {
+              // Do an action during error
+            }
+          });
+        }catch(error) {
+          // Do an action during error
+        }
+      });
+    });
+  };
+
+  private async getOnlineUserCount(): Promise<number> {
+    const onlineUsers = await this.onlineUserService.findMany({
+      select: {
+        userId: true,
+      },
+      distinct: Prisma.OnlineUserScalarFieldEnum.userId,
+    });
+
+    return onlineUsers.length;
+  }
 
   private isRefreshTokenExpiredSoon = (refreshToken: string): boolean => {
     const {exp} = JWTGenerator.decode(refreshToken);
@@ -26,7 +70,7 @@ export class AuthenticationController {
       }
     }
     return false;
-  }
+  };
 
   signup = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
     const {firstName, lastName, email, password, mobilePhone, whatsAppNumber, bio, picture, specialization, teachingType, videoProAcademy, haveAudience} = request.body.input;
@@ -42,7 +86,7 @@ export class AuthenticationController {
         whatsAppNumber,
         bio,
         picture,
-        refreshToken: JWTGenerator.generateRefreshToken({firstName, lastName, email, picture} as User),
+        refreshToken: JWTGenerator.generateRefreshToken({firstName, lastName, email, picture} as ExtendedUser),
         role: {
           slug
         },

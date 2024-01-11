@@ -12,33 +12,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommentRepository = void 0;
 const inversify_1 = require("inversify");
 const db_1 = __importDefault(require("../../domain/db"));
-let CommentRepository = class CommentRepository {
-    constructor() { }
-    count(args) {
-        return db_1.default.comment.count(args);
-    }
-    findMany(args) {
-        return db_1.default.comment.findMany(args);
-    }
-    findUnique(args) {
-        return db_1.default.comment.findUnique(args);
+const BaseRepository_1 = require("./Base/BaseRepository");
+let CommentRepository = class CommentRepository extends BaseRepository_1.BaseRepository {
+    constructor() {
+        super("Comment");
     }
     findFirst(args) {
         return db_1.default.comment.findFirst(args);
     }
-    create(args) {
-        return db_1.default.comment.create(args);
-    }
-    update(args) {
-        return db_1.default.comment.update(args);
-    }
-    delete(id) {
-        return db_1.default.comment.delete({
-            where: {
-                id,
-            }
-        });
-    }
+    ;
 };
 exports.CommentRepository = CommentRepository;
 exports.CommentRepository = CommentRepository = __decorate([

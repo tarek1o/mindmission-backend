@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const DIContainer_1 = require("./container/DIContainer");
 require("./classes/userDI");
+require("./classes/onlineUserDI");
 require("./classes/roleDI");
 require("./classes/authenticationDI");
 require("./classes/authorizationDI");
@@ -20,5 +21,6 @@ require("./classes/ratingDI");
 require("./classes/couponDI");
 require("./classes/commentDI");
 require("./classes/messageDI");
+require("./classes/realTimeManagerDI");
 exports.default = DIContainer_1.container;
 //# sourceMappingURL=DI.js.map

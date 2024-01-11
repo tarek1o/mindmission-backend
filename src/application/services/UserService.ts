@@ -99,7 +99,7 @@ export class UserService implements IUserService {
 	};
 
 	async update(args: {data: UpdateUser, select?: Prisma.UserSelect, include?: Prisma.UserInclude}): Promise<ExtendedUser> {
-		const {id, firstName, lastName, email, isEmailVerified, password, passwordUpdatedTime, resetPasswordCode, bio, picture, mobilePhone, whatsAppNumber, refreshToken, isActive, isBlocked, isDeleted, roleId, personalLinks} = args.data
+		const {id, firstName, lastName, email, isEmailVerified, password, passwordUpdatedTime, resetPasswordCode, bio, picture, mobilePhone, whatsAppNumber, refreshToken, isOnline, isActive, isBlocked, isDeleted, roleId, personalLinks} = args.data
 		if(resetPasswordCode && resetPasswordCode.code && !resetPasswordCode.isVerified) {
 			resetPasswordCode.code = bcrypt.hashSync((args.data.resetPasswordCode as any).code.toString(), 10);
 		}
@@ -179,9 +179,10 @@ export class UserService implements IUserService {
 				mobilePhone: mobilePhone || undefined,
 				whatsAppNumber: whatsAppNumber || undefined,
 				refreshToken: refreshToken || undefined,
-				isActive: isActive || undefined,
-				isBlocked: isBlocked || undefined,
-				isDeleted: isDeleted || undefined,
+				isOnline: isOnline,
+				isActive: isActive,
+				isBlocked: isBlocked,
+				isDeleted: isDeleted,
 				role: roleId ? {
 					connect: {
 						id: roleId
@@ -205,7 +206,8 @@ export class UserService implements IUserService {
 							}
 						}
 					})
-				} : undefined
+				} : undefined,
+				lastSeen: isOnline === false ? new Date() : undefined
 			},
 			select: args.select,
 			include: args.include

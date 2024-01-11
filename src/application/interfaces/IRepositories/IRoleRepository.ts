@@ -1,5 +1,5 @@
 import { Role } from "@prisma/client";
-import { IRepository } from "./Base/IRepository";
+import { IBaseRepository } from "./Base/IBaseRepository";
 
-export interface IRoleRepository extends IRepository<Role> {
+export interface IRoleRepository extends IBaseRepository<Role> {
 }

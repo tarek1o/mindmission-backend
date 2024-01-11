@@ -1,5 +1,5 @@
 import { Quiz } from "@prisma/client";
-import { IRepository } from "./Base/IRepository";
+import { IBaseRepository } from "./Base/IBaseRepository";
 
-export interface IQuizRepository extends IRepository<Quiz> {
+export interface IQuizRepository extends IBaseRepository<Quiz> {
 }

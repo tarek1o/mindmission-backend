@@ -1,5 +1,5 @@
 import { Article } from "@prisma/client";
-import { IRepository } from "./Base/IRepository";
+import { IBaseRepository } from "./Base/IBaseRepository";
 
-export interface IArticleRepository extends IRepository<Article> {
+export interface IArticleRepository extends IBaseRepository<Article> {
 }

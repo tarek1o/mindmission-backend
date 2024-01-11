@@ -1,6 +1,6 @@
 import { Prisma, Chapter } from "@prisma/client";
-import { IRepository } from "./Base/IRepository";
+import { IBaseRepository } from "./Base/IBaseRepository";
 
-export interface IChapterRepository extends IRepository<Chapter> {
+export interface IChapterRepository extends IBaseRepository<Chapter> {
   findFirst(args: Prisma.ChapterFindFirstArgs): Promise<Chapter | null>;
 }

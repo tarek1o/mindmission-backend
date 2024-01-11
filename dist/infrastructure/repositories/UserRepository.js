@@ -12,32 +12,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserRepository = void 0;
 const inversify_1 = require("inversify");
 const db_1 = __importDefault(require("../../domain/db"));
-let UserRepository = class UserRepository {
-    constructor() { }
-    count(args) {
-        return db_1.default.user.count(args);
-    }
-    findMany(args) {
-        return db_1.default.user.findMany(args);
-    }
-    findUnique(args) {
-        return db_1.default.user.findUnique(args);
+const BaseRepository_1 = require("./Base/BaseRepository");
+let UserRepository = class UserRepository extends BaseRepository_1.BaseRepository {
+    constructor() {
+        super("User");
     }
     findFirst(args) {
         return db_1.default.user.findFirst(args);
-    }
-    create(args) {
-        return db_1.default.user.create(args);
-    }
-    update(args) {
-        return db_1.default.user.update(args);
-    }
-    delete(id) {
-        return db_1.default.user.delete({
-            where: {
-                id,
-            }
-        });
     }
 };
 exports.UserRepository = UserRepository;

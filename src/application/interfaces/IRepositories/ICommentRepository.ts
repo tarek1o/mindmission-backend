@@ -1,6 +1,6 @@
 import { Prisma, Comment } from "@prisma/client";
-import { IRepository } from "./Base/IRepository";
+import { IBaseRepository } from "./Base/IBaseRepository";
 
-export interface ICommentRepository extends IRepository<Comment> {
+export interface ICommentRepository extends IBaseRepository<Comment> {
   findFirst(args: Prisma.CommentFindFirstArgs): Promise<Comment | null>;
 }

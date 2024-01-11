@@ -1,5 +1,5 @@
 import { Category } from "@prisma/client";
-import { IRepository } from "./Base/IRepository";
+import { IBaseRepository } from "./Base/IBaseRepository";
 
-export interface ICategoryRepository extends IRepository<Category> {
+export interface ICategoryRepository extends IBaseRepository<Category> {
 }

@@ -4,8 +4,8 @@ import asyncHandler from'express-async-handler';
 import {ICommentService} from "../../application/interfaces/IServices/ICommentService"
 import { ILogService } from "../../application/interfaces/IServices/ILogService";
 import { ExtendedRequest } from "../types/ExtendedRequest";
-import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
 import { RequestManager } from "../services/RequestManager";
+import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
 import APIError from "../errorHandlers/APIError";
 import HttpStatusCode from '../enums/HTTPStatusCode';
 
@@ -37,7 +37,7 @@ export class CommentController {
 		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The comment is retrieved successfully', [Comment]));
 	});
 
-	createComment = asyncHandler(async(request: ExtendedRequest, response: Response, next: NextFunction) => {
+	createComment = asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
 		const createdComment = await this.commentService.create({data: {...request.body.input, userId: request.user?.id}, select, include});
 		response.status(HttpStatusCode.Created).json(ResponseFormatter.formate(true, 'The comment is created successfully', [createdComment]));
@@ -45,7 +45,7 @@ export class CommentController {
 
 	updateComment = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const updatedLesson = await this.commentService.update({data: {...request.body.input, id: +request.params.id}, select, include});
+		const updatedLesson = await this.commentService.update({data: {id: +request.params.id, content: request.body.input.content}, select, include});
 		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The comment is updated successfully', [updatedLesson]));
 	});
 

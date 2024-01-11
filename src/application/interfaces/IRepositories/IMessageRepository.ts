@@ -1,5 +1,5 @@
 import { Message } from "@prisma/client";
-import { IRepository } from "./Base/IRepository";
+import { IBaseRepository } from "./Base/IBaseRepository";
 
-export interface IMessageRepository extends IRepository<Message> {
+export interface IMessageRepository extends IBaseRepository<Message> {
 }
