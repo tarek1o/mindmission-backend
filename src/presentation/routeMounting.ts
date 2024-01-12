@@ -15,6 +15,7 @@ import videoRoutes from "./routes/videoRoutes";
 import quizRoutes from "./routes/quizRoutes";
 import paymentRoutes from "./routes/paymentRoutes";
 import ratingRoutes from "./routes/ratingRoutes";
+import statisticsRoutes from "./routes/statisticsRoutes";
 import couponRoutes from "./routes/couponRoutes";
 import commentRoutes from "./routes/commentRoutes";
 import messageRoutes from "./routes/messageRoutes";
@@ -37,6 +38,7 @@ export const routeMounting = (app: Application) => {
   app.use(`${process.env.apiVersion}/quizzes`, quizRoutes);
   app.use(`${process.env.apiVersion}/payments`, paymentRoutes);
   app.use(`${process.env.apiVersion}/ratings`, ratingRoutes);
+  app.use(`${process.env.apiVersion}/statistics`, statisticsRoutes);
   app.use(`${process.env.apiVersion}/coupons`, couponRoutes);
   app.use(`${process.env.apiVersion}/comments`, commentRoutes);
   app.use(`${process.env.apiVersion}/messages`, messageRoutes);

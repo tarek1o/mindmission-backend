@@ -7,6 +7,10 @@ import { IRatingService } from "../interfaces/IServices/IRatingService";
 export class RatingService implements IRatingService {
 	constructor(@inject('IRatingRepository') private ratingRepository: IRatingRepository) {}
 
+	aggregate(args: Prisma.RatingAggregateArgs): Promise<Prisma.GetRatingAggregateType<Prisma.RatingAggregateArgs>> {
+		return this.ratingRepository.aggregate(args);
+	}
+
 	count(args: Prisma.RatingCountArgs): Promise<number> {
 		return this.ratingRepository.count(args);
 	};
