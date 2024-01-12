@@ -14,6 +14,9 @@ const inversify_1 = require("inversify");
 const db_1 = __importDefault(require("../../domain/db"));
 let RatingRepository = class RatingRepository {
     constructor() { }
+    aggregate(args) {
+        return db_1.default.rating.aggregate(args);
+    }
     count(args) {
         return db_1.default.rating.count(args);
     }

@@ -11,7 +11,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OnlineUserService = void 0;
 const inversify_1 = require("inversify");
-const Transaction_1 = require("../../infrastructure/Services/Transaction");
+const Transaction_1 = require("../../infrastructure/services/Transaction");
 let OnlineUserService = class OnlineUserService {
     constructor(onlineUserRepository, userService) {
         this.onlineUserRepository = onlineUserRepository;

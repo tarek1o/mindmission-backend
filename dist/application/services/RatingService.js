@@ -15,6 +15,9 @@ let RatingService = class RatingService {
     constructor(ratingRepository) {
         this.ratingRepository = ratingRepository;
     }
+    aggregate(args) {
+        return this.ratingRepository.aggregate(args);
+    }
     count(args) {
         return this.ratingRepository.count(args);
     }

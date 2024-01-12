@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.QuizService = void 0;
 const client_1 = require("@prisma/client");
 const inversify_1 = require("inversify");
-const Transaction_1 = require("../../infrastructure/Services/Transaction");
+const Transaction_1 = require("../../infrastructure/services/Transaction");
 const APIError_1 = __importDefault(require("../../presentation/errorHandlers/APIError"));
 const HTTPStatusCode_1 = __importDefault(require("../../presentation/enums/HTTPStatusCode"));
 let QuizService = class QuizService {

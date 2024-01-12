@@ -7,6 +7,10 @@ import prisma from "../../domain/db";
 export class RatingRepository implements IRatingRepository {
   constructor() {}
 
+  aggregate(args: Prisma.RatingAggregateArgs): Promise<Prisma.GetRatingAggregateType<Prisma.RatingAggregateArgs>> {
+    return prisma.rating.aggregate(args);
+  }
+
   count(args: Prisma.RatingCountArgs): Promise<number> {
     return prisma.rating.count(args)
   }

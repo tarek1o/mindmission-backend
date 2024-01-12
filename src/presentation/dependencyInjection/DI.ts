@@ -16,6 +16,7 @@ import './classes/articleDI';
 import './classes/quizDI';
 import './classes/paymentDI';
 import './classes/ratingDI';
+import './classes/statisticsDI';
 import './classes/couponDI';
 import './classes/commentDI';
 import './classes/messageDI';
