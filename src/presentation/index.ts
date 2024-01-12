@@ -18,7 +18,7 @@ app.use(express.json({limit: "50kb"}));
 app.use(Logger());
 app.use(compression());
 
-container.get<RealTimeManager>('RealTimeManager');
+// container.get<RealTimeManager>('RealTimeManager');
 
 // upsertMainItemsIntoDB();
 
