@@ -4,7 +4,7 @@ import { IQuizService } from "../interfaces/IServices/IQuizService"
 import { ILessonService } from "../interfaces/IServices/ILessonService";
 import { ICourseService } from "../interfaces/IServices/ICourseService";
 import { IQuizRepository } from "../interfaces/IRepositories/IQuizRepository"
-import { Transaction } from "../../infrastructure/Services/Transaction";
+import { Transaction } from "../../infrastructure/services/Transaction";
 import { CreateQuiz, UpdateQuiz } from "../inputs/quizInput";
 import APIError from "../../presentation/errorHandlers/APIError";
 import HttpStatusCode from "../../presentation/enums/HTTPStatusCode";

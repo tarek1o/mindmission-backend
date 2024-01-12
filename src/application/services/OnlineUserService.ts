@@ -4,7 +4,7 @@ import { IOnlineUserService } from "../interfaces/IServices/IOnlineUserService"
 import { IOnlineUserRepository } from "../interfaces/IRepositories/IOnlineUserRepository"
 import { IUserService } from "../interfaces/IServices/IUserService"
 import { CreateOnlineUser } from "../inputs/onlineUserInput"
-import { Transaction } from "../../infrastructure/Services/Transaction"
+import { Transaction } from "../../infrastructure/services/Transaction"
 
 @injectable()
 export class OnlineUserService implements IOnlineUserService {

@@ -4,7 +4,7 @@ import { CreateArticle, UpdateArticle } from "../inputs/articleInput";
 import { IArticleService } from "../interfaces/IServices/IArticleService"
 import { ILessonService } from "../interfaces/IServices/ILessonService";
 import { ICourseService } from "../interfaces/IServices/ICourseService";
-import { Transaction } from "../../infrastructure/Services/Transaction";
+import { Transaction } from "../../infrastructure/services/Transaction";
 import { IArticleRepository } from "../interfaces/IRepositories/IArticleRepository"
 import APIError from "../../presentation/errorHandlers/APIError";
 import HttpStatusCode from "../../presentation/enums/HTTPStatusCode";

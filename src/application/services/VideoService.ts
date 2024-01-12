@@ -4,7 +4,7 @@ import { IVideoService } from "../interfaces/IServices/IVideoService";
 import { ILessonService } from "../interfaces/IServices/ILessonService";
 import { ICourseService } from "../interfaces/IServices/ICourseService";
 import { IVideoRepository } from "../interfaces/IRepositories/IVideoRepository";
-import { Transaction } from "../../infrastructure/Services/Transaction";
+import { Transaction } from "../../infrastructure/services/Transaction";
 import { CreateVideo, UpdateVideo } from "../inputs/videoInput";
 import APIError from "../../presentation/errorHandlers/APIError";
 import HttpStatusCode from "../../presentation/enums/HTTPStatusCode";
