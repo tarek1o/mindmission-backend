@@ -9,7 +9,7 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class ArticleController {
-	constructor(@inject('IArticleService') private articleService: IArticleService) {}
+	constructor(@inject('IArticleService') private articleService: IArticleService) {};
 
 	getAllArticles = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const findOptions = RequestManager.findOptionsWrapper(request);

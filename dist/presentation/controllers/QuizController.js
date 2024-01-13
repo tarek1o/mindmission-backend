@@ -63,6 +63,7 @@ let QuizController = class QuizController {
             response.status(HTTPStatusCode_1.default.NoContent).json();
         });
     }
+    ;
 };
 exports.QuizController = QuizController;
 exports.QuizController = QuizController = __decorate([

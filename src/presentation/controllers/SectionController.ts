@@ -1,16 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
 import asyncHandler from'express-async-handler';
-import {ISectionService} from "../../application/interfaces/IServices/ISectionService"
+import {ISectionService} from "../../application/interfaces/IServices/ISectionService";
 import { ExtendedRequest } from "../types/ExtendedRequest";
-import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
 import { RequestManager } from "../services/RequestManager";
+import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
 import APIError from "../errorHandlers/APIError";
 import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class SectionController {
-	constructor(@inject('ISectionService') private sectionService: ISectionService) {}
+	constructor(@inject('ISectionService') private sectionService: ISectionService) {};
 
 	getAllSections = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const findOptions = RequestManager.findOptionsWrapper(request);

@@ -9,7 +9,7 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class LogController {
-	constructor(@inject('ILogService') private logService: ILogService) {}
+	constructor(@inject('ILogService') private logService: ILogService) {};
 
 	getAllLogs = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const findOptions = RequestManager.findOptionsWrapper(request);

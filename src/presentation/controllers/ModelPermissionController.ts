@@ -5,7 +5,7 @@ import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
 import HttpStatusCode from '../enums/HTTPStatusCode';
 
 export class ModelPermissionController {
-	constructor() {}
+	constructor() {};
 
 	getAllModelPermissions = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
     response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'All models and their permissions are retrieved successfully', [{

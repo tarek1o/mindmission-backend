@@ -2,13 +2,13 @@ import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
 import asyncHandler from'express-async-handler';
 import { PaymentMethod } from "@prisma/client";
+import {IPaymentService} from "../../application/interfaces/IServices/IPaymentService"
+import { IStudentService } from "../../application/interfaces/IServices/IStudentService";
+import { ILogService } from "../../application/interfaces/IServices/ILogService";
 import { ExtendedPaymentUnit } from "../../application/types/ExtendedPaymentUnit";
 import {PayMob} from "../services/PayMob";
 import {PayPal} from "../services/PayPal";
 import { ExtendedRequest } from "../types/ExtendedRequest";
-import {IPaymentService} from "../../application/interfaces/IServices/IPaymentService"
-import { IStudentService } from "../../application/interfaces/IServices/IStudentService";
-import { ILogService } from "../../application/interfaces/IServices/ILogService";
 import { RequestManager } from "../services/RequestManager";
 import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
 import APIError from "../errorHandlers/APIError";
@@ -16,7 +16,7 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class PaymentController {
-	constructor(@inject('IPaymentService') private paymentService: IPaymentService, @inject('IStudentService') private studentService: IStudentService, @inject('ILogService') private logService: ILogService) {}
+	constructor(@inject('IPaymentService') private paymentService: IPaymentService, @inject('IStudentService') private studentService: IStudentService, @inject('ILogService') private logService: ILogService) {};
 
   private async paymentConfirmation(paymentId: number) {
 		const updatedPayment = await this.paymentService.update({
@@ -63,7 +63,7 @@ export class PaymentController {
 		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The Payment is retrieved successfully', [Payment]));
 	});
 
-	pay = asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => {
+	createPayment = asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
 		const payment = await this.paymentService.create({
 			data: {
@@ -95,23 +95,21 @@ export class PaymentController {
   });
 
   payMobPaymentConfirmation = asyncHandler(async(request: ExtendedRequest, response: Response, next: NextFunction) => {
-    if(PayMob.isValidRequest(request)) {
-      const paymentId = PayMob.getPaymentId(request);
-      await this.paymentConfirmation(paymentId);
-      response.status(HttpStatusCode.OK).send(ResponseFormatter.formate(true, "The payment is confirmed successfully"));
-      return;
+    if(!PayMob.isValidRequest(request)) {
+			throw new APIError("Invalid PayMob Request", HttpStatusCode.Forbidden);
     }
-    response.status(HttpStatusCode.BadRequest).send(ResponseFormatter.formate(false, "Invalid PayMob Request"));
+		const paymentId = PayMob.getPaymentId(request);
+		await this.paymentConfirmation(paymentId);
+		response.status(HttpStatusCode.OK).send(ResponseFormatter.formate(true, "The payment is confirmed successfully"));
   });
 
   payPalPaymentConfirmation = asyncHandler(async(request: ExtendedRequest, response: Response, next: NextFunction) => {
-    if(await PayPal.isValidRequest(request)) {
-      const paymentId = PayPal.getPaymentId(request);
-      await this.paymentConfirmation(paymentId);
-      response.status(HttpStatusCode.OK).send(ResponseFormatter.formate(true, "The payment is confirmed successfully"));
-      return;
+		if(!await PayPal.isValidRequest(request)) {
+			throw new APIError("Invalid PayPal Request", HttpStatusCode.Forbidden);
     }
-    response.status(HttpStatusCode.BadRequest).send(ResponseFormatter.formate(false, "Invalid PayPal Request"));
+		const paymentId = PayPal.getPaymentId(request);
+		await this.paymentConfirmation(paymentId);
+		response.status(HttpStatusCode.OK).send(ResponseFormatter.formate(true, "The payment is confirmed successfully"));
   });
 
 	deletePayment = asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => {

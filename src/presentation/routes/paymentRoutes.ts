@@ -6,7 +6,7 @@ import {Authorization} from '../middlewares/authorization-validator/Authorizatio
 import { PaymentController } from '../controllers/PaymentController';
 
 const {isAuthenticated, isAuthorized} = container.get<Authorization>('Authorization');
-const {getAllPayments, getPaymentById, pay, payMobPaymentConfirmation, payPalPaymentConfirmation, deletePayment} = container.get<PaymentController>('PaymentController');
+const {getAllPayments, getPaymentById, createPayment, payMobPaymentConfirmation, payPalPaymentConfirmation, deletePayment} = container.get<PaymentController>('PaymentController');
 
 const paymentRouter = express.Router();
 
@@ -17,7 +17,7 @@ paymentRouter.route("/get/:id")
 	.post(idValidation, isAuthenticated, isAuthorized('Payment', 'GET'), getPaymentById);
 
 paymentRouter.route("/pay")
-	.post(isAuthenticated, isAuthorized('Payment', 'POST'), payValidation, pay);
+	.post(isAuthenticated, isAuthorized('Payment', 'POST'), payValidation, createPayment);
 
 paymentRouter.route("/paymob/confirm")
 	.post(payMobPaymentConfirmation);

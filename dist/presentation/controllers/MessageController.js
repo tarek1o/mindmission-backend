@@ -15,8 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MessageController = void 0;
 const inversify_1 = require("inversify");
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
-const SendEmail_1 = require("../services/SendEmail");
 const RequestManager_1 = require("../services/RequestManager");
+const SendEmail_1 = require("../services/SendEmail");
 const ResponseFormatter_1 = require("../responseFormatter/ResponseFormatter");
 const APIError_1 = __importDefault(require("../errorHandlers/APIError"));
 const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
@@ -67,7 +67,6 @@ let MessageController = class MessageController {
             if (!message) {
                 throw new APIError_1.default("This message is not exist", HTTPStatusCode_1.default.BadRequest);
             }
-            await SendEmail_1.SendEmail.send({ to: message.email, subject, message: reply });
             const updatedMessage = await this.messageService.update({
                 data: {
                     id: +request.params.id,
@@ -78,6 +77,7 @@ let MessageController = class MessageController {
                 select,
                 include,
             });
+            await SendEmail_1.SendEmail.send({ to: message.email, subject, message: reply });
             this.logService.log("UPDATE", "MESSAGE", Object.assign({ id: +request.params.id }, request.body.input), request.user);
             response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The Message is replied successfully', [updatedMessage]));
         });
@@ -87,6 +87,7 @@ let MessageController = class MessageController {
             response.status(HTTPStatusCode_1.default.NoContent).json();
         });
     }
+    ;
 };
 exports.MessageController = MessageController;
 exports.MessageController = MessageController = __decorate([

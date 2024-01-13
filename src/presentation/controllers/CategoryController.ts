@@ -11,7 +11,7 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class CategoryController {
-	constructor(@inject('ICategoryService') private categoryService: ICategoryService, @inject('ILogService') private logService: ILogService) {}
+	constructor(@inject('ICategoryService') private categoryService: ICategoryService, @inject('ILogService') private logService: ILogService) {};
 
 	getAllCategories = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const findOptions = RequestManager.findOptionsWrapper(request);

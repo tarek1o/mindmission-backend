@@ -62,6 +62,7 @@ let CommentController = class CommentController {
             response.status(HTTPStatusCode_1.default.NoContent).json();
         });
     }
+    ;
 };
 exports.CommentController = CommentController;
 exports.CommentController = CommentController = __decorate([

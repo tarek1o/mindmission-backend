@@ -50,7 +50,7 @@ let StudentController = class StudentController {
             const { courseId } = request.body.input;
             const updatedStudent = await this.studentService.update({
                 data: {
-                    id: (_a = request.user) === null || _a === void 0 ? void 0 : _a.id,
+                    userId: (_a = request.user) === null || _a === void 0 ? void 0 : _a.id,
                     wishlistCourse: {
                         operation: "connect",
                         courseId
@@ -67,7 +67,7 @@ let StudentController = class StudentController {
             const { courseId } = request.body.input;
             const updatedStudent = await this.studentService.update({
                 data: {
-                    id: (_a = request.user) === null || _a === void 0 ? void 0 : _a.id,
+                    userId: (_a = request.user) === null || _a === void 0 ? void 0 : _a.id,
                     wishlistCourse: {
                         operation: "disconnect",
                         courseId
@@ -81,7 +81,7 @@ let StudentController = class StudentController {
         this.rate = (0, express_async_handler_1.default)(async (request, response, next) => {
             var _a;
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
-            const updatedStudent = await this.studentService.update({ data: { id: (_a = request.user) === null || _a === void 0 ? void 0 : _a.id, ratings: Object.assign({}, request.body.input) }, select, include });
+            const updatedStudent = await this.studentService.update({ data: { userId: (_a = request.user) === null || _a === void 0 ? void 0 : _a.id, ratings: Object.assign({}, request.body.input) }, select, include });
             response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The course is enrolled successfully', [updatedStudent]));
         });
     }

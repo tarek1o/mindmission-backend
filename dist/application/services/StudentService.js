@@ -21,8 +21,8 @@ let StudentService = class StudentService {
         this.studentRepository = studentRepository;
         this.courseService = courseService;
     }
-    async isStudentEnrollInThCourse(userId, courseId) {
-        const student = await this.studentRepository.findFirst({
+    isStudentEnrollInThCourse(userId, courseId) {
+        return this.studentRepository.findFirst({
             where: {
                 userId,
                 enrolledCourses: {
@@ -35,10 +35,6 @@ let StudentService = class StudentService {
                 id: true
             }
         });
-        if (student) {
-            return student;
-        }
-        return null;
     }
     ;
     count(args) {
@@ -58,7 +54,7 @@ let StudentService = class StudentService {
     }
     ;
     async update(args) {
-        const { id, enrolledCourses, ratings, wishlistCourse } = args.data;
+        const { userId, enrolledCourses, ratings, wishlistCourse } = args.data;
         let instructorId = 0;
         let studentId = 0;
         if (ratings) {
@@ -73,7 +69,7 @@ let StudentService = class StudentService {
             if (!isCourseExist) {
                 throw new APIError_1.default("This course does not exist", HTTPStatusCode_1.default.BadRequest);
             }
-            const student = await this.isStudentEnrollInThCourse(id, ratings.courseId);
+            const student = await this.isStudentEnrollInThCourse(userId, ratings.courseId);
             if (!student) {
                 throw new APIError_1.default('The current student cannot rate the course not enroll in', HTTPStatusCode_1.default.Forbidden);
             }
@@ -82,7 +78,7 @@ let StudentService = class StudentService {
         }
         return this.studentRepository.update({
             where: {
-                userId: id
+                userId
             },
             data: {
                 ratings: ratings ? {

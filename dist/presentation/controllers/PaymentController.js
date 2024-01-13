@@ -49,7 +49,7 @@ let PaymentController = class PaymentController {
             }
             response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The Payment is retrieved successfully', [Payment]));
         });
-        this.pay = (0, express_async_handler_1.default)(async (request, response, next) => {
+        this.createPayment = (0, express_async_handler_1.default)(async (request, response, next) => {
             var _a;
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
             const payment = await this.paymentService.create({
@@ -75,22 +75,20 @@ let PaymentController = class PaymentController {
             response.status(HTTPStatusCode_1.default.Created).json(res);
         });
         this.payMobPaymentConfirmation = (0, express_async_handler_1.default)(async (request, response, next) => {
-            if (PayMob_1.PayMob.isValidRequest(request)) {
-                const paymentId = PayMob_1.PayMob.getPaymentId(request);
-                await this.paymentConfirmation(paymentId);
-                response.status(HTTPStatusCode_1.default.OK).send(ResponseFormatter_1.ResponseFormatter.formate(true, "The payment is confirmed successfully"));
-                return;
+            if (!PayMob_1.PayMob.isValidRequest(request)) {
+                throw new APIError_1.default("Invalid PayMob Request", HTTPStatusCode_1.default.Forbidden);
             }
-            response.status(HTTPStatusCode_1.default.BadRequest).send(ResponseFormatter_1.ResponseFormatter.formate(false, "Invalid PayMob Request"));
+            const paymentId = PayMob_1.PayMob.getPaymentId(request);
+            await this.paymentConfirmation(paymentId);
+            response.status(HTTPStatusCode_1.default.OK).send(ResponseFormatter_1.ResponseFormatter.formate(true, "The payment is confirmed successfully"));
         });
         this.payPalPaymentConfirmation = (0, express_async_handler_1.default)(async (request, response, next) => {
-            if (await PayPal_1.PayPal.isValidRequest(request)) {
-                const paymentId = PayPal_1.PayPal.getPaymentId(request);
-                await this.paymentConfirmation(paymentId);
-                response.status(HTTPStatusCode_1.default.OK).send(ResponseFormatter_1.ResponseFormatter.formate(true, "The payment is confirmed successfully"));
-                return;
+            if (!await PayPal_1.PayPal.isValidRequest(request)) {
+                throw new APIError_1.default("Invalid PayPal Request", HTTPStatusCode_1.default.Forbidden);
             }
-            response.status(HTTPStatusCode_1.default.BadRequest).send(ResponseFormatter_1.ResponseFormatter.formate(false, "Invalid PayPal Request"));
+            const paymentId = PayPal_1.PayPal.getPaymentId(request);
+            await this.paymentConfirmation(paymentId);
+            response.status(HTTPStatusCode_1.default.OK).send(ResponseFormatter_1.ResponseFormatter.formate(true, "The payment is confirmed successfully"));
         });
         this.deletePayment = (0, express_async_handler_1.default)(async (request, response, next) => {
             const deletedPayment = await this.paymentService.delete(+request.params.id);
@@ -98,6 +96,7 @@ let PaymentController = class PaymentController {
             response.status(HTTPStatusCode_1.default.NoContent).json();
         });
     }
+    ;
     async paymentConfirmation(paymentId) {
         var _a;
         const updatedPayment = await this.paymentService.update({
@@ -108,7 +107,11 @@ let PaymentController = class PaymentController {
             select: {
                 id: true,
                 status: true,
-                studentId: true,
+                student: {
+                    select: {
+                        userId: true
+                    }
+                },
                 paymentUnits: {
                     select: {
                         courseId: true
@@ -116,8 +119,8 @@ let PaymentController = class PaymentController {
                 }
             }
         });
-        const enrolledCourses = (_a = updatedPayment === null || updatedPayment === void 0 ? void 0 : updatedPayment.paymentUnits) === null || _a === void 0 ? void 0 : _a.map(unit => unit.courseId);
-        await this.studentService.update({ data: { id: updatedPayment.studentId, enrolledCourses } });
+        const enrolledCourses = (_a = updatedPayment === null || updatedPayment === void 0 ? void 0 : updatedPayment.paymentUnits) === null || _a === void 0 ? void 0 : _a.map((unit) => unit.courseId);
+        await this.studentService.update({ data: { userId: updatedPayment.student.userId, enrolledCourses } });
     }
     ;
 };

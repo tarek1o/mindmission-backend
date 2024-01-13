@@ -9,7 +9,7 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class QuizController {
-	constructor(@inject('IQuizService') private quizService: IQuizService) {}
+	constructor(@inject('IQuizService') private quizService: IQuizService) {};
 
 	getAllQuizzes = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const findOptions = RequestManager.findOptionsWrapper(request);

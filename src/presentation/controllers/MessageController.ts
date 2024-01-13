@@ -4,15 +4,15 @@ import asyncHandler from'express-async-handler';
 import { ExtendedRequest } from "../types/ExtendedRequest";
 import {IMessageService} from "../../application/interfaces/IServices/IMessageService"
 import { ILogService } from "../../application/interfaces/IServices/ILogService";
-import { SendEmail } from "../services/SendEmail";
 import { RequestManager } from "../services/RequestManager";
+import { SendEmail } from "../services/SendEmail";
 import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
 import APIError from "../errorHandlers/APIError";
 import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class MessageController {
-	constructor(@inject('IMessageService') private messageService: IMessageService, @inject('ILogService') private logService: ILogService) {}
+	constructor(@inject('IMessageService') private messageService: IMessageService, @inject('ILogService') private logService: ILogService) {};
 
 	getAllMessages = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const findOptions = RequestManager.findOptionsWrapper(request);
@@ -59,7 +59,6 @@ export class MessageController {
     if(!message) {
       throw new APIError("This message is not exist", HttpStatusCode.BadRequest);
     }
-    await SendEmail.send({to: message.email, subject, message: reply});
 		const updatedMessage = await this.messageService.update({
 			data: {
 				id: +request.params.id,
@@ -70,6 +69,7 @@ export class MessageController {
 			select,
 			include,
 		});
+    await SendEmail.send({to: message.email, subject, message: reply});
     this.logService.log("UPDATE", "MESSAGE", {id: +request.params.id, ...request.body.input}, request.user);
 		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The Message is replied successfully', [updatedMessage]));
 	});

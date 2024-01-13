@@ -63,6 +63,7 @@ let LessonController = class LessonController {
             response.status(HTTPStatusCode_1.default.NoContent).json();
         });
     }
+    ;
 };
 exports.LessonController = LessonController;
 exports.LessonController = LessonController = __decorate([
