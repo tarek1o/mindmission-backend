@@ -31,7 +31,7 @@ let ArticleService = class ArticleService {
             },
             select: {
                 lessonType: true,
-                chapter: {
+                section: {
                     select: {
                         courseId: true
                     }
@@ -53,7 +53,7 @@ let ArticleService = class ArticleService {
                 readingTime: true,
                 lesson: {
                     select: {
-                        chapter: {
+                        section: {
                             select: {
                                 course: {
                                     select: {
@@ -71,7 +71,7 @@ let ArticleService = class ArticleService {
         if (!article) {
             throw new APIError_1.default("This article is not exist", HTTPStatusCode_1.default.BadRequest);
         }
-        let { id, hours, articles } = article.lesson.chapter.course;
+        let { id, hours, articles } = article.lesson.section.course;
         if (readingTime && operationType === 'update') {
             readingTime -= article.readingTime;
         }

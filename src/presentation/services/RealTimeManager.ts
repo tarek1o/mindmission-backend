@@ -95,7 +95,7 @@ export class RealTimeManager {
       select: {
         lesson: {
           select: {
-            chapter: {
+            section: {
               select: {
                 course: {
                   select: {
@@ -120,7 +120,7 @@ export class RealTimeManager {
         }
       }
     }) as any;
-    return comment?.lesson.chapter.course.instructor.user.onlineUser.map((user: any) => user.socketId);
+    return comment?.lesson.section.course.instructor.user.onlineUser.map((user: any) => user.socketId);
   };
 
   private async notifyForNewComment(comment: Comment, socket: Socket<any>) {

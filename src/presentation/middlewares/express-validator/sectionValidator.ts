@@ -1,7 +1,7 @@
 import {body} from "express-validator";
 import ErrorExpressValidatorHandler from "../../errorHandlers/ErrorExpressValidatorHandler";
 
-export const addChapterValidation = [
+export const addSectionValidation = [
   body("input.title")
     .notEmpty().withMessage("Title is required")
     .isString().withMessage("Title must be string")
@@ -25,7 +25,7 @@ export const addChapterValidation = [
   ErrorExpressValidatorHandler.catchExpressValidatorErrors
 ];
 
-export const updateChapterValidation = [
+export const updateSectionValidation = [
   body("input.title")
     .optional()
     .isString().withMessage("Title must be string")

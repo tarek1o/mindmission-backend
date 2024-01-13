@@ -45,6 +45,7 @@ let LogController = class LogController {
             response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The log is retrieved successfully', [role]));
         });
     }
+    ;
 };
 exports.LogController = LogController;
 exports.LogController = LogController = __decorate([

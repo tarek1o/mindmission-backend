@@ -3,14 +3,14 @@ import { inject, injectable } from "inversify";
 import asyncHandler from'express-async-handler';
 import {IInstructorService} from "../../application/interfaces/IServices/IInstructorService"
 import { ExtendedRequest } from "../types/ExtendedRequest";
-import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
 import { RequestManager } from "../services/RequestManager";
+import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
 import APIError from "../errorHandlers/APIError";
 import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class InstructorController {
-	constructor(@inject('IInstructorService') private instructorService: IInstructorService) {}
+	constructor(@inject('IInstructorService') private instructorService: IInstructorService) {};
 
 	getAllInstructors = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const findOptions = RequestManager.findOptionsWrapper(request);

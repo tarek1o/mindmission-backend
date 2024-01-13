@@ -207,7 +207,7 @@ model Course {
   lectures           Int            @default(0)
   articles           Int            @default(0)
   quizzes            Int            @default(0)
-  chapters           Chapter[]
+  sections           Section[]
   ratings            Rating[]       
   enrolledStudents   Student[]      @relation("enrolled")
   wishlistStudents   Student[]      @relation("wishlist")
@@ -231,7 +231,7 @@ enum CourseLevel {
   ADVANCED
 }
 
-model Chapter {
+model Section {
   id                Int            @id @default(autoincrement())
   title             String
   slug              String
@@ -256,12 +256,12 @@ model Lesson {
   video             Video?
   article           Article?
   quiz              Quiz?
-  chapterId         Int
-  chapter           Chapter        @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  sectionId         Int
+  section           Section        @relation(fields: [sectionId], references: [id], onDelete: Cascade)
   comments          Comment[]
   createdAt         DateTime       @default(now())
   updatedAt         DateTime?      @updatedAt
-  @@unique([order, chapterId])
+  @@unique([order, sectionId])
 }
 
 enum LessonType {

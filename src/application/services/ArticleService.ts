@@ -20,7 +20,7 @@ export class ArticleService implements IArticleService {
 			},
 			select: {
 				lessonType: true,
-				chapter: {
+				section: {
 					select: {
 						courseId: true
 					}
@@ -43,7 +43,7 @@ export class ArticleService implements IArticleService {
 				readingTime: true,
 				lesson: {
 					select: {
-						chapter: {
+						section: {
 							select: {
 								course: {
 									select: {
@@ -61,7 +61,7 @@ export class ArticleService implements IArticleService {
 		if(!article) {
 			throw new APIError("This article is not exist", HttpStatusCode.BadRequest);
 		}
-		let {id, hours, articles} = article.lesson.chapter.course;
+		let {id, hours, articles} = article.lesson.section.course;
 		if(readingTime && operationType === 'update') {
 			readingTime -= article.readingTime;			
 		}

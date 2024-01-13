@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
 import asyncHandler from'express-async-handler';
-import {ICommentService} from "../../application/interfaces/IServices/ICommentService"
+import {ICommentService} from "../../application/interfaces/IServices/ICommentService";
 import { ILogService } from "../../application/interfaces/IServices/ILogService";
 import { ExtendedRequest } from "../types/ExtendedRequest";
 import { RequestManager } from "../services/RequestManager";
@@ -11,7 +11,7 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class CommentController {
-	constructor(@inject('ICommentService') private commentService: ICommentService, @inject('ILogService') private logService: ILogService) {}
+	constructor(@inject('ICommentService') private commentService: ICommentService, @inject('ILogService') private logService: ILogService) {};
 
 	getAllComments = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const findOptions = RequestManager.findOptionsWrapper(request);

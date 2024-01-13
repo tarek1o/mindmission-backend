@@ -70,6 +70,7 @@ let CategoryController = class CategoryController {
             response.status(HTTPStatusCode_1.default.NoContent).json();
         });
     }
+    ;
 };
 exports.CategoryController = CategoryController;
 exports.CategoryController = CategoryController = __decorate([

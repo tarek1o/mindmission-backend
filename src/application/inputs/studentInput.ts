@@ -7,7 +7,7 @@ type Rating = {
 }
 
 export type UpdateStudent = {
-  id: number;
+  userId: number;
   ratings?: Rating;
   enrolledCourses?: number[];
   wishlistCourse?: {

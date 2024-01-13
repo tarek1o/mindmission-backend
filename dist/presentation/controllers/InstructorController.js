@@ -15,8 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.InstructorController = void 0;
 const inversify_1 = require("inversify");
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
-const ResponseFormatter_1 = require("../responseFormatter/ResponseFormatter");
 const RequestManager_1 = require("../services/RequestManager");
+const ResponseFormatter_1 = require("../responseFormatter/ResponseFormatter");
 const APIError_1 = __importDefault(require("../errorHandlers/APIError"));
 const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
 let InstructorController = class InstructorController {
@@ -54,6 +54,7 @@ let InstructorController = class InstructorController {
             response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The instructor is updated successfully', [updatedInstructor]));
         });
     }
+    ;
 };
 exports.InstructorController = InstructorController;
 exports.InstructorController = InstructorController = __decorate([

@@ -32,9 +32,9 @@ export const addLessonValidation = [
       return true;
     }),
 
-  body("input.chapterId")
-    .notEmpty().withMessage("ChapterId is required")
-    .isInt({min: 1}).withMessage("ChapterId must be an integer number more than or equal to 1"),
+  body("input.sectionId")
+    .notEmpty().withMessage("sectionId is required")
+    .isInt({min: 1}).withMessage("sectionId must be an integer number more than or equal to 1"),
   
   ErrorExpressValidatorHandler.catchExpressValidatorErrors
 ];

@@ -144,42 +144,42 @@ exports.updateCourseValidation = [
     (0, express_validator_1.body)("input.discountPercentage")
         .optional()
         .isFloat({ min: 0, max: 100 }).withMessage('Discount Percentage must be a floating number between 0 and 100'),
-    (0, express_validator_1.body)("input.chapters")
+    (0, express_validator_1.body)("input.sections")
         .optional()
-        .isArray({ min: 1 }).withMessage("Chapters must be an array of chapter objects")
-        .custom(chapters => {
-        chapters.forEach((chapter) => {
-            if (!chapter.id) {
-                throw new Error('Any chapter object must have an id property');
+        .isArray({ min: 1 }).withMessage("Sections must be an array of section objects")
+        .custom(sections => {
+        sections.forEach((section) => {
+            if (!section.id) {
+                throw new Error('Any section object must have an id property');
             }
-            if (!chapter.order) {
-                throw new Error('Any chapter object must have an order property');
+            if (!section.order) {
+                throw new Error('Any section object must have an order property');
             }
-            if (!Number.isInteger(chapter.id)) {
+            if (!Number.isInteger(section.id)) {
                 throw new Error('Id value must be an integer number');
             }
-            if (!Number.isInteger(chapter.order)) {
+            if (!Number.isInteger(section.order)) {
                 throw new Error('Order value must be an integer number');
             }
-            if (chapter.id <= 0) {
+            if (section.id <= 0) {
                 throw new Error('Id value must be an integer number more than or equal 1');
             }
-            if (chapter.order <= 0) {
+            if (section.order <= 0) {
                 throw new Error('Order value must be an integer number more than or equal 1');
             }
         });
         return true;
     })
-        .custom(chapters => {
-        const chapterIds = chapters.map((chapter) => chapter.id);
-        const uniqueChapterIds = Array.from(new Set(chapterIds));
-        if (chapterIds.length !== uniqueChapterIds.length) {
-            throw new Error('Please, make sure that any chapter id not repeated');
+        .custom(sections => {
+        const sectionIds = sections.map((section) => section.id);
+        const uniqueSectionIds = Array.from(new Set(sectionIds));
+        if (sectionIds.length !== uniqueSectionIds.length) {
+            throw new Error('Please, make sure that any section id not repeated');
         }
-        const chapterOrders = chapters.map((chapter) => chapter.order);
-        const uniqueChapterOrders = Array.from(new Set(chapterOrders));
-        if (chapterOrders.length !== uniqueChapterOrders.length) {
-            throw new Error('There are more than one chapter with same order');
+        const sectionOrders = sections.map((section) => section.order);
+        const uniqueSectionOrders = Array.from(new Set(sectionOrders));
+        if (sectionOrders.length !== uniqueSectionOrders.length) {
+            throw new Error('There are more than one section with same order');
         }
         return true;
     }),

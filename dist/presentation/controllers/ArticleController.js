@@ -59,6 +59,7 @@ let ArticleController = class ArticleController {
             response.status(HTTPStatusCode_1.default.NoContent).json();
         });
     }
+    ;
 };
 exports.ArticleController = ArticleController;
 exports.ArticleController = ArticleController = __decorate([

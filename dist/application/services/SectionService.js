@@ -12,30 +12,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ChapterService = void 0;
+exports.SectionService = void 0;
 const inversify_1 = require("inversify");
 const slugify_1 = __importDefault(require("slugify"));
 const APIError_1 = __importDefault(require("../../presentation/errorHandlers/APIError"));
 const HTTPStatusCode_1 = __importDefault(require("../../presentation/enums/HTTPStatusCode"));
-let ChapterService = class ChapterService {
-    constructor(chapterRepository, lessonService) {
-        this.chapterRepository = chapterRepository;
+let SectionService = class SectionService {
+    constructor(sectionRepository, lessonService) {
+        this.sectionRepository = sectionRepository;
         this.lessonService = lessonService;
     }
     count(args) {
-        return this.chapterRepository.count(args);
+        return this.sectionRepository.count(args);
     }
     ;
     findMany(args) {
-        return this.chapterRepository.findMany(args);
+        return this.sectionRepository.findMany(args);
     }
     ;
     findUnique(args) {
-        return this.chapterRepository.findUnique(args);
+        return this.sectionRepository.findUnique(args);
     }
     ;
     findFirst(args) {
-        return this.chapterRepository.findFirst(args);
+        return this.sectionRepository.findFirst(args);
     }
     ;
     async create(args) {
@@ -51,9 +51,9 @@ let ChapterService = class ChapterService {
             }
         });
         if (isOrderExist) {
-            throw new APIError_1.default('There is already chapter with the same order', HTTPStatusCode_1.default.BadRequest);
+            throw new APIError_1.default('There is already section with the same order', HTTPStatusCode_1.default.BadRequest);
         }
-        return this.chapterRepository.create({
+        return this.sectionRepository.create({
             data: {
                 title,
                 slug,
@@ -75,15 +75,15 @@ let ChapterService = class ChapterService {
         if (lessons) {
             const count = await this.lessonService.count({
                 where: {
-                    chapterId: id
+                    sectionId: id
                 },
             });
             if (count !== lessons.length) {
-                throw new APIError_1.default("You should send all chapter's lessons during update the order of lessons", HTTPStatusCode_1.default.BadRequest);
+                throw new APIError_1.default("You should send all section's lessons during update the order of lessons", HTTPStatusCode_1.default.BadRequest);
             }
         }
         ;
-        return this.chapterRepository.update({
+        return this.sectionRepository.update({
             where: {
                 id: id
             },
@@ -109,14 +109,14 @@ let ChapterService = class ChapterService {
         });
     }
     delete(id) {
-        return this.chapterRepository.delete(id);
+        return this.sectionRepository.delete(id);
     }
     ;
 };
-exports.ChapterService = ChapterService;
-exports.ChapterService = ChapterService = __decorate([
+exports.SectionService = SectionService;
+exports.SectionService = SectionService = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)('IChapterRepository')),
+    __param(0, (0, inversify_1.inject)('ISectionRepository')),
     __param(1, (0, inversify_1.inject)('ILessonService'))
-], ChapterService);
-//# sourceMappingURL=ChapterService.js.map
+], SectionService);
+//# sourceMappingURL=SectionService.js.map

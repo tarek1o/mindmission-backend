@@ -47,7 +47,7 @@ let QuizService = class QuizService {
                 requiredTime: true,
                 lesson: {
                     select: {
-                        chapter: {
+                        section: {
                             select: {
                                 course: {
                                     select: {
@@ -65,7 +65,7 @@ let QuizService = class QuizService {
         if (!quiz) {
             throw new APIError_1.default("This quiz is not exist", HTTPStatusCode_1.default.BadRequest);
         }
-        let { id, hours, quizzes } = quiz.lesson.chapter.course;
+        let { id, hours, quizzes } = quiz.lesson.section.course;
         if (requiredTime && operationType === 'update') {
             requiredTime -= quiz.requiredTime;
         }

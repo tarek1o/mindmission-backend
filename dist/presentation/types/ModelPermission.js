@@ -12,7 +12,7 @@ exports.AllowedModels = {
     Wishlists: 'wishlist',
     Payments: 'payment',
     Ratings: 'rating',
-    Chapters: 'chapter',
+    Sections: 'section',
     Lessons: 'lesson',
     Videos: 'video',
     Articles: 'article',

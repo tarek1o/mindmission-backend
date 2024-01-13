@@ -9,21 +9,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ChapterRepository = void 0;
+exports.SectionRepository = void 0;
 const inversify_1 = require("inversify");
 const db_1 = __importDefault(require("../../domain/db"));
 const BaseRepository_1 = require("./Base/BaseRepository");
-let ChapterRepository = class ChapterRepository extends BaseRepository_1.BaseRepository {
+let SectionRepository = class SectionRepository extends BaseRepository_1.BaseRepository {
     constructor() {
-        super("Chapter");
+        super("Section");
     }
     findFirst(args) {
-        return db_1.default.chapter.findFirst(args);
+        return db_1.default.section.findFirst(args);
     }
     ;
 };
-exports.ChapterRepository = ChapterRepository;
-exports.ChapterRepository = ChapterRepository = __decorate([
+exports.SectionRepository = SectionRepository;
+exports.SectionRepository = SectionRepository = __decorate([
     (0, inversify_1.injectable)()
-], ChapterRepository);
-//# sourceMappingURL=ChapterRepository.js.map
+], SectionRepository);
+//# sourceMappingURL=SectionRepository.js.map

@@ -72,6 +72,7 @@ let CouponController = class CouponController {
             response.status(HTTPStatusCode_1.default.NoContent).json();
         });
     }
+    ;
 };
 exports.CouponController = CouponController;
 exports.CouponController = CouponController = __decorate([

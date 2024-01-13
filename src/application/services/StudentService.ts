@@ -12,8 +12,8 @@ import HttpStatusCode from "../../presentation/enums/HTTPStatusCode";
 export class StudentService implements IStudentService {
 	constructor(@inject('IStudentRepository') private studentRepository: IStudentRepository, @inject("ICourseService") private courseService: CourseService) {}
 
-	private async isStudentEnrollInThCourse(userId: number, courseId: number): Promise<Student | null> {
-		const student = await this.studentRepository.findFirst({
+	private isStudentEnrollInThCourse(userId: number, courseId: number): Promise<Student | null> {
+		return this.studentRepository.findFirst({
 			where: {
 				userId,
 				enrolledCourses: {
@@ -26,10 +26,6 @@ export class StudentService implements IStudentService {
 				id: true
 			}
 		});
-		if(student) {
-			return student;
-		}
-		return null;
 	};
 
 	count(args: Prisma.StudentCountArgs): Promise<number> {
@@ -49,7 +45,7 @@ export class StudentService implements IStudentService {
 	};
 
 	async update(args: {data: UpdateStudent, select?: Prisma.StudentSelect, include?: Prisma.StudentInclude}): Promise<ExtendedStudent> {
-		const {id, enrolledCourses, ratings, wishlistCourse} = args.data;
+		const {userId, enrolledCourses, ratings, wishlistCourse} = args.data;
 		let instructorId = 0;
 		let studentId = 0;
 		if(ratings) {
@@ -64,7 +60,7 @@ export class StudentService implements IStudentService {
 			if(!isCourseExist) {
 				throw new APIError("This course does not exist", HttpStatusCode.BadRequest);
 			}
-			const student = await this.isStudentEnrollInThCourse(id, ratings.courseId);
+			const student = await this.isStudentEnrollInThCourse(userId, ratings.courseId);
 			if(!student) {
 				throw new APIError('The current student cannot rate the course not enroll in', HttpStatusCode.Forbidden)
 			}
@@ -73,7 +69,7 @@ export class StudentService implements IStudentService {
 		}
 		return this.studentRepository.update({
 			where: {
-				userId: id
+				userId
 			},
 			data: {
 				ratings: ratings ? {

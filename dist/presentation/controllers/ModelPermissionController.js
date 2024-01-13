@@ -17,6 +17,7 @@ class ModelPermissionController {
                 }]));
         });
     }
+    ;
 }
 exports.ModelPermissionController = ModelPermissionController;
 //# sourceMappingURL=ModelPermissionController.js.map

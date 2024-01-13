@@ -4,14 +4,14 @@ import asyncHandler from'express-async-handler';
 import { ICourseService } from "../../application/interfaces/IServices/ICourseService";
 import { ILogService } from "../../application/interfaces/IServices/ILogService";
 import { ExtendedRequest } from "../types/ExtendedRequest";
-import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
 import { RequestManager } from "../services/RequestManager";
+import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
 import APIError from "../errorHandlers/APIError";
 import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class CourseController {
-	constructor(@inject('ICourseService') private courseService: ICourseService, @inject('ILogService') private logService: ILogService) {}
+	constructor(@inject('ICourseService') private courseService: ICourseService, @inject('ILogService') private logService: ILogService) {};
 
 	courseAggregates = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const {where, skip, take, orderBy} = RequestManager.findOptionsWrapper(request);

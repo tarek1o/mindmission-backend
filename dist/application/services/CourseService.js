@@ -18,10 +18,10 @@ const slugify_1 = __importDefault(require("slugify"));
 const APIError_1 = __importDefault(require("../../presentation/errorHandlers/APIError"));
 const HTTPStatusCode_1 = __importDefault(require("../../presentation/enums/HTTPStatusCode"));
 let CourseService = class CourseService {
-    constructor(courseRepository, categoryService, chapterService) {
+    constructor(courseRepository, categoryService, sectionService) {
         this.courseRepository = courseRepository;
         this.categoryService = categoryService;
-        this.chapterService = chapterService;
+        this.sectionService = sectionService;
     }
     async isTrueTopic(id) {
         const topic = await this.categoryService.findUnique({
@@ -88,19 +88,19 @@ let CourseService = class CourseService {
     }
     ;
     async update(args) {
-        let { id, title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, hours, lectures, articles, quizzes, isApproved, isDraft, chapters, topicId } = args.data;
+        let { id, title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, hours, lectures, articles, quizzes, isApproved, isDraft, sections: sections, topicId } = args.data;
         const slug = title ? (0, slugify_1.default)(title.toString(), { lower: true, trim: true }) : undefined;
         if (topicId && !await this.isTrueTopic(topicId)) {
             throw new APIError_1.default("This topic may be not exist or may be exist but not a topic", HTTPStatusCode_1.default.BadRequest);
         }
-        if (chapters) {
-            const count = await this.chapterService.count({
+        if (sections) {
+            const count = await this.sectionService.count({
                 where: {
                     courseId: id
                 },
             });
-            if (count !== chapters.length) {
-                throw new APIError_1.default("You should send all course's chapters during update the order of chapters", HTTPStatusCode_1.default.BadRequest);
+            if (count !== sections.length) {
+                throw new APIError_1.default("You should send all course's sections during update the order of sections", HTTPStatusCode_1.default.BadRequest);
             }
         }
         return this.courseRepository.update({
@@ -125,8 +125,8 @@ let CourseService = class CourseService {
                 quizzes,
                 isApproved: isApproved || undefined,
                 isDraft: isDraft || undefined,
-                chapters: chapters ? {
-                    update: chapters.map(({ id, order }) => {
+                sections: sections ? {
+                    update: sections.map(({ id, order }) => {
                         return {
                             where: {
                                 id
@@ -158,6 +158,6 @@ exports.CourseService = CourseService = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)('ICourseRepository')),
     __param(1, (0, inversify_1.inject)('ICategoryService')),
-    __param(2, (0, inversify_1.inject)('IChapterService'))
+    __param(2, (0, inversify_1.inject)('ISectionService'))
 ], CourseService);
 //# sourceMappingURL=CourseService.js.map

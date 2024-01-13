@@ -104,7 +104,7 @@ let RealTimeManager = class RealTimeManager {
             select: {
                 lesson: {
                     select: {
-                        chapter: {
+                        section: {
                             select: {
                                 course: {
                                     select: {
@@ -129,7 +129,7 @@ let RealTimeManager = class RealTimeManager {
                 }
             }
         });
-        return comment === null || comment === void 0 ? void 0 : comment.lesson.chapter.course.instructor.user.onlineUser.map((user) => user.socketId);
+        return comment === null || comment === void 0 ? void 0 : comment.lesson.section.course.instructor.user.onlineUser.map((user) => user.socketId);
     }
     ;
     async notifyForNewComment(comment, socket) {

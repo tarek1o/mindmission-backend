@@ -3,10 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateChapterValidation = exports.addChapterValidation = void 0;
+exports.updateSectionValidation = exports.addSectionValidation = void 0;
 const express_validator_1 = require("express-validator");
 const ErrorExpressValidatorHandler_1 = __importDefault(require("../../errorHandlers/ErrorExpressValidatorHandler"));
-exports.addChapterValidation = [
+exports.addSectionValidation = [
     (0, express_validator_1.body)("input.title")
         .notEmpty().withMessage("Title is required")
         .isString().withMessage("Title must be string")
@@ -25,7 +25,7 @@ exports.addChapterValidation = [
         .isInt({ min: 1 }).withMessage("CourseId must be an integer number more than or equal 1"),
     ErrorExpressValidatorHandler_1.default.catchExpressValidatorErrors
 ];
-exports.updateChapterValidation = [
+exports.updateSectionValidation = [
     (0, express_validator_1.body)("input.title")
         .optional()
         .isString().withMessage("Title must be string")
@@ -77,4 +77,4 @@ exports.updateChapterValidation = [
     }),
     ErrorExpressValidatorHandler_1.default.catchExpressValidatorErrors
 ];
-//# sourceMappingURL=chapterValidator.js.map
+//# sourceMappingURL=sectionValidator.js.map

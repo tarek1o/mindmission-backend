@@ -4,14 +4,14 @@ import slugify from "slugify";
 import { ICourseRepository } from "../interfaces/IRepositories/ICourseRepository";
 import { ICourseService } from "../interfaces/IServices/ICourseService";
 import { ICategoryService } from "../interfaces/IServices/ICategoryService";
-import { IChapterService } from "../interfaces/IServices/IChapterService";
+import { ISectionService } from "../interfaces/IServices/ISectionService";
 import { CreateCourse, UpdateCourse } from "../inputs/courseInput";
 import APIError from "../../presentation/errorHandlers/APIError";
 import HttpStatusCode from "../../presentation/enums/HTTPStatusCode";
 
 @injectable()
 export class CourseService implements ICourseService {
-	constructor(@inject('ICourseRepository') private courseRepository: ICourseRepository, @inject('ICategoryService') private categoryService: ICategoryService, @inject('IChapterService') private chapterService: IChapterService) {}
+	constructor(@inject('ICourseRepository') private courseRepository: ICourseRepository, @inject('ICategoryService') private categoryService: ICategoryService, @inject('ISectionService') private sectionService: ISectionService) {}
 
 	async isTrueTopic(id: number): Promise<boolean> {
 		const topic = await this.categoryService.findUnique({
@@ -81,20 +81,20 @@ export class CourseService implements ICourseService {
 	};
 
 	async update(args: {data: UpdateCourse, select?: Prisma.CourseSelect, include?: Prisma.CourseInclude}): Promise<Course> {
-    let {id, title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, hours, lectures, articles, quizzes, isApproved, isDraft, chapters, topicId} = args.data;
+    let {id, title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, hours, lectures, articles, quizzes, isApproved, isDraft, sections: sections, topicId} = args.data;
 		const slug = title ? slugify(title.toString(), {lower: true, trim: true}) : undefined;
 		if(topicId && !await this.isTrueTopic(topicId)) {
 			throw new APIError("This topic may be not exist or may be exist but not a topic", HttpStatusCode.BadRequest);
 		}
-		if(chapters) {
-			const count = await this.chapterService.count({
+		if(sections) {
+			const count = await this.sectionService.count({
 				where: {
 					courseId: id
 				},
 			});
 
-			if(count !== chapters.length) {
-				throw new APIError("You should send all course's chapters during update the order of chapters", HttpStatusCode.BadRequest);
+			if(count !== sections.length) {
+				throw new APIError("You should send all course's sections during update the order of sections", HttpStatusCode.BadRequest);
 			}
 		}
 		return this.courseRepository.update({
@@ -119,8 +119,8 @@ export class CourseService implements ICourseService {
 				quizzes,
         isApproved: isApproved || undefined,
 				isDraft: isDraft || undefined,
-				chapters: chapters ? {
-					update: chapters.map(({id, order}) => {
+				sections: sections ? {
+					update: sections.map(({id, order}) => {
 						return {
 							where: {
 								id

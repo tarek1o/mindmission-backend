@@ -9,7 +9,7 @@ import './classes/categoryDI';
 import './classes/instructorDI';
 import './classes/studentDI';
 import './classes/courseDI';
-import './classes/chapterDI';
+import './classes/sectionDI';
 import './classes/lessonDI';
 import './classes/videoDI';
 import './classes/articleDI';

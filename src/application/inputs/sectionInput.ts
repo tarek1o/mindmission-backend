@@ -1,11 +1,11 @@
-export type CreateChapter = {
+export type CreateSection = {
   title: string;
   description?: string;
   order: number;
   courseId: number
 }
 
-export type UpdateChapter = {
+export type UpdateSection = {
   id: number;
   title?: string;
   description?: string;
