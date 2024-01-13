@@ -34,12 +34,12 @@ let LessonService = class LessonService {
     }
     ;
     async create(args) {
-        const { title, order, lessonType, attachment, isFree, chapterId } = args.data;
+        const { title, order, lessonType, attachment, isFree, sectionId } = args.data;
         const slug = (0, slugify_1.default)(args.data.title.toString(), { lower: true, trim: true });
         const isOrderIsFound = await this.lessonRepository.findFirst({
             where: {
                 order,
-                chapterId
+                sectionId
             },
             select: {
                 id: true
@@ -56,9 +56,9 @@ let LessonService = class LessonService {
                 lessonType,
                 attachment,
                 isFree,
-                chapter: {
+                section: {
                     connect: {
-                        id: chapterId
+                        id: sectionId
                     }
                 }
             },

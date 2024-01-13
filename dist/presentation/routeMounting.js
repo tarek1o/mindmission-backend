@@ -13,7 +13,7 @@ const categoryRoutes_1 = __importDefault(require("./routes/categoryRoutes"));
 const instructorRoutes_1 = __importDefault(require("./routes/instructorRoutes"));
 const studentRoutes_1 = __importDefault(require("./routes/studentRoutes"));
 const courseRoutes_1 = __importDefault(require("./routes/courseRoutes"));
-const chapterRoutes_1 = __importDefault(require("./routes/chapterRoutes"));
+const sectionRoutes_1 = __importDefault(require("./routes/sectionRoutes"));
 const lessonRoutes_1 = __importDefault(require("./routes/lessonRoutes"));
 const articleRoutes_1 = __importDefault(require("./routes/articleRoutes"));
 const videoRoutes_1 = __importDefault(require("./routes/videoRoutes"));
@@ -34,7 +34,7 @@ const routeMounting = (app) => {
     app.use(`${process.env.apiVersion}/instructors`, instructorRoutes_1.default);
     app.use(`${process.env.apiVersion}/students`, studentRoutes_1.default);
     app.use(`${process.env.apiVersion}/courses`, courseRoutes_1.default);
-    app.use(`${process.env.apiVersion}/chapters`, chapterRoutes_1.default);
+    app.use(`${process.env.apiVersion}/sections`, sectionRoutes_1.default);
     app.use(`${process.env.apiVersion}/lessons`, lessonRoutes_1.default);
     app.use(`${process.env.apiVersion}/articles`, articleRoutes_1.default);
     app.use(`${process.env.apiVersion}/videos`, videoRoutes_1.default);

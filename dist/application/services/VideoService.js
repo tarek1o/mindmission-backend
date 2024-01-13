@@ -47,7 +47,7 @@ let VideoService = class VideoService {
                 time: true,
                 lesson: {
                     select: {
-                        chapter: {
+                        section: {
                             select: {
                                 course: {
                                     select: {
@@ -65,7 +65,7 @@ let VideoService = class VideoService {
         if (!video) {
             throw new APIError_1.default("This video is not exist", HTTPStatusCode_1.default.BadRequest);
         }
-        let { id, hours, lectures } = video.lesson.chapter.course;
+        let { id, hours, lectures } = video.lesson.section.course;
         if (time && operationType === 'update') {
             time -= video.time;
         }

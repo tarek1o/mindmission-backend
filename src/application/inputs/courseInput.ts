@@ -33,6 +33,6 @@ export type UpdateCourse = {
   lectures?: number;
   articles?: number;
   quizzes?: number;
-  chapters?: {id: number, order: number}[];
+  sections?: {id: number, order: number}[];
   topicId?: number;
 }

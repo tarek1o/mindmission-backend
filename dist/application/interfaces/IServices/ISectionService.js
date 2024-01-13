@@ -1,3 +1,3 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-//# sourceMappingURL=IChapterService.js.map
+//# sourceMappingURL=ISectionService.js.map

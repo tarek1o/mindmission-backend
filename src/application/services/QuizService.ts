@@ -38,7 +38,7 @@ export class QuizService implements IQuizService {
 				requiredTime: true,
 				lesson: {
 					select: {
-						chapter: {
+						section: {
 							select: {
 								course: {
 									select: {
@@ -56,7 +56,7 @@ export class QuizService implements IQuizService {
 		if(!quiz) {
 			throw new APIError("This quiz is not exist", HttpStatusCode.BadRequest);
 		}
-		let {id, hours, quizzes} = quiz.lesson.chapter.course;
+		let {id, hours, quizzes} = quiz.lesson.section.course;
 		if(requiredTime && operationType === 'update') {
 			requiredTime -= quiz.requiredTime;			
 		}

@@ -6,7 +6,7 @@ export type CreateLesson = {
   attachment?: string; 
   order: number;
   lessonType: LessonType;
-  chapterId: number
+  sectionId: number
 };
 
 export type UpdateLesson = {

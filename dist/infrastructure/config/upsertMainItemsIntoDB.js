@@ -31,7 +31,7 @@ const upsertMainItemsIntoDB = async () => {
             permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
         },
         {
-            modelName: ModelPermission_1.AllowedModels.Chapters,
+            modelName: ModelPermission_1.AllowedModels.Sections,
             permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
         },
         {
@@ -81,7 +81,7 @@ const upsertMainItemsIntoDB = async () => {
             permissions: [ModelPermission_1.Permissions.Read]
         },
         {
-            modelName: ModelPermission_1.AllowedModels.Chapters,
+            modelName: ModelPermission_1.AllowedModels.Sections,
             permissions: [ModelPermission_1.Permissions.Read]
         },
         {
@@ -135,7 +135,7 @@ const upsertMainItemsIntoDB = async () => {
             permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
         },
         {
-            modelName: ModelPermission_1.AllowedModels.Chapters,
+            modelName: ModelPermission_1.AllowedModels.Sections,
             permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
         },
         {

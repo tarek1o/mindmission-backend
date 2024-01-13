@@ -37,7 +37,7 @@ export class VideoService implements IVideoService {
 				time: true,
 				lesson: {
 					select: {
-						chapter: {
+						section: {
 							select: {
 								course: {
 									select: {
@@ -55,7 +55,7 @@ export class VideoService implements IVideoService {
 		if(!video) {
 			throw new APIError("This video is not exist", HttpStatusCode.BadRequest);
 		}
-		let {id, hours, lectures} = video.lesson.chapter.course;
+		let {id, hours, lectures} = video.lesson.section.course;
 		if(time && operationType === 'update') {
 			time -= video.time;			
 		}
