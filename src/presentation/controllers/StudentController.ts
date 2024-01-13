@@ -41,7 +41,7 @@ export class StudentController {
 		const {courseId} = request.body.input;
 		const updatedStudent = await this.studentService.update({
 			data: {
-				id: request.user?.id as number, 
+				userId: request.user?.id as number, 
 				wishlistCourse: {
 					operation: "connect",
 					courseId
@@ -58,7 +58,7 @@ export class StudentController {
 		const {courseId} = request.body.input;
 		const updatedStudent = await this.studentService.update({
 			data: {
-				id: request.user?.id as number, 
+				userId: request.user?.id as number, 
 				wishlistCourse: {
 					operation: "disconnect",
 					courseId
@@ -72,7 +72,7 @@ export class StudentController {
 
 	rate = asyncHandler(async(request: ExtendedRequest, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const updatedStudent = await this.studentService.update({data: {id: request.user?.id as number, ratings: {...request.body.input}}, select, include});
+		const updatedStudent = await this.studentService.update({data: {userId: request.user?.id as number, ratings: {...request.body.input}}, select, include});
 		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The course is enrolled successfully', [updatedStudent]));
 	});
 }

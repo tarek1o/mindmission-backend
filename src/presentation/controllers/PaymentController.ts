@@ -27,16 +27,20 @@ export class PaymentController {
 			select: {
 				id: true,
 				status: true,
-				studentId: true,
+				student: {
+					select: {
+						userId: true
+					}
+				},
 				paymentUnits: {
 					select: {
 						courseId: true
 					}
 				}
 			}
-		});
-		const enrolledCourses = updatedPayment?.paymentUnits?.map(unit => unit.courseId);
-		await this.studentService.update({data: {id: updatedPayment.studentId, enrolledCourses}});
+		}) as any;
+		const enrolledCourses = updatedPayment?.paymentUnits?.map((unit: any) => unit.courseId);
+		await this.studentService.update({data: {userId: updatedPayment.student.userId, enrolledCourses}});
 	};
 
 	getAllPayments = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
