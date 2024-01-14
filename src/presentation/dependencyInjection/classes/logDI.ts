@@ -5,6 +5,6 @@ import { ILogService } from '../../../application/interfaces/IServices/ILogServi
 import { LogService } from '../../../application/services/LogService';
 import { LogController } from '../../controllers/LogController';
 
-container.bind<ILogRepository>('ILogRepository').to(LogRepository).inRequestScope();
-container.bind<ILogService>('ILogService').to(LogService).inRequestScope();
-container.bind<LogController>('LogController').to(LogController).inRequestScope();
+container.bind<ILogRepository>('ILogRepository').to(LogRepository).inSingletonScope();
+container.bind<ILogService>('ILogService').to(LogService).inSingletonScope();
+container.bind<LogController>('LogController').to(LogController).inSingletonScope();

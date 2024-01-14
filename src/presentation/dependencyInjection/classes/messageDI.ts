@@ -5,6 +5,6 @@ import { IMessageService } from '../../../application/interfaces/IServices/IMess
 import { MessageService } from '../../../application/services/MessageService';
 import { MessageController } from '../../controllers/MessageController';
 
-container.bind<IMessageRepository>('IMessageRepository').to(MessageRepository).inRequestScope();
-container.bind<IMessageService>('IMessageService').to(MessageService).inRequestScope();
-container.bind<MessageController>('MessageController').to(MessageController).inRequestScope();
+container.bind<IMessageRepository>('IMessageRepository').to(MessageRepository).inSingletonScope();
+container.bind<IMessageService>('IMessageService').to(MessageService).inSingletonScope();
+container.bind<MessageController>('MessageController').to(MessageController).inSingletonScope();

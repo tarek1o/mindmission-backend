@@ -5,6 +5,6 @@ import { ICouponService } from '../../../application/interfaces/IServices/ICoupo
 import { CouponService } from '../../../application/services/CouponService';
 import { CouponController } from '../../controllers/CouponController';
 
-container.bind<ICouponRepository>('ICouponRepository').to(CouponRepository).inRequestScope();
-container.bind<ICouponService>('ICouponService').to(CouponService).inRequestScope();
-container.bind<CouponController>('CouponController').to(CouponController).inRequestScope();
+container.bind<ICouponRepository>('ICouponRepository').to(CouponRepository).inSingletonScope();
+container.bind<ICouponService>('ICouponService').to(CouponService).inSingletonScope();
+container.bind<CouponController>('CouponController').to(CouponController).inSingletonScope();

@@ -5,6 +5,6 @@ import { ISectionService } from '../../../application/interfaces/IServices/ISect
 import { SectionService } from '../../../application/services/SectionService';
 import { SectionController } from '../../controllers/SectionController';
 
-container.bind<ISectionRepository>('ISectionRepository').to(SectionRepository).inRequestScope();
-container.bind<ISectionService>('ISectionService').to(SectionService).inRequestScope();
-container.bind<SectionController>('SectionController').to(SectionController).inRequestScope();
+container.bind<ISectionRepository>('ISectionRepository').to(SectionRepository).inSingletonScope();
+container.bind<ISectionService>('ISectionService').to(SectionService).inSingletonScope();
+container.bind<SectionController>('SectionController').to(SectionController).inSingletonScope();

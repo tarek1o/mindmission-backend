@@ -5,6 +5,6 @@ import { IArticleService } from '../../../application/interfaces/IServices/IArti
 import { ArticleService } from '../../../application/services/ArticleService';
 import { ArticleController } from '../../controllers/ArticleController';
 
-container.bind<IArticleRepository>('IArticleRepository').to(ArticleRepository).inRequestScope();
-container.bind<IArticleService>('IArticleService').to(ArticleService).inRequestScope();
-container.bind<ArticleController>('ArticleController').to(ArticleController).inRequestScope();
+container.bind<IArticleRepository>('IArticleRepository').to(ArticleRepository).inSingletonScope();
+container.bind<IArticleService>('IArticleService').to(ArticleService).inSingletonScope();
+container.bind<ArticleController>('ArticleController').to(ArticleController).inSingletonScope();

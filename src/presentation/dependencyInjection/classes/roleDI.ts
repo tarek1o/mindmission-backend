@@ -5,6 +5,6 @@ import { IRoleRepository } from '../../../application/interfaces/IRepositories/I
 import { IRoleService } from '../../../application/interfaces/IServices/IRoleService';
 import { RoleController } from '../../controllers/RoleController';
 
-container.bind<IRoleRepository>('IRoleRepository').to(RoleRepository).inRequestScope();
-container.bind<IRoleService>('IRoleService').to(RoleService).inRequestScope();
-container.bind<RoleController>('RoleController').to(RoleController).inRequestScope();
+container.bind<IRoleRepository>('IRoleRepository').to(RoleRepository).inSingletonScope();
+container.bind<IRoleService>('IRoleService').to(RoleService).inSingletonScope();
+container.bind<RoleController>('RoleController').to(RoleController).inSingletonScope();

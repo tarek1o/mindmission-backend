@@ -4,5 +4,5 @@ import { OnlineUserRepository } from '../../../infrastructure/repositories/Onlin
 import { IOnlineUserService } from '../../../application/interfaces/IServices/IOnlineUserService';
 import { OnlineUserService } from '../../../application/services/OnlineUserService';
 
-container.bind<IOnlineUserRepository>('IOnlineUserRepository').to(OnlineUserRepository).inRequestScope();
-container.bind<IOnlineUserService>('IOnlineUserService').to(OnlineUserService).inRequestScope();
+container.bind<IOnlineUserRepository>('IOnlineUserRepository').to(OnlineUserRepository).inSingletonScope();
+container.bind<IOnlineUserService>('IOnlineUserService').to(OnlineUserService).inSingletonScope();
