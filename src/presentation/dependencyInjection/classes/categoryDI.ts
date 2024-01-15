@@ -5,6 +5,6 @@ import { ICategoryService } from '../../../application/interfaces/IServices/ICat
 import { CategoryService } from '../../../application/services/CategoryService';
 import { CategoryController } from '../../controllers/CategoryController';
 
-container.bind<ICategoryRepository>('ICategoryRepository').to(CategoryRepository).inRequestScope();
-container.bind<ICategoryService>('ICategoryService').to(CategoryService).inRequestScope();
-container.bind<CategoryController>('CategoryController').to(CategoryController).inRequestScope();
+container.bind<ICategoryRepository>('ICategoryRepository').to(CategoryRepository).inSingletonScope();
+container.bind<ICategoryService>('ICategoryService').to(CategoryService).inSingletonScope();
+container.bind<CategoryController>('CategoryController').to(CategoryController).inSingletonScope();

@@ -1,1 +1,1 @@
-{"version":3,"file":"authorizationDI.js","sourceRoot":"","sources":["../../../../src/presentation/dependencyInjection/classes/authorizationDI.ts"],"names":[],"mappings":";;AAAA,0DAAqD;AACrD,6GAAiG;AAEjG,uBAAS,CAAC,IAAI,CAAgB,eAAe,CAAC,CAAC,EAAE,CAAC,sCAAa,CAAC,CAAC,cAAc,EAAE,CAAC"}
+{"version":3,"file":"authorizationDI.js","sourceRoot":"","sources":["../../../../src/presentation/dependencyInjection/classes/authorizationDI.ts"],"names":[],"mappings":";;AAAA,0DAAqD;AACrD,6GAAiG;AAEjG,uBAAS,CAAC,IAAI,CAAgB,eAAe,CAAC,CAAC,EAAE,CAAC,sCAAa,CAAC,CAAC,gBAAgB,EAAE,CAAC"}

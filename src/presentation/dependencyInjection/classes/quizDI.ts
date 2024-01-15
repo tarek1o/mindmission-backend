@@ -5,6 +5,6 @@ import { IQuizService } from '../../../application/interfaces/IServices/IQuizSer
 import { QuizService } from '../../../application/services/QuizService';
 import { QuizController } from '../../controllers/QuizController';
 
-container.bind<IQuizRepository>('IQuizRepository').to(QuizRepository).inRequestScope();
-container.bind<IQuizService>('IQuizService').to(QuizService).inRequestScope();
-container.bind<QuizController>('QuizController').to(QuizController).inRequestScope();
+container.bind<IQuizRepository>('IQuizRepository').to(QuizRepository).inSingletonScope();
+container.bind<IQuizService>('IQuizService').to(QuizService).inSingletonScope();
+container.bind<QuizController>('QuizController').to(QuizController).inSingletonScope();

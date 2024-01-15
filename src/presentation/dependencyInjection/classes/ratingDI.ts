@@ -5,6 +5,6 @@ import { IRatingService } from '../../../application/interfaces/IServices/IRatin
 import { RatingService } from '../../../application/services/RatingService';
 import { RatingController } from '../../controllers/RatingController';
 
-container.bind<IRatingRepository>('IRatingRepository').to(RatingRepository).inRequestScope();
-container.bind<IRatingService>('IRatingService').to(RatingService).inRequestScope();
-container.bind<RatingController>('RatingController').to(RatingController).inRequestScope();
+container.bind<IRatingRepository>('IRatingRepository').to(RatingRepository).inSingletonScope();
+container.bind<IRatingService>('IRatingService').to(RatingService).inSingletonScope();
+container.bind<RatingController>('RatingController').to(RatingController).inSingletonScope();

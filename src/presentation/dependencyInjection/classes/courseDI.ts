@@ -5,6 +5,6 @@ import { ICourseService } from '../../../application/interfaces/IServices/ICours
 import { CourseService } from '../../../application/services/CourseService';
 import { CourseController } from '../../controllers/CourseController';
 
-container.bind<ICourseRepository>('ICourseRepository').to(CourseRepository).inRequestScope();
-container.bind<ICourseService>('ICourseService').to(CourseService).inRequestScope();
-container.bind<CourseController>('CourseController').to(CourseController).inRequestScope();
+container.bind<ICourseRepository>('ICourseRepository').to(CourseRepository).inSingletonScope();
+container.bind<ICourseService>('ICourseService').to(CourseService).inSingletonScope();
+container.bind<CourseController>('CourseController').to(CourseController).inSingletonScope();

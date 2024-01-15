@@ -5,6 +5,6 @@ import { ILessonService } from '../../../application/interfaces/IServices/ILesso
 import { LessonService } from '../../../application/services/LessonService';
 import { LessonController } from '../../controllers/LessonController';
 
-container.bind<ILessonRepository>('ILessonRepository').to(LessonRepository).inRequestScope();
-container.bind<ILessonService>('ILessonService').to(LessonService).inRequestScope();
-container.bind<LessonController>('LessonController').to(LessonController).inRequestScope();
+container.bind<ILessonRepository>('ILessonRepository').to(LessonRepository).inSingletonScope();
+container.bind<ILessonService>('ILessonService').to(LessonService).inSingletonScope();
+container.bind<LessonController>('LessonController').to(LessonController).inSingletonScope();

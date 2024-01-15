@@ -5,6 +5,6 @@ import { ICommentService } from '../../../application/interfaces/IServices/IComm
 import { CommentService } from '../../../application/services/CommentService';
 import { CommentController } from '../../controllers/CommentController';
 
-container.bind<ICommentRepository>('ICommentRepository').to(CommentRepository).inRequestScope();
-container.bind<ICommentService>('ICommentService').to(CommentService).inRequestScope();
-container.bind<CommentController>('CommentController').to(CommentController).inRequestScope();
+container.bind<ICommentRepository>('ICommentRepository').to(CommentRepository).inSingletonScope();
+container.bind<ICommentService>('ICommentService').to(CommentService).inSingletonScope();
+container.bind<CommentController>('CommentController').to(CommentController).inSingletonScope();

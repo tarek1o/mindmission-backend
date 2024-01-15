@@ -5,6 +5,6 @@ import { IUserRepository } from '../../../application/interfaces/IRepositories/I
 import { IUserService } from '../../../application/interfaces/IServices/IUserService';
 import { UserController } from '../../controllers/UserController';
 
-container.bind<IUserRepository>('IUserRepository').to(UserRepository).inRequestScope();
-container.bind<IUserService>('IUserService').to(UserService).inRequestScope();
-container.bind<UserController>('UserController').to(UserController).inRequestScope();
+container.bind<IUserRepository>('IUserRepository').to(UserRepository).inSingletonScope();
+container.bind<IUserService>('IUserService').to(UserService).inSingletonScope();
+container.bind<UserController>('UserController').to(UserController).inSingletonScope();

@@ -5,6 +5,6 @@ import { IVideoService } from '../../../application/interfaces/IServices/IVideoS
 import { VideoService } from '../../../application/services/VideoService';
 import { VideoController } from '../../controllers/VideoController';
 
-container.bind<IVideoRepository>('IVideoRepository').to(VideoRepository).inRequestScope();
-container.bind<IVideoService>('IVideoService').to(VideoService).inRequestScope();
-container.bind<VideoController>('VideoController').to(VideoController).inRequestScope();
+container.bind<IVideoRepository>('IVideoRepository').to(VideoRepository).inSingletonScope();
+container.bind<IVideoService>('IVideoService').to(VideoService).inSingletonScope();
+container.bind<VideoController>('VideoController').to(VideoController).inSingletonScope();

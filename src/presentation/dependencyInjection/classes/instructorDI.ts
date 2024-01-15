@@ -5,6 +5,6 @@ import { IInstructorService } from '../../../application/interfaces/IServices/II
 import { InstructorService } from '../../../application/services/InstructorService';
 import { InstructorController } from '../../controllers/InstructorController';
 
-container.bind<IInstructorRepository>('IInstructorRepository').to(InstructorRepository).inRequestScope();
-container.bind<IInstructorService>('IInstructorService').to(InstructorService).inRequestScope();
-container.bind<InstructorController>('InstructorController').to(InstructorController).inRequestScope();
+container.bind<IInstructorRepository>('IInstructorRepository').to(InstructorRepository).inSingletonScope();
+container.bind<IInstructorService>('IInstructorService').to(InstructorService).inSingletonScope();
+container.bind<InstructorController>('InstructorController').to(InstructorController).inSingletonScope();
