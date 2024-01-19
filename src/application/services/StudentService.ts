@@ -1,29 +1,24 @@
-import { Prisma, Student } from "@prisma/client"
+import { Course, Enrollment, Prisma, Student } from "@prisma/client"
 import {inject, injectable } from "inversify"
 import { IStudentRepository } from "../interfaces/IRepositories/IStudentRepository";
 import { IStudentService } from "../interfaces/IServices/IStudentService";
 import { ExtendedStudent } from "../types/ExtendedStudent";
+import { TransactionType } from "../types/TransactionType";
 import { UpdateStudent } from "../inputs/studentInput";
-import { CourseService } from "./CourseService";
 import APIError from "../../presentation/errorHandlers/APIError";
 import HttpStatusCode from "../../presentation/enums/HTTPStatusCode";
 
 @injectable()
 export class StudentService implements IStudentService {
-	constructor(@inject('IStudentRepository') private studentRepository: IStudentRepository, @inject("ICourseService") private courseService: CourseService) {}
+	constructor(@inject('IStudentRepository') private studentRepository: IStudentRepository) {}
 
-	private isStudentEnrollInThCourse(userId: number, courseId: number): Promise<Student | null> {
-		return this.studentRepository.findFirst({
+	private async getStudentId(userId: number): Promise<Student | null> {
+		return this.findUnique({
 			where: {
-				userId,
-				enrolledCourses: {
-					some: {
-						id: courseId
-					}
-				}
+				userId
 			},
 			select: {
-				id: true
+				id: true,
 			}
 		});
 	};
@@ -44,71 +39,41 @@ export class StudentService implements IStudentService {
 		return this.studentRepository.findFirst(args);
 	};
 
-	async update(args: {data: UpdateStudent, select?: Prisma.StudentSelect, include?: Prisma.StudentInclude}): Promise<ExtendedStudent> {
-		const {userId, enrolledCourses, ratings, wishlistCourse} = args.data;
-		let instructorId = 0;
-		let studentId = 0;
-		if(ratings) {
-			const isCourseExist = await this.courseService.findUnique({
-				where: {
-					id: ratings.courseId,
-				},
-				select: {
-					instructorId: true
-				}
-			});
-			if(!isCourseExist) {
-				throw new APIError("This course does not exist", HttpStatusCode.BadRequest);
-			}
-			const student = await this.isStudentEnrollInThCourse(userId, ratings.courseId);
-			if(!student) {
-				throw new APIError('The current student cannot rate the course not enroll in', HttpStatusCode.Forbidden)
-			}
-			studentId = student.id;
-			instructorId = isCourseExist.instructorId;
+	async update(args: {data: UpdateStudent, select?: Prisma.StudentSelect, include?: Prisma.StudentInclude}, transaction: TransactionType): Promise<ExtendedStudent> {
+		const {userId, enrolledCourses, wishlistCourse} = args.data;
+		const student = await this.getStudentId(userId);
+		if(!student) {
+			throw new APIError('This student is not exist', HttpStatusCode.BadRequest);
 		}
+		const studentId = student.id;
 		return this.studentRepository.update({
 			where: {
-				userId
+				id: studentId
 			},
 			data: {
-				ratings: ratings ? {
-					upsert: {
-						where: {
-							studentId_courseId_instructorId: {
-								studentId,
-								instructorId,
-								courseId: ratings.courseId,
-							},
-						},
-						update: {
-							commentForCourse: ratings.commentForCourse,
-							commentForInstructor: ratings.commentForInstructor,
-							courseRate: ratings.courseRate,
-							instructorRate: ratings.instructorRate
-						},
-						create: {
-							commentForCourse: ratings.commentForCourse,
-							commentForInstructor: ratings.commentForInstructor,
-							courseRate: ratings.courseRate,
-							instructorRate: ratings.instructorRate,
-							course: {
-								connect: {
-									id: ratings.courseId
-								},
-							},
-							instructor: {
-								connect: {
-									id: instructorId
-								}
-							}
-						}
-					}
-				} : undefined,
-				enrolledCourses: enrolledCourses ? {
-					connect: enrolledCourses?.map(id => {
+				enrollmentCourses: enrolledCourses ? {
+					upsert: enrolledCourses?.map(id => {
 						return {
-							id
+							where: {
+								studentId_courseId: {
+									studentId,
+									courseId: id
+								}
+							},
+							update: {
+								course: {
+									connect: {
+										id
+									}
+								}
+							},
+							create: {
+								course: {
+									connect: {
+										id
+									}
+								}
+							},
 						}
 					})
 				} : undefined,
@@ -120,6 +85,6 @@ export class StudentService implements IStudentService {
 			},
 			select: args.select,
 			include: args.include
-		});
+		}, transaction);
 	};
 }

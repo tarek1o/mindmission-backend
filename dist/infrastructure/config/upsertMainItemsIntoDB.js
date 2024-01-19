@@ -31,6 +31,10 @@ const upsertMainItemsIntoDB = async () => {
             permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
         },
         {
+            modelName: ModelPermission_1.AllowedModels.Enrollments,
+            permissions: [ModelPermission_1.Permissions.Read]
+        },
+        {
             modelName: ModelPermission_1.AllowedModels.Sections,
             permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
         },
@@ -101,6 +105,10 @@ const upsertMainItemsIntoDB = async () => {
             permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create]
         },
         {
+            modelName: ModelPermission_1.AllowedModels.Enrollments,
+            permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Update]
+        },
+        {
             modelName: ModelPermission_1.AllowedModels.Ratings,
             permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
         },
@@ -141,6 +149,10 @@ const upsertMainItemsIntoDB = async () => {
         {
             modelName: ModelPermission_1.AllowedModels.Lessons,
             permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
+        },
+        {
+            modelName: ModelPermission_1.AllowedModels.Enrollments,
+            permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
         },
         {
             modelName: ModelPermission_1.AllowedModels.Ratings,

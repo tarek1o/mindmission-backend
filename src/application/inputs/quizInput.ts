@@ -15,7 +15,7 @@ type Question = {
 export type CreateQuiz = {
   title: string; 
   description?: string; 
-  requiredTime: number; 
+  time: number; 
   questions: Question[]; 
   lessonId: number;
 }
@@ -24,7 +24,6 @@ export type UpdateQuiz = {
   id: number;
   title?: string; 
   description?: string; 
-  requiredTime?: number; 
+  time?: number; 
   questions?: Question[]; 
-  lessonId?: number;
 }

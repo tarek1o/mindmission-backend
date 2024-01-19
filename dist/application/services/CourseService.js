@@ -18,10 +18,9 @@ const slugify_1 = __importDefault(require("slugify"));
 const APIError_1 = __importDefault(require("../../presentation/errorHandlers/APIError"));
 const HTTPStatusCode_1 = __importDefault(require("../../presentation/enums/HTTPStatusCode"));
 let CourseService = class CourseService {
-    constructor(courseRepository, categoryService, sectionService) {
+    constructor(courseRepository, categoryService) {
         this.courseRepository = courseRepository;
         this.categoryService = categoryService;
-        this.sectionService = sectionService;
     }
     async isTrueTopic(id) {
         const topic = await this.categoryService.findUnique({
@@ -52,7 +51,7 @@ let CourseService = class CourseService {
         return this.courseRepository.findUnique(args);
     }
     ;
-    async create(args) {
+    async create(args, transaction) {
         const { title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, isDraft, userId, topicId } = args.data;
         const slug = (0, slugify_1.default)(title, { lower: true, trim: true });
         if (!await this.isTrueTopic(topicId)) {
@@ -84,24 +83,14 @@ let CourseService = class CourseService {
             },
             select: args.select,
             included: args.include
-        });
+        }, transaction);
     }
     ;
-    async update(args) {
+    async update(args, transaction) {
         let { id, title, shortDescription, description, language, level, imageCover, requirements, courseTeachings, price, discountPercentage, hours, lectures, articles, quizzes, isApproved, isDraft, sections: sections, topicId } = args.data;
         const slug = title ? (0, slugify_1.default)(title.toString(), { lower: true, trim: true }) : undefined;
         if (topicId && !await this.isTrueTopic(topicId)) {
             throw new APIError_1.default("This topic may be not exist or may be exist but not a topic", HTTPStatusCode_1.default.BadRequest);
-        }
-        if (sections) {
-            const count = await this.sectionService.count({
-                where: {
-                    courseId: id
-                },
-            });
-            if (count !== sections.length) {
-                throw new APIError_1.default("You should send all course's sections during update the order of sections", HTTPStatusCode_1.default.BadRequest);
-            }
         }
         return this.courseRepository.update({
             where: {
@@ -123,8 +112,9 @@ let CourseService = class CourseService {
                 lectures,
                 articles,
                 quizzes,
-                isApproved: isApproved || undefined,
-                isDraft: isDraft || undefined,
+                isApproved: isApproved,
+                isDraft: isDraft,
+                publishedAt: isApproved ? new Date() : undefined,
                 sections: sections ? {
                     update: sections.map(({ id, order }) => {
                         return {
@@ -145,11 +135,11 @@ let CourseService = class CourseService {
             },
             select: args.select,
             include: args.include
-        });
+        }, transaction);
     }
     ;
-    delete(id) {
-        return this.courseRepository.delete(id);
+    delete(id, transaction) {
+        return this.courseRepository.delete(id, transaction);
     }
     ;
 };
@@ -157,7 +147,6 @@ exports.CourseService = CourseService;
 exports.CourseService = CourseService = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)('ICourseRepository')),
-    __param(1, (0, inversify_1.inject)('ICategoryService')),
-    __param(2, (0, inversify_1.inject)('ISectionService'))
+    __param(1, (0, inversify_1.inject)('ICategoryService'))
 ], CourseService);
 //# sourceMappingURL=CourseService.js.map

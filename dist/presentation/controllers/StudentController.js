@@ -78,13 +78,8 @@ let StudentController = class StudentController {
             });
             response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The course is removed from student wishlist successfully', [updatedStudent]));
         });
-        this.rate = (0, express_async_handler_1.default)(async (request, response, next) => {
-            var _a;
-            const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
-            const updatedStudent = await this.studentService.update({ data: { userId: (_a = request.user) === null || _a === void 0 ? void 0 : _a.id, ratings: Object.assign({}, request.body.input) }, select, include });
-            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The course is enrolled successfully', [updatedStudent]));
-        });
     }
+    ;
 };
 exports.StudentController = StudentController;
 exports.StudentController = StudentController = __decorate([

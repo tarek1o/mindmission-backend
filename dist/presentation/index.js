@@ -20,6 +20,7 @@ Express_1.default.use((0, logger_1.default)());
 Express_1.default.use((0, compression_1.default)());
 // container.get<RealTimeManager>('RealTimeManager');
 // upsertMainItemsIntoDB();
+// seeding();
 (0, routeMounting_1.routeMounting)(Express_1.default);
 Express_1.default.all('*', NotFoundRoutesHandler_1.default.catchRoute);
 Express_1.default.use(GlobalErrorHandler_1.default.catchError);

@@ -1,0 +1,26 @@
+import { container } from './container/DIContainer';
+import './classes/userDI';
+import './classes/onlineUserDI';
+import './classes/roleDI';
+import './classes/authenticationDI';
+import './classes/authorizationDI';
+import './classes/logDI';
+import './classes/categoryDI';
+import './classes/instructorDI';
+import './classes/studentDI';
+import './classes/courseDI';
+import './classes/sectionDI';
+import './classes/lessonDI';
+import './classes/videoDI';
+import './classes/articleDI';
+import './classes/quizDI';
+import './classes/paymentDI';
+import './classes/enrollmentCourseDI';
+import './classes/ratingDI';
+import './classes/statisticsDI';
+import './classes/couponDI';
+import './classes/commentDI';
+import './classes/messageDI';
+import './classes/realTimeManagerDI';
+
+export default container;

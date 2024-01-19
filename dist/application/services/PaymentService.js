@@ -48,7 +48,7 @@ let PaymentService = class PaymentService {
         return this.paymentRepository.findUnique(args);
     }
     ;
-    async create(args) {
+    async create(args, transaction) {
         const { currency, paymentMethod, paymentUnits, userId, couponCode } = args.data;
         const courses = await this.courseService.findMany({
             where: {
@@ -95,10 +95,10 @@ let PaymentService = class PaymentService {
             },
             select: args.select,
             include: args.include
-        });
+        }, transaction);
     }
     ;
-    async update(args) {
+    async update(args, transaction) {
         const { id, status } = args.data;
         return this.paymentRepository.update({
             where: {
@@ -109,10 +109,10 @@ let PaymentService = class PaymentService {
             },
             select: args.select,
             include: args.include
-        });
+        }, transaction);
     }
     ;
-    deleteNotCompletedPayment(id) {
+    deleteNotCompletedPayment(id, transaction) {
         setTimeout(async () => {
             const payment = await this.paymentRepository.findUnique({
                 where: {
@@ -123,13 +123,13 @@ let PaymentService = class PaymentService {
                 }
             });
             if (payment && payment.status !== "COMPLETE") {
-                await this.delete(id);
+                await this.delete(id, transaction);
             }
         }, 1000 * 60 * 11); // 11 Min
     }
     ;
-    delete(id) {
-        return this.paymentRepository.delete(id);
+    delete(id, transaction) {
+        return this.paymentRepository.delete(id, transaction);
     }
     ;
 };

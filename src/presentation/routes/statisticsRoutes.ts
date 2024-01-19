@@ -1,5 +1,5 @@
 import express from 'express';
-import container from '../dependencyInjection/DI'
+import container from '../DIContainer/DI'
 import {StatisticsController} from '../controllers/StatisticsController';
 
 const {getMainStatistics} = container.get<StatisticsController>('StatisticsController');

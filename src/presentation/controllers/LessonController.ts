@@ -45,7 +45,9 @@ export class LessonController {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
 		const updatedLesson = await this.lessonService.update({
 			data: {
-				...request.body.input,	
+				...request.body.input,
+				time: undefined,
+				lessonType: undefined,
 				id: +request.params.id
 			},
 			select,

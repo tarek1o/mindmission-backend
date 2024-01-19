@@ -1,6 +1,5 @@
 import {body, } from "express-validator";
 import ErrorExpressValidatorHandler from "../../errorHandlers/ErrorExpressValidatorHandler";
-import { LessonType } from "@prisma/client";
 
 export const addLessonValidation = [
   body("input.title")
@@ -21,17 +20,6 @@ export const addLessonValidation = [
     .notEmpty().withMessage("Order is required")
     .isInt({min: 1}).withMessage("Order must be an integer number more than or equal to 1"),
   
-  body("input.lessonType")
-    .notEmpty().withMessage("Lesson type is required")
-    .toUpperCase()
-    .custom(value => {
-      if(!LessonType[value as LessonType]) {
-        const allowedLessonTypes = Object.values(LessonType).map(value => value.toLowerCase()).toString();
-        throw new Error(`The lesson types can be ${allowedLessonTypes} only`)
-      }
-      return true;
-    }),
-
   body("input.sectionId")
     .notEmpty().withMessage("sectionId is required")
     .isInt({min: 1}).withMessage("sectionId must be an integer number more than or equal to 1"),
@@ -53,17 +41,6 @@ export const updateLessonValidation = [
   body("input.attachment")
     .optional()
     .isURL().withMessage("Lesson Attachment must be a url formate"),
-
-  body("input.lessonType")
-    .optional()
-    .toUpperCase()
-    .custom(value => {
-      if(!LessonType[value as LessonType]) {
-        const allowedLessonTypes = Object.values(LessonType).map(value => value.toLowerCase()).toString();
-        throw new Error(`The lesson types can be ${allowedLessonTypes} only`)
-      }
-      return true;
-    }),
   
   ErrorExpressValidatorHandler.catchExpressValidatorErrors
 ];

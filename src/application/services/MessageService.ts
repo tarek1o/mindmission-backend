@@ -3,6 +3,7 @@ import {inject, injectable } from "inversify"
 import { IMessageService } from "../interfaces/IServices/IMessageService"
 import { IMessageRepository } from "../interfaces/IRepositories/IMessageRepository"
 import { CreateMessage, UpdateMessage } from "../inputs/messageInput"
+import { TransactionType } from "../types/TransactionType"
 
 @injectable()
 export class MessageService implements IMessageService {
@@ -20,7 +21,7 @@ export class MessageService implements IMessageService {
 		return this.messageRepository.findUnique(args);
 	};
 
-  create(args: {data: CreateMessage, select?: Prisma.MessageSelect, include?: Prisma.MessageInclude}): Promise<Message> {
+  create(args: {data: CreateMessage, select?: Prisma.MessageSelect, include?: Prisma.MessageInclude}, transaction?: TransactionType): Promise<Message> {
 		const {name, email, message} = args.data;		
 		return this.messageRepository.create({
 			data: {
@@ -30,10 +31,10 @@ export class MessageService implements IMessageService {
 			},
 			select: args.select,
 			include: args.include
-    });
+    }, transaction);
 	};
 
-	update(args: {data: UpdateMessage, select?: Prisma.MessageSelect, include?: Prisma.MessageInclude}): Promise<Message> {
+	update(args: {data: UpdateMessage, select?: Prisma.MessageSelect, include?: Prisma.MessageInclude}, transaction?: TransactionType): Promise<Message> {
 		const {id, subject, reply, replierId} = args.data;
 		return this.messageRepository.update({
 			where: {
@@ -51,10 +52,10 @@ export class MessageService implements IMessageService {
 			},
 			select: args.select,
 			include: args.include
-		});
+		}, transaction);
 	};
 
-	delete(id: number): Promise<Message> {
-		return this.messageRepository.delete(id);
+	delete(id: number, transaction?: TransactionType): Promise<Message> {
+		return this.messageRepository.delete(id, transaction);
 	};
 }

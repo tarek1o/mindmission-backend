@@ -63,7 +63,7 @@ export class Authorization {
       }
     }
     permission = (permission === 'post') ? 'add' : (permission === 'patch') ? 'update' : (permission === 'put') ? 'get' : permission;
-    throw new APIError(`Not Allowed to ${permission} ${modelName}`, HttpStatusCode.Unauthorized);
+    throw new APIError(`Not Allowed to ${permission} ${modelName}`, HttpStatusCode.Forbidden);
   });
   
   isCurrentUserRoleInWhiteList = (...roleWhiteList: MainRoles[]) => asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => { 
@@ -71,13 +71,13 @@ export class Authorization {
       next();
     }
     else {
-      throw new APIError('Not allow to access this route', HttpStatusCode.Unauthorized);
+      throw new APIError('Not allow to access this route', HttpStatusCode.Forbidden);
     }
   });
 
   isCurrentUserRoleInBlackList = (...roleBlackList: MainRoles[]) => asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => { 
     if(this.isCurrentUserRoleInList(request, roleBlackList)) {
-      throw new APIError('Not allow to access this route', HttpStatusCode.Unauthorized);
+      throw new APIError('Not allow to access this route', HttpStatusCode.Forbidden);
     }
     else {
       next();
@@ -86,7 +86,7 @@ export class Authorization {
   
   isParamIdEqualCurrentUserId = (userId = 'id') => asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => { 
     if(request.user && +request.params[userId] !== request.user.id && this.isCurrentUserRoleInList(request, ['instructor', 'student'])) {
-      throw new APIError('Not allow to access this route, the Id in route not match the Id of the current user', HttpStatusCode.Unauthorized);
+      throw new APIError('Not allow to access this route, the Id in route not match the Id of the current user', HttpStatusCode.Forbidden);
     }
     next();
   });

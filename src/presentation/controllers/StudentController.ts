@@ -10,7 +10,7 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class StudentController {
-	constructor(@inject('IStudentService') private studentService: IStudentService) {}
+	constructor(@inject('IStudentService') private studentService: IStudentService) {};
 
 	getAllStudents = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const findOptions = RequestManager.findOptionsWrapper(request);
@@ -68,11 +68,5 @@ export class StudentController {
 			include
 		});
 		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The course is removed from student wishlist successfully', [updatedStudent]));
-	});
-
-	rate = asyncHandler(async(request: ExtendedRequest, response: Response, next: NextFunction) => {
-		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const updatedStudent = await this.studentService.update({data: {userId: request.user?.id as number, ratings: {...request.body.input}}, select, include});
-		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The course is enrolled successfully', [updatedStudent]));
 	});
 }

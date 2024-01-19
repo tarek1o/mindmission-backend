@@ -27,7 +27,7 @@ let MessageService = class MessageService {
         return this.messageRepository.findUnique(args);
     }
     ;
-    create(args) {
+    create(args, transaction) {
         const { name, email, message } = args.data;
         return this.messageRepository.create({
             data: {
@@ -37,10 +37,10 @@ let MessageService = class MessageService {
             },
             select: args.select,
             include: args.include
-        });
+        }, transaction);
     }
     ;
-    update(args) {
+    update(args, transaction) {
         const { id, subject, reply, replierId } = args.data;
         return this.messageRepository.update({
             where: {
@@ -58,11 +58,11 @@ let MessageService = class MessageService {
             },
             select: args.select,
             include: args.include
-        });
+        }, transaction);
     }
     ;
-    delete(id) {
-        return this.messageRepository.delete(id);
+    delete(id, transaction) {
+        return this.messageRepository.delete(id, transaction);
     }
     ;
 };

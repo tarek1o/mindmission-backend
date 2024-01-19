@@ -1,5 +1,5 @@
 import express from 'express';
-import container from '../dependencyInjection/DI'
+import container from '../DIContainer/DI'
 import {idValidation} from "../middlewares/express-validator/idValidation";
 import {updateInstructorValidation} from "../middlewares/express-validator/instructorValidator";
 import {Authorization} from '../middlewares/authorization-validator/AuthorizationValidator';

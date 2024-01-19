@@ -26,8 +26,8 @@ let StudentRepository = class StudentRepository {
     findFirst(args) {
         return db_1.default.student.findFirst(args);
     }
-    update(args) {
-        return db_1.default.student.update(args);
+    update(args, transaction) {
+        return (transaction || db_1.default).student.update(args);
     }
 };
 exports.StudentRepository = StudentRepository;

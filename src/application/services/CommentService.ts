@@ -3,6 +3,7 @@ import { inject, injectable } from "inversify"
 import { ICommentRepository } from "../interfaces/IRepositories/ICommentRepository"
 import { ICommentService } from "../interfaces/IServices/ICommentService"
 import { CreateComment, UpdateComment } from "../inputs/commentInput"
+import { TransactionType } from "../types/TransactionType"
 
 @injectable()
 export class CommentService implements ICommentService {
@@ -20,7 +21,7 @@ export class CommentService implements ICommentService {
 		return this.commentRepository.findUnique(args);
 	};
 
-  create(args: {data: CreateComment, select?: Prisma.CommentSelect, include?: Prisma.CommentInclude}): Promise<Comment> {
+  create(args: {data: CreateComment, select?: Prisma.CommentSelect, include?: Prisma.CommentInclude}, transaction?: TransactionType): Promise<Comment> {
 		const {content, lessonId, parentId, userId} = args.data;	
 		return this.commentRepository.create({
 			data: {
@@ -43,10 +44,10 @@ export class CommentService implements ICommentService {
 			},
 			select: args.select,
 			include: args.include
-		});
+		}, transaction);
 	};
 
-	update(args: {data: UpdateComment, select?: Prisma.CommentSelect, include?: Prisma.CommentInclude}): Promise<Comment> {
+	update(args: {data: UpdateComment, select?: Prisma.CommentSelect, include?: Prisma.CommentInclude}, transaction?: TransactionType): Promise<Comment> {
 		const {id, content} = args.data;
 		return this.commentRepository.update({
 			where: {
@@ -57,10 +58,10 @@ export class CommentService implements ICommentService {
 			},
 			select: args.select,
 			include: args.include
-		});
+		}, transaction);
 	};
 
-	delete(id: number): Promise<Comment> {
-		return this.commentRepository.delete(id);
+	delete(id: number, transaction?: TransactionType): Promise<Comment> {
+		return this.commentRepository.delete(id, transaction);
 	};
 }

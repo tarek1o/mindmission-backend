@@ -1,80 +1,45 @@
 import { Prisma, Article, LessonType } from "@prisma/client"
 import {inject, injectable } from "inversify"
 import { CreateArticle, UpdateArticle } from "../inputs/articleInput";
+import { TransactionType } from "../types/TransactionType";
+import { IArticleRepository } from "../interfaces/IRepositories/IArticleRepository"
 import { IArticleService } from "../interfaces/IServices/IArticleService"
 import { ILessonService } from "../interfaces/IServices/ILessonService";
-import { ICourseService } from "../interfaces/IServices/ICourseService";
 import { Transaction } from "../../infrastructure/services/Transaction";
-import { IArticleRepository } from "../interfaces/IRepositories/IArticleRepository"
 import APIError from "../../presentation/errorHandlers/APIError";
 import HttpStatusCode from "../../presentation/enums/HTTPStatusCode";
 
 @injectable()
 export class ArticleService implements IArticleService {
-	constructor(@inject('IArticleRepository') private articleRepository: IArticleRepository, @inject('ILessonService') private lessonService: ILessonService, @inject('ICourseService') private courseService: ICourseService) {}
+	constructor(@inject('IArticleRepository') private articleRepository: IArticleRepository, @inject('ILessonService') private lessonService: ILessonService) {}
 
-	private async isLessonTypeIsArticle(lessonId: number) {
+	private async isLessonAvailable(lessonId: number): Promise<boolean> {
 		const lesson = await this.lessonService.findUnique({
 			where: {
 				id: lessonId
 			},
 			select: {
-				lessonType: true,
-				section: {
-					select: {
-						courseId: true
-					}
-				}
+				lessonType: true
 			}
 		});
 
-		if(lesson && lesson.lessonType === LessonType.ARTICLE) {
-			return true;
+		if(lesson && lesson.lessonType === 'UNDEFINED') {
+			return true
 		}
-		return false
+		return false; 
 	};
 
-	private async updateCourseInfo(articleId: number, operationType: "create" | "update" | "delete", readingTime?: number) {
-		const article = await this.findUnique({
-			where: {
-				id: articleId
+	private async updateLessonInfo(lessonId: number, time: number, lessonType?: LessonType, transaction?: TransactionType) {
+		await this.lessonService.update({
+			data: {
+				id: lessonId,
+				time,
+				lessonType,
 			},
 			select: {
-				readingTime: true,
-				lesson: {
-					select: {
-						section: {
-							select: {
-								course: {
-									select: {
-										id: true,
-										hours: true,
-										articles: true,
-									}
-								}
-							}
-						}
-					}
-				}
+				id: true
 			}
-		}) as any;
-		if(!article) {
-			throw new APIError("This article is not exist", HttpStatusCode.BadRequest);
-		}
-		let {id, hours, articles} = article.lesson.section.course;
-		if(readingTime && operationType === 'update') {
-			readingTime -= article.readingTime;			
-		}
-		if(operationType === 'delete') {
-			readingTime = -article.readingTime;
-		}
-		await this.courseService.update({
-			data: {
-				id,
-				hours: hours + readingTime,
-				articles: operationType === "create" ? articles + 1 : (operationType === "delete" ? articles - 1 : undefined)
-			}
-		})
+		}, transaction)
 	};
 
 	count(args: Prisma.ArticleCountArgs): Promise<number> {
@@ -89,17 +54,18 @@ export class ArticleService implements IArticleService {
 		return this.articleRepository.findUnique(args);
 	};
 
-	async create(args: {data: CreateArticle, select?: Prisma.ArticleSelect, include?: Prisma.ArticleInclude}): Promise<Article> {
-		const {lessonId, title, content, readingTime} = args.data;
-		if(!await this.isLessonTypeIsArticle(lessonId)) {
-			throw new APIError("This lesson may be not exist or may be exist but its type is not an article", HttpStatusCode.BadRequest);
-		}	
-		return Transaction.transact<Article>(async () => {
-			const createdArticle = await this.articleRepository.create({
+	async create(args: {data: CreateArticle, select?: Prisma.ArticleSelect, include?: Prisma.ArticleInclude}, transaction?: TransactionType): Promise<Article> {
+		const {lessonId, title, content, time} = args.data;
+		if(!await this.isLessonAvailable(lessonId)) {
+			throw new APIError('This lesson is not available', HttpStatusCode.BadRequest);
+		}
+		return Transaction.transact<Article>(async (prismaTransaction) => {
+			await this.updateLessonInfo(lessonId, time, 'ARTICLE', prismaTransaction);
+			return await this.articleRepository.create({
 				data: {
 					title,
 					content,
-					readingTime,
+					time,
 					lesson: {
 						connect: {
 							id: lessonId
@@ -108,45 +74,38 @@ export class ArticleService implements IArticleService {
 				},
 				select: args.select,
 				include: args.include
-			});
-			await this.updateCourseInfo(createdArticle.id, 'create', readingTime);
-			return createdArticle;
-		});
+			}, prismaTransaction);
+		}, transaction);
 	};
 
-	async update(args: {data: UpdateArticle, select?: Prisma.ArticleSelect, include?: Prisma.ArticleInclude}): Promise<Article> {
-		const {id, title, content, readingTime, lessonId} = args.data;
-		if(lessonId && !await this.isLessonTypeIsArticle(lessonId)) {
-			throw new APIError("This lesson may be not exist or may be exist but its type is not an article", HttpStatusCode.BadRequest);
-		}
-		return Transaction.transact<Article>(async () => {
-			if(readingTime) {
-				await this.updateCourseInfo(id, 'update', readingTime);
-			}
-			return this.articleRepository.update({
+	async update(args: {data: UpdateArticle, select?: Prisma.ArticleSelect, include?: Prisma.ArticleInclude}, transaction?: TransactionType): Promise<Article> {
+		const {id, title, content, time} = args.data;
+		return Transaction.transact<Article>(async (prismaTransaction) => {
+			const updatedArticle = await this.articleRepository.update({
 				where: {
 					id: id
 				},
 				data: {
 					title: title || undefined,
 					content: content || undefined,
-					readingTime: readingTime || undefined,
-					lesson: lessonId ? {
-						connect: {
-							id: lessonId
-						}
-					} : undefined
+					time: time || undefined,
 				},
 				select: args.select,
 				include: args.include
-			});
-		});
+			}, prismaTransaction);
+			if(time) {
+				await this.updateLessonInfo(updatedArticle.lessonId, time, undefined, prismaTransaction);
+			}
+			args.select && !args.select.lessonId && Reflect.deleteProperty(updatedArticle, 'lessonId'); 
+			return updatedArticle;
+		}, transaction);
 	};
 
-	async delete(id: number): Promise<Article> {
-		return Transaction.transact<Article>(async () => {
-			await this.updateCourseInfo(id, 'delete');
-			return this.articleRepository.delete(id);
-		})
+	delete(id: number, transaction?: TransactionType): Promise<Article> {
+		return Transaction.transact<Article>(async (prismaTransaction) => {
+			const deletedArticle = await this.articleRepository.delete(id, prismaTransaction);
+			await this.updateLessonInfo(deletedArticle.lessonId, 0, 'UNDEFINED', prismaTransaction);
+			return deletedArticle;
+		}, transaction);
 	};
 }

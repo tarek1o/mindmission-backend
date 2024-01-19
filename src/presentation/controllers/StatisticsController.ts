@@ -4,12 +4,13 @@ import asyncHandler from'express-async-handler';
 import { ICourseService } from "../../application/interfaces/IServices/ICourseService";
 import { IRatingService } from "../../application/interfaces/IServices/IRatingService";
 import { IInstructorService } from "../../application/interfaces/IServices/IInstructorService";
+import { IEnrollmentService } from "../../application/interfaces/IServices/IEnrollmentService";
 import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
 import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class StatisticsController {
-	constructor(@inject('ICourseService') private courseService: ICourseService, @inject("IRatingService") private ratingService: IRatingService, @inject("IInstructorService") private instructorService: IInstructorService) {}
+	constructor(@inject('ICourseService') private courseService: ICourseService, @inject("IRatingService") private ratingService: IRatingService, @inject("IInstructorService") private instructorService: IInstructorService, @inject("IEnrollmentService") private enrollmentService: IEnrollmentService) {}
 
   private async getAvailableCoursesCount(): Promise<Number> {
     return this.courseService.count({
@@ -25,7 +26,13 @@ export class StatisticsController {
   };
 
   private async getSuccessfulLearnsCount(): Promise<Number> {
-    return 0;
+    return this.enrollmentService.count({
+      where: {
+        progress: {
+          equals: 100
+        }
+      }
+    });
   };
 
   private async getRatingAvgForAllCourses(): Promise<number> {
@@ -34,7 +41,7 @@ export class StatisticsController {
         courseRate: true
       },
     });
-    return aggregateResult._avg?.courseRate as number;
+    return aggregateResult._avg?.courseRate || 0;
   };
 
   private async getFiveStarInstructorsCount(): Promise<number> {

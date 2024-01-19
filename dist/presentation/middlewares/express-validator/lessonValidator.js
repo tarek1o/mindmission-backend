@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateLessonValidation = exports.addLessonValidation = void 0;
 const express_validator_1 = require("express-validator");
 const ErrorExpressValidatorHandler_1 = __importDefault(require("../../errorHandlers/ErrorExpressValidatorHandler"));
-const client_1 = require("@prisma/client");
 exports.addLessonValidation = [
     (0, express_validator_1.body)("input.title")
         .notEmpty().withMessage("Lesson title is required")
@@ -22,16 +21,6 @@ exports.addLessonValidation = [
     (0, express_validator_1.body)("input.order")
         .notEmpty().withMessage("Order is required")
         .isInt({ min: 1 }).withMessage("Order must be an integer number more than or equal to 1"),
-    (0, express_validator_1.body)("input.lessonType")
-        .notEmpty().withMessage("Lesson type is required")
-        .toUpperCase()
-        .custom(value => {
-        if (!client_1.LessonType[value]) {
-            const allowedLessonTypes = Object.values(client_1.LessonType).map(value => value.toLowerCase()).toString();
-            throw new Error(`The lesson types can be ${allowedLessonTypes} only`);
-        }
-        return true;
-    }),
     (0, express_validator_1.body)("input.sectionId")
         .notEmpty().withMessage("sectionId is required")
         .isInt({ min: 1 }).withMessage("sectionId must be an integer number more than or equal to 1"),
@@ -49,16 +38,6 @@ exports.updateLessonValidation = [
     (0, express_validator_1.body)("input.attachment")
         .optional()
         .isURL().withMessage("Lesson Attachment must be a url formate"),
-    (0, express_validator_1.body)("input.lessonType")
-        .optional()
-        .toUpperCase()
-        .custom(value => {
-        if (!client_1.LessonType[value]) {
-            const allowedLessonTypes = Object.values(client_1.LessonType).map(value => value.toLowerCase()).toString();
-            throw new Error(`The lesson types can be ${allowedLessonTypes} only`);
-        }
-        return true;
-    }),
     ErrorExpressValidatorHandler_1.default.catchExpressValidatorErrors
 ];
 //# sourceMappingURL=lessonValidator.js.map

@@ -13,18 +13,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.QuizService = void 0;
-const client_1 = require("@prisma/client");
 const inversify_1 = require("inversify");
 const Transaction_1 = require("../../infrastructure/services/Transaction");
 const APIError_1 = __importDefault(require("../../presentation/errorHandlers/APIError"));
 const HTTPStatusCode_1 = __importDefault(require("../../presentation/enums/HTTPStatusCode"));
 let QuizService = class QuizService {
-    constructor(quizRepository, lessonService, courseService) {
+    constructor(quizRepository, lessonService) {
         this.quizRepository = quizRepository;
         this.lessonService = lessonService;
-        this.courseService = courseService;
     }
-    async isLessonTypeIsQuiz(lessonId) {
+    async isLessonAvailable(lessonId) {
         const lesson = await this.lessonService.findUnique({
             where: {
                 id: lessonId
@@ -33,53 +31,25 @@ let QuizService = class QuizService {
                 lessonType: true
             }
         });
-        if (lesson && lesson.lessonType === client_1.LessonType.QUIZ) {
+        if (lesson && lesson.lessonType === 'UNDEFINED') {
             return true;
         }
         return false;
     }
-    async updateCourseInfo(quizId, operationType, requiredTime) {
-        const quiz = await this.findUnique({
-            where: {
-                id: quizId
+    ;
+    async updateLessonInfo(lessonId, time, lessonType, transaction) {
+        await this.lessonService.update({
+            data: {
+                id: lessonId,
+                time,
+                lessonType,
             },
             select: {
-                requiredTime: true,
-                lesson: {
-                    select: {
-                        section: {
-                            select: {
-                                course: {
-                                    select: {
-                                        id: true,
-                                        hours: true,
-                                        quizzes: true,
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                id: true
             }
-        });
-        if (!quiz) {
-            throw new APIError_1.default("This quiz is not exist", HTTPStatusCode_1.default.BadRequest);
-        }
-        let { id, hours, quizzes } = quiz.lesson.section.course;
-        if (requiredTime && operationType === 'update') {
-            requiredTime -= quiz.requiredTime;
-        }
-        if (operationType === 'delete') {
-            requiredTime = -quiz.requiredTime;
-        }
-        await this.courseService.update({
-            data: {
-                id,
-                hours: hours + requiredTime,
-                quizzes: operationType === "create" ? quizzes + 1 : (operationType === "delete" ? quizzes - 1 : undefined)
-            }
-        });
+        }, transaction);
     }
+    ;
     count(args) {
         return this.quizRepository.count(args);
     }
@@ -92,16 +62,17 @@ let QuizService = class QuizService {
         return this.quizRepository.findUnique(args);
     }
     ;
-    async create(args) {
-        const { title, description, requiredTime, questions, lessonId } = args.data;
-        if (await this.isLessonTypeIsQuiz(lessonId)) {
-            throw new APIError_1.default("This lesson may be not exist or may be exist but its type is not a quiz", HTTPStatusCode_1.default.BadRequest);
+    async create(args, transaction) {
+        const { title, description, time, questions, lessonId } = args.data;
+        if (!await this.isLessonAvailable(lessonId)) {
+            throw new APIError_1.default('This lesson is not available', HTTPStatusCode_1.default.BadRequest);
         }
-        return Transaction_1.Transaction.transact(async () => {
-            const createdQuiz = await this.quizRepository.create({
+        return Transaction_1.Transaction.transact(async (prismaTransaction) => {
+            await this.updateLessonInfo(lessonId, time, 'QUIZ', prismaTransaction);
+            return await this.quizRepository.create({
                 data: {
                     title,
-                    requiredTime,
+                    time,
                     description,
                     questions: {
                         createMany: {
@@ -127,34 +98,29 @@ let QuizService = class QuizService {
                 },
                 select: args.select,
                 include: args.include
-            });
-            await this.updateCourseInfo(createdQuiz.id, 'create', requiredTime);
-            return createdQuiz;
-        });
+            }, prismaTransaction);
+        }, transaction);
     }
     ;
-    async update(args) {
-        const { id, title, description, requiredTime, questions, lessonId } = args.data;
-        if (lessonId && !await this.isLessonTypeIsQuiz(lessonId)) {
-            throw new APIError_1.default("This lesson may be not exist or may be exist but its type is not a quiz", HTTPStatusCode_1.default.BadRequest);
-        }
-        return Transaction_1.Transaction.transact(async () => {
-            if (requiredTime) {
-                await this.updateCourseInfo(id, 'update', requiredTime);
-            }
-            return this.quizRepository.update({
+    async update(args, transaction) {
+        const { id, title, description, time, questions } = args.data;
+        return Transaction_1.Transaction.transact(async (prismaTransaction) => {
+            const updatedQuiz = await this.quizRepository.update({
                 where: {
                     id,
                 },
                 data: {
                     title: title || undefined,
-                    requiredTime: requiredTime || undefined,
+                    time: time || undefined,
                     description: description || undefined,
                     questions: questions && questions.length > 0 ? {
                         upsert: questions.map((question, index) => {
                             return {
                                 where: {
-                                    id: question.id || 0
+                                    quizId_order: {
+                                        quizId: id,
+                                        order: question.order || 0
+                                    }
                                 },
                                 update: {
                                     questionText: question.questionText || undefined,
@@ -179,23 +145,24 @@ let QuizService = class QuizService {
                             };
                         })
                     } : undefined,
-                    lesson: lessonId ? {
-                        connect: {
-                            id: lessonId
-                        }
-                    } : undefined
                 },
-                select: args.select,
+                select: args.select ? Object.assign(Object.assign({}, args.select), { lessonId: true }) : undefined,
                 include: args.include
-            });
-        });
+            }, prismaTransaction);
+            if (time) {
+                await this.updateLessonInfo(updatedQuiz.lessonId, time, undefined, prismaTransaction);
+            }
+            args.select && !args.select.lessonId && Reflect.deleteProperty(updatedQuiz, 'lessonId');
+            return updatedQuiz;
+        }, transaction);
     }
     ;
-    async delete(id) {
-        return Transaction_1.Transaction.transact(async () => {
-            await this.updateCourseInfo(id, 'delete');
-            return this.quizRepository.delete(id);
-        });
+    async delete(id, transaction) {
+        return Transaction_1.Transaction.transact(async (prismaTransaction) => {
+            const deletedQuiz = await this.quizRepository.delete(id, prismaTransaction);
+            await this.updateLessonInfo(deletedQuiz.lessonId, 0, 'UNDEFINED', prismaTransaction);
+            return deletedQuiz;
+        }, transaction);
     }
     ;
 };
@@ -203,7 +170,6 @@ exports.QuizService = QuizService;
 exports.QuizService = QuizService = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)('IQuizRepository')),
-    __param(1, (0, inversify_1.inject)('ILessonService')),
-    __param(2, (0, inversify_1.inject)('ICourseService'))
+    __param(1, (0, inversify_1.inject)('ILessonService'))
 ], QuizService);
 //# sourceMappingURL=QuizService.js.map

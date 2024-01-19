@@ -29,11 +29,11 @@ let OnlineUserRepository = class OnlineUserRepository {
     findFirst(args) {
         return db_1.default.onlineUser.findFirst(args);
     }
-    upsert(args) {
-        return db_1.default.onlineUser.upsert(args);
+    upsert(args, transaction) {
+        return (transaction || db_1.default).onlineUser.upsert(args);
     }
-    delete(args) {
-        return db_1.default.onlineUser.delete(args);
+    delete(args, transaction) {
+        return (transaction || db_1.default).onlineUser.delete(args);
     }
 };
 exports.OnlineUserRepository = OnlineUserRepository;

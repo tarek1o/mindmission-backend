@@ -13,73 +13,50 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VideoService = void 0;
-const client_1 = require("@prisma/client");
 const inversify_1 = require("inversify");
 const Transaction_1 = require("../../infrastructure/services/Transaction");
 const APIError_1 = __importDefault(require("../../presentation/errorHandlers/APIError"));
 const HTTPStatusCode_1 = __importDefault(require("../../presentation/enums/HTTPStatusCode"));
 let VideoService = class VideoService {
-    constructor(videoRepository, lessonService, courseService) {
+    constructor(videoRepository, courseService, lessonService) {
         this.videoRepository = videoRepository;
-        this.lessonService = lessonService;
         this.courseService = courseService;
+        this.lessonService = lessonService;
     }
-    async isLessonTypeIsVideo(lessonId) {
-        const lesson = await this.lessonService.findUnique({
-            where: {
-                id: lessonId
-            },
-            select: {
-                lessonType: true
-            }
-        });
-        if (lesson && lesson.lessonType === client_1.LessonType.VIDEO) {
-            return true;
-        }
-        return false;
-    }
-    async updateCourseInfo(videoId, operationType, time) {
-        const video = await this.findUnique({
-            where: {
-                id: videoId
-            },
-            select: {
-                time: true,
-                lesson: {
-                    select: {
-                        section: {
-                            select: {
-                                course: {
-                                    select: {
-                                        id: true,
-                                        hours: true,
-                                        lectures: true,
-                                    }
-                                }
-                            }
-                        }
-                    }
+    async isLessonAvailable(lessonId) {
+        try {
+            const lesson = await this.lessonService.findUnique({
+                where: {
+                    id: lessonId
+                },
+                select: {
+                    lessonType: true
                 }
+            });
+            if (lesson && lesson.lessonType === 'UNDEFINED') {
+                return true;
             }
-        });
-        if (!video) {
-            throw new APIError_1.default("This video is not exist", HTTPStatusCode_1.default.BadRequest);
+            return false;
         }
-        let { id, hours, lectures } = video.lesson.section.course;
-        if (time && operationType === 'update') {
-            time -= video.time;
+        catch (error) {
+            console.log(error);
+            throw error;
         }
-        if (operationType === 'delete') {
-            time = -video.time;
-        }
-        await this.courseService.update({
-            data: {
-                id,
-                hours: hours + time,
-                lectures: operationType === "create" ? lectures + 1 : (operationType === "delete" ? lectures - 1 : undefined)
-            }
-        });
     }
+    ;
+    async updateLessonInfo(lessonId, time, lessonType, transaction) {
+        await this.lessonService.update({
+            data: {
+                id: lessonId,
+                time,
+                lessonType,
+            },
+            select: {
+                id: true
+            }
+        }, transaction);
+    }
+    ;
     count(args) {
         return this.videoRepository.count(args);
     }
@@ -92,13 +69,14 @@ let VideoService = class VideoService {
         return this.videoRepository.findUnique(args);
     }
     ;
-    async create(args) {
+    async create(args, transaction) {
         const { title, description, url, time, lessonId } = args.data;
-        if (!await this.isLessonTypeIsVideo(lessonId)) {
-            throw new APIError_1.default("This lesson may be not exist or may be exist but its type is not a video", HTTPStatusCode_1.default.BadRequest);
+        if (!await this.isLessonAvailable(lessonId)) {
+            throw new APIError_1.default('This lesson is not available', HTTPStatusCode_1.default.BadRequest);
         }
-        return Transaction_1.Transaction.transact(async () => {
-            const createdVideo = await this.videoRepository.create({
+        return Transaction_1.Transaction.transact(async (prismaTransaction) => {
+            await this.updateLessonInfo(lessonId, time, 'VIDEO', prismaTransaction);
+            return await this.videoRepository.create({
                 data: {
                     title,
                     description,
@@ -107,26 +85,18 @@ let VideoService = class VideoService {
                     lesson: {
                         connect: {
                             id: lessonId
-                        }
+                        },
                     }
                 },
                 select: args.select,
                 include: args.include
-            });
-            await this.updateCourseInfo(createdVideo.id, 'create', time);
-            return createdVideo;
-        });
+            }, prismaTransaction);
+        }, transaction);
     }
-    async update(args) {
-        const { id, title, description, url, time, lessonId } = args.data;
-        if (lessonId && !await this.isLessonTypeIsVideo(lessonId)) {
-            throw new APIError_1.default("This lesson may be not exist or may be exist but its type is not a video", HTTPStatusCode_1.default.BadRequest);
-        }
-        return Transaction_1.Transaction.transact(async () => {
-            if (time) {
-                await this.updateCourseInfo(id, 'update', time);
-            }
-            return this.videoRepository.update({
+    async update(args, transaction) {
+        const { id, title, description, url, time } = args.data;
+        return Transaction_1.Transaction.transact(async (prismaTransaction) => {
+            const updateVideo = await this.videoRepository.update({
                 where: {
                     id
                 },
@@ -134,22 +104,24 @@ let VideoService = class VideoService {
                     title: title || undefined,
                     description: description || undefined,
                     url: url || undefined,
-                    lesson: lessonId ? {
-                        connect: {
-                            id: lessonId
-                        }
-                    } : undefined,
+                    time,
                 },
-                select: args.select,
+                select: args.select ? Object.assign(Object.assign({}, args.select), { lessonId: true }) : undefined,
                 include: args.include
-            });
-        });
+            }, prismaTransaction);
+            if (time) {
+                await this.updateLessonInfo(updateVideo.lessonId, time, undefined, prismaTransaction);
+            }
+            args.select && !args.select.lessonId && Reflect.deleteProperty(updateVideo, 'lessonId');
+            return updateVideo;
+        }, transaction);
     }
-    async delete(id) {
-        return Transaction_1.Transaction.transact(async () => {
-            await this.updateCourseInfo(id, 'delete');
-            return this.videoRepository.delete(id);
-        });
+    delete(id, transaction) {
+        return Transaction_1.Transaction.transact(async (prismaTransaction) => {
+            const deletedVideo = await this.videoRepository.delete(id);
+            await this.updateLessonInfo(deletedVideo.lessonId, 0, 'UNDEFINED', prismaTransaction);
+            return deletedVideo;
+        }, transaction);
     }
     ;
 };
@@ -157,7 +129,7 @@ exports.VideoService = VideoService;
 exports.VideoService = VideoService = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)('IVideoRepository')),
-    __param(1, (0, inversify_1.inject)('ILessonService')),
-    __param(2, (0, inversify_1.inject)("ICourseService"))
+    __param(1, (0, inversify_1.inject)('ICourseService')),
+    __param(2, (0, inversify_1.inject)('ILessonService'))
 ], VideoService);
 //# sourceMappingURL=VideoService.js.map

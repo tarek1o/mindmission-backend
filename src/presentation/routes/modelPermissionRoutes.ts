@@ -1,6 +1,6 @@
 import express from 'express';
 import {Authorization} from '../middlewares/authorization-validator/AuthorizationValidator';
-import container from '../dependencyInjection/DI'
+import container from '../DIContainer/DI'
 import {ModelPermissionController} from "../controllers/ModelPermissionController"
 
 const {isAuthenticated, isAuthorized} = container.get<Authorization>('Authorization');

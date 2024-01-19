@@ -51,7 +51,7 @@ let CouponService = class CouponService {
         return this.couponRepository.findUnique(args);
     }
     ;
-    async create(args) {
+    async create(args, transaction) {
         const { discount, expiredAt, userId } = args.data;
         const code = await this.generateRandomCode();
         return this.couponRepository.create({
@@ -67,10 +67,10 @@ let CouponService = class CouponService {
             },
             select: args.select,
             include: args.include
-        });
+        }, transaction);
     }
     ;
-    update(args) {
+    update(args, transaction) {
         const { id, discount, expiredAt } = args.data;
         return this.couponRepository.update({
             where: {
@@ -82,11 +82,11 @@ let CouponService = class CouponService {
             },
             select: args.select,
             include: args.include
-        });
+        }, transaction);
     }
     ;
-    delete(id) {
-        return this.couponRepository.delete(id);
+    delete(id, transaction) {
+        return this.couponRepository.delete(id, transaction);
     }
     ;
 };

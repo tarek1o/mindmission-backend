@@ -33,7 +33,7 @@ let RoleService = class RoleService {
         return this.roleRepository.findUnique(args);
     }
     ;
-    async create(args) {
+    async create(args, transaction) {
         const { name, description, allowedModels } = args.data;
         const slug = (0, slugify_1.default)(name, { trim: true, lower: true });
         const isExist = await this.findUnique({
@@ -56,10 +56,10 @@ let RoleService = class RoleService {
             },
             select: args.select,
             include: args.include
-        });
+        }, transaction);
     }
     ;
-    async update(args) {
+    async update(args, transaction) {
         const { id, name, description, allowedModels } = args.data;
         const slug = name ? (0, slugify_1.default)(name.toString(), { trim: true, lower: true }) : undefined;
         if (name) {
@@ -87,10 +87,10 @@ let RoleService = class RoleService {
             },
             select: args.select,
             include: args.include
-        });
+        }, transaction);
     }
     ;
-    async delete(id) {
+    async delete(id, transaction) {
         const role = await this.findUnique({
             where: {
                 id
@@ -106,7 +106,7 @@ let RoleService = class RoleService {
         if (role.slug === "student" || role.slug === "instructor" || role.slug === "super-admin") {
             throw new Error('This role is not deletable');
         }
-        return this.roleRepository.delete(id);
+        return this.roleRepository.delete(id, transaction);
     }
     ;
 };

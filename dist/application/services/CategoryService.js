@@ -60,7 +60,7 @@ let CategoryService = class CategoryService {
         return this.categoryRepository.findUnique(args);
     }
     ;
-    async create(args) {
+    async create(args, transaction) {
         var _a;
         const { name, type, description, parentId } = args.data;
         const slug = (0, slugify_1.default)(name, { trim: true, lower: true });
@@ -93,10 +93,10 @@ let CategoryService = class CategoryService {
             },
             select: args.select,
             include: args.include
-        });
+        }, transaction);
     }
     ;
-    async update(args) {
+    async update(args, transaction) {
         var _a;
         const { id, name, type, description, parentId } = args.data;
         let slug = undefined;
@@ -148,11 +148,11 @@ let CategoryService = class CategoryService {
             },
             select: args.select,
             include: args.include
-        });
+        }, transaction);
     }
     ;
-    delete(id) {
-        return this.categoryRepository.delete(id);
+    delete(id, transaction) {
+        return this.categoryRepository.delete(id, transaction);
     }
     ;
 };

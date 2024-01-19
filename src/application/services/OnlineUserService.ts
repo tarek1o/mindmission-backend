@@ -5,6 +5,7 @@ import { IOnlineUserRepository } from "../interfaces/IRepositories/IOnlineUserRe
 import { IUserService } from "../interfaces/IServices/IUserService"
 import { CreateOnlineUser } from "../inputs/onlineUserInput"
 import { Transaction } from "../../infrastructure/services/Transaction"
+import { TransactionType } from "../types/TransactionType"
 
 @injectable()
 export class OnlineUserService implements IOnlineUserService {
@@ -26,9 +27,9 @@ export class OnlineUserService implements IOnlineUserService {
 		return this.onlineUserRepository.findUnique(args);
 	};
 
-	async create(args: {data: CreateOnlineUser, select?: Prisma.OnlineUserSelect, include?: Prisma.OnlineUserInclude}): Promise<OnlineUser> {
+	async create(args: {data: CreateOnlineUser, select?: Prisma.OnlineUserSelect, include?: Prisma.OnlineUserInclude}, transaction?: TransactionType): Promise<OnlineUser> {
 		const {socketId, userId} = args.data;
-		return Transaction.transact<OnlineUser>(async() => {
+		return Transaction.transact<OnlineUser>(async(prismTransaction) => {
 			const createdOnlineUser = await this.onlineUserRepository.upsert({
 				where: {
 					socketId,
@@ -45,7 +46,7 @@ export class OnlineUserService implements IOnlineUserService {
 				update: {},
 				select: args.select,
 				include: args.include
-			});
+			}, prismTransaction);
 			const onlineUserDevices = await this.onlineUserRepository.count({
 				where: {
 					userId
@@ -60,14 +61,14 @@ export class OnlineUserService implements IOnlineUserService {
 					select: {
 						id: true
 					}
-				})
+				}, prismTransaction);
 			}
 			return createdOnlineUser;
-		})
+		}, transaction);
 	};
 
-	async delete(socketId: string): Promise<OnlineUser> {
-		return Transaction.transact<OnlineUser>(async () => {
+	async delete(socketId: string, transaction?: TransactionType): Promise<OnlineUser> {
+		return Transaction.transact<OnlineUser>(async (prismTransaction) => {
 			const deletedOnlineUser = await this.onlineUserRepository.delete({
 				where: {
 					socketId,
@@ -76,7 +77,7 @@ export class OnlineUserService implements IOnlineUserService {
 					id: true,
 					userId: true,
 				}
-			});
+			},prismTransaction);
 			const onlineUserDevices = await this.onlineUserRepository.count({
 				where: {
 					userId: deletedOnlineUser.userId
@@ -91,9 +92,9 @@ export class OnlineUserService implements IOnlineUserService {
 					select: {
 						id: true
 					}
-				});
+				}, prismTransaction);
 			}
 			return deletedOnlineUser;
-		})
+		}, transaction);
 	};
 }

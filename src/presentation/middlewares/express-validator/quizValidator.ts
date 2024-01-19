@@ -9,9 +9,9 @@ export const addQuizValidation = [
     .isLength({min: 5}).withMessage("Too short quiz title, 5 characters at least")
     .isLength({max: 1000}).withMessage("Too long quiz title, 1000 characters at most"),
   
-  body("input.requiredTime")
-    .notEmpty().withMessage("required time is required")
-    .isFloat({min: 0}).withMessage("Required time must be a string"),
+  body("input.time")
+    .notEmpty().withMessage("Time is required")
+    .isFloat({min: 0}).withMessage("Time must be a string"),
 
   body("input.description")
     .optional()
@@ -76,6 +76,10 @@ export const addQuizValidation = [
       return true;
     }),
 
+  body("input.lessonId")
+    .notEmpty().withMessage("LessonId is required")
+    .isInt({min: 1}).withMessage("LessonId must be an integer number more than or equal to 1"),
+
   ErrorExpressValidatorHandler.catchExpressValidatorErrors
 ];
 
@@ -86,9 +90,9 @@ export const updateQuizValidation = [
     .isLength({min: 5}).withMessage("Too short quiz title, 5 characters at least")
     .isLength({max: 1000}).withMessage("Too long quiz title, 1000 characters at most"),
   
-  body("input.requiredTime")
+  body("input.time")
     .optional()
-    .isFloat({min: 0}).withMessage("Required time must be a string"),
+    .isFloat({min: 0}).withMessage("Time must be a string"),
 
   body("input.description")
     .optional()

@@ -13,9 +13,9 @@ exports.addQuizValidation = [
         .isString().withMessage("Quiz title must be a string")
         .isLength({ min: 5 }).withMessage("Too short quiz title, 5 characters at least")
         .isLength({ max: 1000 }).withMessage("Too long quiz title, 1000 characters at most"),
-    (0, express_validator_1.body)("input.requiredTime")
-        .notEmpty().withMessage("required time is required")
-        .isFloat({ min: 0 }).withMessage("Required time must be a string"),
+    (0, express_validator_1.body)("input.time")
+        .notEmpty().withMessage("Time is required")
+        .isFloat({ min: 0 }).withMessage("Time must be a string"),
     (0, express_validator_1.body)("input.description")
         .optional()
         .isString().withMessage("Description must be string")
@@ -77,6 +77,9 @@ exports.addQuizValidation = [
         }
         return true;
     }),
+    (0, express_validator_1.body)("input.lessonId")
+        .notEmpty().withMessage("LessonId is required")
+        .isInt({ min: 1 }).withMessage("LessonId must be an integer number more than or equal to 1"),
     ErrorExpressValidatorHandler_1.default.catchExpressValidatorErrors
 ];
 exports.updateQuizValidation = [
@@ -85,9 +88,9 @@ exports.updateQuizValidation = [
         .isString().withMessage("Quiz title must be a string")
         .isLength({ min: 5 }).withMessage("Too short quiz title, 5 characters at least")
         .isLength({ max: 1000 }).withMessage("Too long quiz title, 1000 characters at most"),
-    (0, express_validator_1.body)("input.requiredTime")
+    (0, express_validator_1.body)("input.time")
         .optional()
-        .isFloat({ min: 0 }).withMessage("Required time must be a string"),
+        .isFloat({ min: 0 }).withMessage("Time must be a string"),
     (0, express_validator_1.body)("input.description")
         .optional()
         .isString().withMessage("Description must be string")

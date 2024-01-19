@@ -31,7 +31,7 @@ let InstructorService = class InstructorService {
         return this.instructorRepository.findUnique(args);
     }
     ;
-    async update(args) {
+    async update(args, transaction) {
         const { id, bref, specialization, skills } = args.data;
         return this.instructorRepository.update({
             where: {
@@ -63,8 +63,8 @@ let InstructorService = class InstructorService {
                 } : undefined
             },
             select: args.select,
-            // include: args.include
-        });
+            include: args.include
+        }, transaction);
     }
     ;
 };

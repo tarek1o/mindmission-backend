@@ -52,7 +52,7 @@ let LessonController = class LessonController {
         this.updateLesson = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
             const updatedLesson = await this.lessonService.update({
-                data: Object.assign(Object.assign({}, request.body.input), { id: +request.params.id }),
+                data: Object.assign(Object.assign({}, request.body.input), { time: undefined, lessonType: undefined, id: +request.params.id }),
                 select,
                 include,
             });
