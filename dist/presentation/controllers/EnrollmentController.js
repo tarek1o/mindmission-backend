@@ -67,7 +67,7 @@ let EnrollmentController = class EnrollmentController {
                     }
                 }
             });
-            this.logService.log('ADD', 'ENROLLMENT', student || {}, request.user);
+            this.logService.log('ADD', 'ENROLLMENT', student, request.user);
             response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The student has been enrolled in the courses successfully.', student.enrollmentCourses));
         });
         this.updateEnrollment = (0, express_async_handler_1.default)(async (request, response, next) => {
