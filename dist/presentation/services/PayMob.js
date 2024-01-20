@@ -8,7 +8,7 @@ const crypto_1 = __importDefault(require("crypto"));
 const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
 const APIError_1 = __importDefault(require("../errorHandlers/APIError"));
 class PayMob {
-    static async getAuthToken() {
+    static async authenticate() {
         const response = await fetch(PayMob.tokenURL, {
             method: "POST",
             headers: {
@@ -25,7 +25,7 @@ class PayMob {
         return token;
     }
     ;
-    static async getOrderId(token, paymentId, totalPrice, currency, orderItems) {
+    static async registerOrder(token, paymentId, totalPrice, currency, orderItems) {
         const response = await fetch(PayMob.orderURL, {
             method: "POST",
             headers: {
@@ -33,7 +33,7 @@ class PayMob {
             },
             body: JSON.stringify({
                 auth_token: token,
-                delivery_needed: "false",
+                delivery_needed: false,
                 amount_cents: totalPrice,
                 currency: currency,
                 merchant_order_id: paymentId,
@@ -56,7 +56,7 @@ class PayMob {
         return id;
     }
     ;
-    static async getPaymentToken(authToken, orderId, totalPrice, currency) {
+    static async generatePaymentToken(authToken, orderId, totalPrice, currency) {
         const response = await fetch(PayMob.paymentKeysURL, {
             method: "POST",
             headers: {
@@ -69,20 +69,19 @@ class PayMob {
                 order_id: orderId,
                 currency: currency,
                 integration_id: PayMob.integrationId,
-                "billing_data": {
-                    "apartment": "803",
-                    "email": "claudette09@exa.com",
-                    "floor": "42",
-                    "first_name": "Clifford",
-                    "street": "Ethan Land",
-                    "building": "8028",
-                    "phone_number": "+86(8)9135210487",
-                    "shipping_method": "PKG",
-                    "postal_code": "01898",
-                    "city": "Jaskolskiburgh",
-                    "country": "CR",
-                    "last_name": "Nicolas",
-                    "state": "Utah"
+                billing_data: {
+                    first_name: "Tarek" || "NA",
+                    last_name: "Eslam" || "NA",
+                    email: "NA",
+                    phone_number: "01022433456",
+                    apartment: "NA",
+                    floor: "NA",
+                    building: "NA",
+                    street: "NA",
+                    city: "NA",
+                    country: "NA",
+                    state: "NA",
+                    zip_code: "NA",
                 },
             })
         });
@@ -96,9 +95,9 @@ class PayMob {
     ;
     static async createPaymentOrder(paymentId, totalPrice, currency, discount, orderItems) {
         const totalPriceInCents = (totalPrice - totalPrice * (discount / 100)) * 100;
-        const token = await PayMob.getAuthToken();
-        const orderId = await PayMob.getOrderId(token, paymentId, totalPriceInCents, currency, orderItems);
-        return await PayMob.getPaymentToken(token, orderId, totalPriceInCents, currency);
+        const token = await PayMob.authenticate();
+        const orderId = await PayMob.registerOrder(token, paymentId, totalPriceInCents, currency, orderItems);
+        return await PayMob.generatePaymentToken(token, orderId, totalPriceInCents, currency);
     }
     ;
     static isValidRequest(request) {

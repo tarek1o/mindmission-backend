@@ -13,7 +13,7 @@ export abstract class PayMob {
   private static integrationId = +(process.env.PayMob_Integration_Id as string);
   private static HMAC = process.env.PayMob_HMAC as string;
 
-  private static async getAuthToken(): Promise<string> {
+  private static async authenticate(): Promise<string> {
     const response = await fetch(PayMob.tokenURL, {
       method: "POST",
       headers: {
@@ -30,7 +30,7 @@ export abstract class PayMob {
     return token;
   };
 
-  private static async getOrderId(token: string, paymentId: number, totalPrice: number, currency: Currency, orderItems: ExtendedPaymentUnit[]): Promise<number> {
+  private static async registerOrder(token: string, paymentId: number, totalPrice: number, currency: Currency, orderItems: ExtendedPaymentUnit[]): Promise<number> {
     const response = await fetch(PayMob.orderURL, {
       method: "POST",
       headers: {
@@ -38,7 +38,7 @@ export abstract class PayMob {
       },
       body: JSON.stringify({
         auth_token: token,
-        delivery_needed: "false",
+        delivery_needed: false,
         amount_cents: totalPrice,
         currency: currency,
         merchant_order_id: paymentId,
@@ -60,7 +60,7 @@ export abstract class PayMob {
     return id;
   };
 
-  private static async getPaymentToken(authToken: string, orderId: number, totalPrice: number, currency: Currency): Promise<string> {
+  private static async generatePaymentToken(authToken: string, orderId: number, totalPrice: number, currency: Currency): Promise<string> {
     const response = await fetch(PayMob.paymentKeysURL, {
       method: "POST",
       headers: {
@@ -73,21 +73,20 @@ export abstract class PayMob {
         order_id: orderId,
         currency: currency, 
         integration_id: PayMob.integrationId,
-        "billing_data": {
-          "apartment": "803", 
-          "email": "claudette09@exa.com", 
-          "floor": "42", 
-          "first_name": "Clifford", 
-          "street": "Ethan Land", 
-          "building": "8028", 
-          "phone_number": "+86(8)9135210487", 
-          "shipping_method": "PKG", 
-          "postal_code": "01898", 
-          "city": "Jaskolskiburgh", 
-          "country": "CR", 
-          "last_name": "Nicolas", 
-          "state": "Utah"
-        }, 
+        billing_data: {
+          first_name: "Tarek" || "NA",
+          last_name: "Eslam" || "NA",
+          email: "NA",
+          phone_number: "01022433456",
+          apartment:  "NA",
+          floor: "NA",
+          building: "NA",
+          street: "NA",
+          city: "NA",
+          country: "NA",
+          state: "NA",
+          zip_code: "NA",
+        },
       })
     });
     if(response.status !== HTTPStatusCode.Created) {
@@ -100,9 +99,9 @@ export abstract class PayMob {
 
   static async createPaymentOrder(paymentId: number, totalPrice: number, currency: Currency, discount: number, orderItems: ExtendedPaymentUnit[]): Promise<string> {
     const totalPriceInCents: number = (totalPrice - totalPrice * (discount / 100)) * 100;
-    const token = await PayMob.getAuthToken();
-    const orderId = await PayMob.getOrderId(token, paymentId, totalPriceInCents, currency, orderItems);
-    return await PayMob.getPaymentToken(token, orderId, totalPriceInCents, currency);
+    const token = await PayMob.authenticate();
+    const orderId = await PayMob.registerOrder(token, paymentId, totalPriceInCents, currency, orderItems);
+    return await PayMob.generatePaymentToken(token, orderId, totalPriceInCents, currency);
   };
 
   static isValidRequest(request: ExtendedRequest): boolean {
