@@ -7,7 +7,6 @@ import {IEnrollmentService} from "../interfaces/IServices/IEnrollmentService";
 import { IStudentService } from "../interfaces/IServices/IStudentService";
 import { TransactionType } from "../types/TransactionType";
 import { Transaction } from "../../infrastructure/services/Transaction";
-import prisma from "../../domain/db";
 
 @injectable()
 export class EnrollmentService implements IEnrollmentService {
@@ -46,26 +45,6 @@ export class EnrollmentService implements IEnrollmentService {
   findFirst(args: Prisma.EnrollmentFindFirstArgs): Promise<ExtendedEnrollment | null> {
     return this.enrollmentRepository.findFirst(args);
   };
-
-  create(args: {data: CreateEnrollment, select?: Prisma.EnrollmentSelect, include?: Prisma.EnrollmentInclude}, transaction: TransactionType): Promise<ExtendedEnrollment> {
-    const {studentId, courseId} = args.data;
-    return this.enrollmentRepository.create({
-      data: {
-        course: {
-          connect: {
-            id: courseId
-          }
-        },
-        student: {
-          connect: {
-            id: studentId
-          }
-        }
-      },
-      select: args.select,
-      include: args.include
-    }, transaction);
-  }
 
 	async update(args: {data: UpdateEnrollment, select?: Prisma.EnrollmentSelect, include?: Prisma.EnrollmentInclude}, transaction?: TransactionType): Promise<ExtendedEnrollment> {
     const {courseId, userId, lessonId} = args.data;

@@ -1,6 +1,6 @@
 export type CreateEnrollment = {
-  studentId: number;
-  courseId: number;
+  userId: number;
+  courseIds: number[];
 }
 
 export type UpdateEnrollment = {

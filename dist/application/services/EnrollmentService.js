@@ -51,25 +51,6 @@ let EnrollmentService = class EnrollmentService {
         return this.enrollmentRepository.findFirst(args);
     }
     ;
-    create(args, transaction) {
-        const { studentId, courseId } = args.data;
-        return this.enrollmentRepository.create({
-            data: {
-                course: {
-                    connect: {
-                        id: courseId
-                    }
-                },
-                student: {
-                    connect: {
-                        id: studentId
-                    }
-                }
-            },
-            select: args.select,
-            include: args.include
-        }, transaction);
-    }
     async update(args, transaction) {
         const { courseId, userId, lessonId } = args.data;
         const studentId = await this.getStudentId(userId);

@@ -20,8 +20,9 @@ const ResponseFormatter_1 = require("../responseFormatter/ResponseFormatter");
 const APIError_1 = __importDefault(require("../errorHandlers/APIError"));
 const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
 let EnrollmentController = class EnrollmentController {
-    constructor(enrollmentService, logService) {
+    constructor(enrollmentService, studentService, logService) {
         this.enrollmentService = enrollmentService;
+        this.studentService = studentService;
         this.logService = logService;
         this.getAllEnrollments = (0, express_async_handler_1.default)(async (request, response, next) => {
             const findOptions = RequestManager_1.RequestManager.findOptionsWrapper(request);
@@ -44,6 +45,30 @@ let EnrollmentController = class EnrollmentController {
                 throw new APIError_1.default('This enrollment does not exist', HTTPStatusCode_1.default.BadRequest);
             }
             response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The enrollment is retrieved successfully', [enrollment]));
+        });
+        this.createEnrollment = (0, express_async_handler_1.default)(async (request, response, next) => {
+            const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
+            const { userId, courseIds } = request.body.input;
+            const student = await this.studentService.update({
+                data: {
+                    userId,
+                    enrolledCourses: courseIds
+                },
+                select: {
+                    id: true,
+                    enrollmentCourses: {
+                        where: {
+                            courseId: {
+                                in: courseIds
+                            }
+                        },
+                        select,
+                        include
+                    }
+                }
+            });
+            this.logService.log('ADD', 'ENROLLMENT', student || {}, request.user);
+            response.status(HTTPStatusCode_1.default.Created).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The student has been enrolled in the courses successfully.', student.enrollmentCourses));
         });
         this.updateEnrollment = (0, express_async_handler_1.default)(async (request, response, next) => {
             var _a;
@@ -68,6 +93,7 @@ exports.EnrollmentController = EnrollmentController;
 exports.EnrollmentController = EnrollmentController = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)('IEnrollmentService')),
-    __param(1, (0, inversify_1.inject)('ILogService'))
+    __param(1, (0, inversify_1.inject)('IStudentService')),
+    __param(2, (0, inversify_1.inject)('ILogService'))
 ], EnrollmentController);
 //# sourceMappingURL=EnrollmentController.js.map
