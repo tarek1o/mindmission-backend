@@ -9,6 +9,8 @@ const compression_1 = __importDefault(require("compression"));
 const Express_1 = __importDefault(require("./config/Express"));
 const ServerCreator_1 = __importDefault(require("./config/ServerCreator"));
 const logger_1 = __importDefault(require("./logger"));
+// import container from "./DIContainer/DI";
+// import { RealTimeManager } from "./services/RealTimeManager";
 const NotFoundRoutesHandler_1 = __importDefault(require("./errorHandlers/NotFoundRoutesHandler"));
 const GlobalErrorHandler_1 = __importDefault(require("./errorHandlers/GlobalErrorHandler"));
 const UnhandledRejectionHandler_1 = __importDefault(require("./errorHandlers/UnhandledRejectionHandler"));
