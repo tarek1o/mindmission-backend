@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const DI_1 = __importDefault(require("../dependencyInjection/DI"));
+const DI_1 = __importDefault(require("../DIContainer/DI"));
 const idValidation_1 = require("../middlewares/express-validator/idValidation");
 const paymentValidator_1 = require("../middlewares/express-validator/paymentValidator");
 const { isAuthenticated, isAuthorized } = DI_1.default.get('Authorization');
@@ -20,6 +20,10 @@ paymentRouter.route("/paymob/confirm")
     .post(payMobPaymentConfirmation);
 paymentRouter.route("/paypal/confirm")
     .post(payPalPaymentConfirmation);
+paymentRouter.route("/response_pay")
+    .get((request, response, next) => {
+    response.status(200).json({ Success: true });
+});
 paymentRouter.route("/delete/:id")
     .post(idValidation_1.idValidation, isAuthenticated, isAuthorized('Payment', 'DELETE'), deletePayment);
 exports.default = paymentRouter;

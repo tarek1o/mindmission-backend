@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, request } from "express";
 import { inject, injectable } from "inversify";
 import asyncHandler from'express-async-handler';
 import {IRatingService} from "../../application/interfaces/IServices/IRatingService"
@@ -11,7 +11,7 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 
 @injectable()
 export class RatingController {
-	constructor(@inject('IRatingService') private ratingService: IRatingService, @inject('ILogService') private logService: ILogService) {}
+	constructor(@inject('IRatingService') private ratingService: IRatingService, @inject('ILogService') private logService: ILogService) {};
 
 	getAllRatings = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const findOptions = RequestManager.findOptionsWrapper(request);
@@ -36,6 +36,19 @@ export class RatingController {
 		}
 		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The rating is retrieved successfully', [rating]));
 	});
+
+	upsertRating = asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => {
+		const {select, include} = RequestManager.findOptionsWrapper(request);
+		const rating = await this.ratingService.upsert({
+			data: {
+				...request.body.input,
+				userId: request.user?.id
+			},
+			select,
+			include
+		});
+		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The rating is recorded successfully', [rating]));
+	})
 
 	deleteRating = asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => {
 		await this.ratingService.delete(+request.params.id);

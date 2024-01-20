@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { Prisma, Coupon } from "@prisma/client";
 import {inject, injectable } from "inversify";
 import { CreateCoupon, UpdateCoupon } from "../inputs/couponInput";
+import { TransactionType } from "../types/TransactionType";
 import {ICouponService} from "../interfaces/IServices/ICouponService";
 import {ICouponRepository} from "../interfaces/IRepositories/ICouponRepository";
 
@@ -41,7 +42,7 @@ export class CouponService implements ICouponService {
 		return this.couponRepository.findUnique(args);
 	};
 
-	async create(args: {data: CreateCoupon, select?: Prisma.CouponSelect, include?: Prisma.CouponInclude}): Promise<Coupon> {
+	async create(args: {data: CreateCoupon, select?: Prisma.CouponSelect, include?: Prisma.CouponInclude}, transaction?: TransactionType): Promise<Coupon> {
 		const {discount, expiredAt, userId} = args.data;
     const code = await this.generateRandomCode();
     return this.couponRepository.create({
@@ -57,10 +58,10 @@ export class CouponService implements ICouponService {
       },
       select: args.select,
       include: args.include
-    });
+    }, transaction);
 	};
 
-	update(args: {data: UpdateCoupon, select?: Prisma.CouponSelect, include?: Prisma.CouponInclude}): Promise<Coupon> {
+	update(args: {data: UpdateCoupon, select?: Prisma.CouponSelect, include?: Prisma.CouponInclude}, transaction?: TransactionType): Promise<Coupon> {
 		const {id, discount, expiredAt} = args.data;
     return this.couponRepository.update({
       where: {
@@ -72,10 +73,10 @@ export class CouponService implements ICouponService {
       },
       select: args.select,
       include: args.include
-    });
+    }, transaction);
 	};
 
-	delete(id: number): Promise<Coupon> {
-		return this.couponRepository.delete(id);
+	delete(id: number, transaction?: TransactionType): Promise<Coupon> {
+		return this.couponRepository.delete(id, transaction);
 	};
 }

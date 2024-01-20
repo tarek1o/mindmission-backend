@@ -70,19 +70,19 @@ let Authorization = class Authorization {
                 }
             }
             permission = (permission === 'post') ? 'add' : (permission === 'patch') ? 'update' : (permission === 'put') ? 'get' : permission;
-            throw new APIError_1.default(`Not Allowed to ${permission} ${modelName}`, HTTPStatusCode_1.default.Unauthorized);
+            throw new APIError_1.default(`Not Allowed to ${permission} ${modelName}`, HTTPStatusCode_1.default.Forbidden);
         });
         this.isCurrentUserRoleInWhiteList = (...roleWhiteList) => (0, express_async_handler_1.default)(async (request, response, next) => {
             if (this.isCurrentUserRoleInList(request, roleWhiteList)) {
                 next();
             }
             else {
-                throw new APIError_1.default('Not allow to access this route', HTTPStatusCode_1.default.Unauthorized);
+                throw new APIError_1.default('Not allow to access this route', HTTPStatusCode_1.default.Forbidden);
             }
         });
         this.isCurrentUserRoleInBlackList = (...roleBlackList) => (0, express_async_handler_1.default)(async (request, response, next) => {
             if (this.isCurrentUserRoleInList(request, roleBlackList)) {
-                throw new APIError_1.default('Not allow to access this route', HTTPStatusCode_1.default.Unauthorized);
+                throw new APIError_1.default('Not allow to access this route', HTTPStatusCode_1.default.Forbidden);
             }
             else {
                 next();
@@ -90,7 +90,7 @@ let Authorization = class Authorization {
         });
         this.isParamIdEqualCurrentUserId = (userId = 'id') => (0, express_async_handler_1.default)(async (request, response, next) => {
             if (request.user && +request.params[userId] !== request.user.id && this.isCurrentUserRoleInList(request, ['instructor', 'student'])) {
-                throw new APIError_1.default('Not allow to access this route, the Id in route not match the Id of the current user', HTTPStatusCode_1.default.Unauthorized);
+                throw new APIError_1.default('Not allow to access this route, the Id in route not match the Id of the current user', HTTPStatusCode_1.default.Forbidden);
             }
             next();
         });

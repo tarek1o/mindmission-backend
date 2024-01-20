@@ -1,75 +1,52 @@
 import { LessonType, Prisma, Video } from "@prisma/client";
 import {inject, injectable } from "inversify";
 import { IVideoService } from "../interfaces/IServices/IVideoService";
-import { ILessonService } from "../interfaces/IServices/ILessonService";
 import { ICourseService } from "../interfaces/IServices/ICourseService";
+import { ILessonService } from "../interfaces/IServices/ILessonService";
 import { IVideoRepository } from "../interfaces/IRepositories/IVideoRepository";
-import { Transaction } from "../../infrastructure/services/Transaction";
 import { CreateVideo, UpdateVideo } from "../inputs/videoInput";
+import { TransactionType } from "../types/TransactionType";
+import { Transaction } from "../../infrastructure/services/Transaction";
 import APIError from "../../presentation/errorHandlers/APIError";
 import HttpStatusCode from "../../presentation/enums/HTTPStatusCode";
 
 @injectable()
 export class VideoService implements IVideoService {
-	constructor(@inject('IVideoRepository') private videoRepository: IVideoRepository, @inject('ILessonService') private lessonService: ILessonService, @inject("ICourseService") private courseService: ICourseService) {}
+	constructor(@inject('IVideoRepository') private videoRepository: IVideoRepository, @inject('ICourseService') private courseService: ICourseService, @inject('ILessonService') private lessonService: ILessonService) {}
 
-	private async isLessonTypeIsVideo(lessonId: number): Promise<boolean> {
-		const lesson = await this.lessonService.findUnique({
-			where: {
-				id: lessonId
-			},
-			select: {
-				lessonType: true
-			}
-		});
-		if(lesson && lesson.lessonType === LessonType.VIDEO) {
-			return true;
-		}
-		return false
-	}
-
-	private async updateCourseInfo(videoId: number, operationType: "create" | "update" | "delete", time?: number) {
-		const video = await this.findUnique({
-			where: {
-				id: videoId
-			},
-			select: {
-				time: true,
-				lesson: {
-					select: {
-						section: {
-							select: {
-								course: {
-									select: {
-										id: true,
-										hours: true,
-										lectures: true,
-									}
-								}
-							}
-						}
-					}
+	private async isLessonAvailable(lessonId: number): Promise<boolean> {
+		try {
+			const lesson = await this.lessonService.findUnique({
+				where: {
+					id: lessonId
+				},
+				select: {
+					lessonType: true
 				}
+			});
+	
+			if(lesson && lesson.lessonType === 'UNDEFINED') {
+				return true
 			}
-		}) as any;
-		if(!video) {
-			throw new APIError("This video is not exist", HttpStatusCode.BadRequest);
+			return false; 
+		}catch(error) {
+			console.log(error);
+			throw error;
 		}
-		let {id, hours, lectures} = video.lesson.section.course;
-		if(time && operationType === 'update') {
-			time -= video.time;			
-		}
-		if(operationType === 'delete') {
-			time = -video.time;
-		}
-		await this.courseService.update({
+	};
+
+	private async updateLessonInfo(lessonId: number, time: number, lessonType?: LessonType, transaction?: TransactionType) {
+		await this.lessonService.update({
 			data: {
-				id,
-				hours: hours + time,
-				lectures: operationType === "create" ? lectures + 1 : (operationType === "delete" ? lectures - 1 : undefined)
+				id: lessonId,
+				time,
+				lessonType,
+			},
+			select: {
+				id: true
 			}
-		})
-	}
+		}, transaction)
+	};
 
 	count(args: Prisma.VideoCountArgs): Promise<number> {
 		return this.videoRepository.count(args);
@@ -83,13 +60,14 @@ export class VideoService implements IVideoService {
 		return this.videoRepository.findUnique(args);
 	};
 
-	async create(args: {data: CreateVideo, select?: Prisma.VideoSelect, include?: Prisma.VideoInclude}): Promise<Video> {
+	async create(args: {data: CreateVideo, select?: Prisma.VideoSelect, include?: Prisma.VideoInclude}, transaction?: TransactionType): Promise<Video> {
 		const {title, description, url, time, lessonId} = args.data;
-		if(!await this.isLessonTypeIsVideo(lessonId)) {
-			throw new APIError("This lesson may be not exist or may be exist but its type is not a video", HttpStatusCode.BadRequest);
+		if(!await this.isLessonAvailable(lessonId)) {
+			throw new APIError('This lesson is not available', HttpStatusCode.BadRequest);
 		}
-		return Transaction.transact<Video>(async () => {
-			const createdVideo = await this.videoRepository.create({
+		return Transaction.transact<Video>(async (prismaTransaction) => {
+			await this.updateLessonInfo(lessonId, time, 'VIDEO', prismaTransaction);
+			return await this.videoRepository.create({
 				data: {
 					title,
 					description,
@@ -98,27 +76,19 @@ export class VideoService implements IVideoService {
 					lesson: {
 						connect: {
 							id: lessonId
-						}
+						},
 					}
 				},
 				select: args.select,
 				include: args.include
-			});
-			await this.updateCourseInfo(createdVideo.id, 'create', time);
-			return createdVideo;
-		});
+			}, prismaTransaction);
+		}, transaction);
 	}
 
-	async update(args: {data: UpdateVideo, select?: Prisma.VideoSelect, include?: Prisma.VideoInclude}): Promise<Video> {
-		const {id, title, description, url, time, lessonId} = args.data;
-		if(lessonId && !await this.isLessonTypeIsVideo(lessonId)) {
-			throw new APIError("This lesson may be not exist or may be exist but its type is not a video", HttpStatusCode.BadRequest);
-		}
-		return Transaction.transact<Video>(async () => {
-			if(time) {
-				await this.updateCourseInfo(id, 'update', time);
-			}
-			return this.videoRepository.update({
+	async update(args: {data: UpdateVideo, select?: Prisma.VideoSelect, include?: Prisma.VideoInclude}, transaction?: TransactionType): Promise<Video> {
+		const {id, title, description, url, time} = args.data;
+		return Transaction.transact<Video>(async (prismaTransaction) => {
+			const updateVideo = await this.videoRepository.update({
 				where: {
 					id
 				},
@@ -126,22 +96,27 @@ export class VideoService implements IVideoService {
 					title: title || undefined,
 					description: description || undefined,
 					url: url || undefined,
-					lesson: lessonId ? {
-						connect: {
-							id: lessonId
-						}
-					} : undefined,
+					time,
 				},
-				select: args.select,
+				select: args.select ? {
+					...args.select,
+					lessonId: true
+				} : undefined,
 				include: args.include
-			});
-		});
+			}, prismaTransaction);
+			if(time) {
+				await this.updateLessonInfo(updateVideo.lessonId, time, undefined, prismaTransaction);
+			}
+			args.select && !args.select.lessonId && Reflect.deleteProperty(updateVideo, 'lessonId');
+			return updateVideo;
+		}, transaction);
 	}
 
-	async delete(id: number): Promise<Video> {
-		return Transaction.transact<Video>(async () => {
-			await this.updateCourseInfo(id, 'delete');
-			return this.videoRepository.delete(id);
-		});
+	delete(id: number, transaction?: TransactionType): Promise<Video> {
+		return Transaction.transact<Video>(async (prismaTransaction) => {
+			const deletedVideo = await this.videoRepository.delete(id);
+			await this.updateLessonInfo(deletedVideo.lessonId, 0, 'UNDEFINED', prismaTransaction);
+			return deletedVideo;
+		}, transaction);
 	};
 }

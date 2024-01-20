@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const DI_1 = __importDefault(require("../dependencyInjection/DI"));
+const DI_1 = __importDefault(require("../DIContainer/DI"));
 const { getMainStatistics } = DI_1.default.get('StatisticsController');
 const statisticsRouter = express_1.default.Router();
 statisticsRouter.route("/get")

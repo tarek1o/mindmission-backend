@@ -2,12 +2,14 @@ import { Prisma } from "@prisma/client";
 import { injectable, unmanaged } from "inversify";
 import { IBaseRepository } from "../../../application/interfaces/IRepositories/Base/IBaseRepository";
 import prisma from "../../../domain/db";
+import { TransactionType } from "../../../application/types/TransactionType";
 
 @injectable()
 export class BaseRepository<T> implements IBaseRepository<T> {
-  private prismaModel!: any;
+  protected prismaModel!: any;
   constructor(@unmanaged() private modelName: Prisma.ModelName) {
-    this.prismaModel = prisma[this.modelName.toLowerCase()[0] + this.modelName.slice(1) as any];
+    this.modelName = this.modelName.toLowerCase()[0] + this.modelName.slice(1) as any
+    this.prismaModel = prisma[this.modelName as any]
   }
 
   count(args: any): Promise<number> {
@@ -22,16 +24,19 @@ export class BaseRepository<T> implements IBaseRepository<T> {
     return this.prismaModel.findUnique(args);
   }
 
-  create(args: any): Promise<T> {
-    return this.prismaModel.create(args);
+  create(args: any, transaction?: TransactionType): Promise<T> {
+    const prismaModel = transaction ? transaction[this.modelName as any] : this.prismaModel;
+    return prismaModel.create(args);
   }
 
-  update(args: any): Promise<T> {
-    return this.prismaModel.update(args);
+  update(args: any, transaction?: TransactionType): Promise<T> {
+    const prismaModel = transaction ? transaction[this.modelName as any] : this.prismaModel;
+    return prismaModel.update(args);
   }
 
-  delete(id: number): Promise<T> {
-    return this.prismaModel.delete({
+  delete(id: number, transaction?: TransactionType): Promise<T> {
+    const prismaModel = transaction ? transaction[this.modelName as any] : this.prismaModel;
+    return prismaModel.delete({
       where: {
         id,
       }

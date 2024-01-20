@@ -1,12 +1,12 @@
 import express from 'express';
-import container from '../dependencyInjection/DI'
+import container from '../DIContainer/DI'
 import {idValidation} from "../middlewares/express-validator/idValidation";
-import {wishlistValidation, rateValidation} from "../middlewares/express-validator/studentValidator";
+import {wishlistValidation} from "../middlewares/express-validator/studentValidator";
 import {Authorization} from '../middlewares/authorization-validator/AuthorizationValidator';
 import { StudentController } from '../controllers/StudentController';
 
 const {isAuthenticated, isAuthorized} = container.get<Authorization>('Authorization');
-const {getAllStudents, getStudentById, addToWishlist, removeFromWishlist, rate} = container.get<StudentController>('StudentController');
+const {getAllStudents, getStudentById, addToWishlist, removeFromWishlist} = container.get<StudentController>('StudentController');
 
 const studentRouter = express.Router();
 
@@ -21,8 +21,5 @@ studentRouter.route("/wishlist/add")
 
 studentRouter.route("/wishlist/remove")
 	.post(isAuthenticated, isAuthorized('Wishlist', 'PATCH'), wishlistValidation, removeFromWishlist);
-
-studentRouter.route("/rate")
-	.post(isAuthenticated, isAuthorized('Rating', 'PATCH'), rateValidation, rate);
 
 export default studentRouter;

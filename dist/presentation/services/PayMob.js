@@ -49,8 +49,8 @@ class PayMob {
             })
         });
         if (response.status !== HTTPStatusCode_1.default.Created) {
-            const message = await response.json();
-            throw new APIError_1.default(`PayMob error: ${message.message}, please try again`, HTTPStatusCode_1.default.InternalServerError);
+            const error = await response.json();
+            throw new APIError_1.default(`PayMob error: ${error.message}, please try again`, HTTPStatusCode_1.default.InternalServerError);
         }
         const { id } = await response.json();
         return id;

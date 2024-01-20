@@ -4,6 +4,7 @@ import slugify from "slugify"
 import {IRoleService} from "../interfaces/IServices/IRoleService"
 import {IRoleRepository} from "../interfaces/IRepositories/IRoleRepository"
 import { CreateRole, UpdateRole } from "../inputs/roleInput"
+import { TransactionType } from "../types/TransactionType"
 import APIError from "../../presentation/errorHandlers/APIError"
 import HttpStatusCode from "../../presentation/enums/HTTPStatusCode"
 
@@ -23,7 +24,7 @@ export class RoleService implements IRoleService {
 		return this.roleRepository.findUnique(args);
 	};
 
-	async create(args: {data: CreateRole, select?: Prisma.RoleSelect, include?: Prisma.RoleInclude}): Promise<Role> {
+	async create(args: {data: CreateRole, select?: Prisma.RoleSelect, include?: Prisma.RoleInclude}, transaction?: TransactionType): Promise<Role> {
 		const {name, description, allowedModels} = args.data;
 		const slug = slugify(name, {trim: true, lower: true});
 		const isExist = await this.findUnique({
@@ -46,10 +47,10 @@ export class RoleService implements IRoleService {
 			},
 			select: args.select,
 			include: args.include
-		});
+		}, transaction);
 	};
 
-	async update(args: {data: UpdateRole, select?: Prisma.RoleSelect, include?: Prisma.RoleInclude}): Promise<Role> {
+	async update(args: {data: UpdateRole, select?: Prisma.RoleSelect, include?: Prisma.RoleInclude}, transaction?: TransactionType): Promise<Role> {
 		const {id, name, description, allowedModels} = args.data;
 		const slug = name ? slugify(name.toString(), {trim: true, lower: true}) : undefined
 		if(name) {
@@ -77,10 +78,10 @@ export class RoleService implements IRoleService {
 			},
 			select: args.select,
 			include: args.include
-		});
+		}, transaction);
 	};
 
-	async delete(id: number): Promise<Role> {
+	async delete(id: number, transaction?: TransactionType): Promise<Role> {
 		const role = await this.findUnique({
 			where: {
 				id
@@ -98,6 +99,6 @@ export class RoleService implements IRoleService {
 		if(role.slug === "student" || role.slug === "instructor" || role.slug === "super-admin") {
 			throw new Error('This role is not deletable');
 		}
-		return this.roleRepository.delete(id);
+		return this.roleRepository.delete(id, transaction);
 	};
 }

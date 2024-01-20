@@ -5,7 +5,6 @@ export type CreateLesson = {
   isFree?: boolean;
   attachment?: string; 
   order: number;
-  lessonType: LessonType;
   sectionId: number
 };
 
@@ -15,4 +14,5 @@ export type UpdateLesson = {
   isFree?: boolean;
   attachment?: string; 
   lessonType?: LessonType;
+  time?: number;
 };

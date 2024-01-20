@@ -1,14 +1,18 @@
 import prisma from "../../domain/db";
+import { TransactionType } from "../../application/types/TransactionType";
+import APIError from "../../presentation/errorHandlers/APIError";
+import HttpStatusCode from "../../presentation/enums/HTTPStatusCode";
 
 export abstract class Transaction {
-  static transact<T>(fn: () => Promise<T>): Promise<T>{
+  static async transact<T>(fn: (transaction: TransactionType) => Promise<T>, transaction?: TransactionType): Promise<T> {
 		try {
-			return prisma.$transaction(fn);
+			return transaction ? await fn(transaction) : await prisma.$transaction(async prismaTransaction => await fn(prismaTransaction));
 		}catch(error: any) {
-			if(error.code !== 'P2025') {
-				throw error;
+			if(error.code === 'P2028') { // P2028 status code for Transaction error
+				return await Transaction.transact<T>(fn, transaction);
+				// throw new APIError('Something went wrong, please try again!', HttpStatusCode.InternalServerError);
 			}
-			return Transaction.transact<T>(fn);
+			throw error;
 		}
 	};
 }

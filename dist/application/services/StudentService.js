@@ -17,22 +17,16 @@ const inversify_1 = require("inversify");
 const APIError_1 = __importDefault(require("../../presentation/errorHandlers/APIError"));
 const HTTPStatusCode_1 = __importDefault(require("../../presentation/enums/HTTPStatusCode"));
 let StudentService = class StudentService {
-    constructor(studentRepository, courseService) {
+    constructor(studentRepository) {
         this.studentRepository = studentRepository;
-        this.courseService = courseService;
     }
-    isStudentEnrollInThCourse(userId, courseId) {
-        return this.studentRepository.findFirst({
+    async getStudentId(userId) {
+        return this.findUnique({
             where: {
-                userId,
-                enrolledCourses: {
-                    some: {
-                        id: courseId
-                    }
-                }
+                userId
             },
             select: {
-                id: true
+                id: true,
             }
         });
     }
@@ -53,71 +47,41 @@ let StudentService = class StudentService {
         return this.studentRepository.findFirst(args);
     }
     ;
-    async update(args) {
-        const { userId, enrolledCourses, ratings, wishlistCourse } = args.data;
-        let instructorId = 0;
-        let studentId = 0;
-        if (ratings) {
-            const isCourseExist = await this.courseService.findUnique({
-                where: {
-                    id: ratings.courseId,
-                },
-                select: {
-                    instructorId: true
-                }
-            });
-            if (!isCourseExist) {
-                throw new APIError_1.default("This course does not exist", HTTPStatusCode_1.default.BadRequest);
-            }
-            const student = await this.isStudentEnrollInThCourse(userId, ratings.courseId);
-            if (!student) {
-                throw new APIError_1.default('The current student cannot rate the course not enroll in', HTTPStatusCode_1.default.Forbidden);
-            }
-            studentId = student.id;
-            instructorId = isCourseExist.instructorId;
+    async update(args, transaction) {
+        const { userId, enrolledCourses, wishlistCourse } = args.data;
+        const student = await this.getStudentId(userId);
+        if (!student) {
+            throw new APIError_1.default('This student is not exist', HTTPStatusCode_1.default.BadRequest);
         }
+        const studentId = student.id;
         return this.studentRepository.update({
             where: {
-                userId
+                id: studentId
             },
             data: {
-                ratings: ratings ? {
-                    upsert: {
-                        where: {
-                            studentId_courseId_instructorId: {
-                                studentId,
-                                instructorId,
-                                courseId: ratings.courseId,
-                            },
-                        },
-                        update: {
-                            commentForCourse: ratings.commentForCourse,
-                            commentForInstructor: ratings.commentForInstructor,
-                            courseRate: ratings.courseRate,
-                            instructorRate: ratings.instructorRate
-                        },
-                        create: {
-                            commentForCourse: ratings.commentForCourse,
-                            commentForInstructor: ratings.commentForInstructor,
-                            courseRate: ratings.courseRate,
-                            instructorRate: ratings.instructorRate,
-                            course: {
-                                connect: {
-                                    id: ratings.courseId
-                                },
-                            },
-                            instructor: {
-                                connect: {
-                                    id: instructorId
-                                }
-                            }
-                        }
-                    }
-                } : undefined,
-                enrolledCourses: enrolledCourses ? {
-                    connect: enrolledCourses === null || enrolledCourses === void 0 ? void 0 : enrolledCourses.map(id => {
+                enrollmentCourses: enrolledCourses ? {
+                    upsert: enrolledCourses === null || enrolledCourses === void 0 ? void 0 : enrolledCourses.map(id => {
                         return {
-                            id
+                            where: {
+                                studentId_courseId: {
+                                    studentId,
+                                    courseId: id
+                                }
+                            },
+                            update: {
+                                course: {
+                                    connect: {
+                                        id
+                                    }
+                                }
+                            },
+                            create: {
+                                course: {
+                                    connect: {
+                                        id
+                                    }
+                                }
+                            },
                         };
                     })
                 } : undefined,
@@ -129,14 +93,13 @@ let StudentService = class StudentService {
             },
             select: args.select,
             include: args.include
-        });
+        }, transaction);
     }
     ;
 };
 exports.StudentService = StudentService;
 exports.StudentService = StudentService = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)('IStudentRepository')),
-    __param(1, (0, inversify_1.inject)("ICourseService"))
+    __param(0, (0, inversify_1.inject)('IStudentRepository'))
 ], StudentService);
 //# sourceMappingURL=StudentService.js.map

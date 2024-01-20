@@ -1,5 +1,5 @@
 import express from 'express';
-import container from '../dependencyInjection/DI'
+import container from '../DIContainer/DI'
 import { signupValidation, loginValidation, forgetPasswordValidation, verifyResetPasswordCodeValidation, resetPasswordValidation, refreshTokenValidation } from '../middlewares/express-validator/authenticationValidator';
 import {addInstructorValidation} from "../middlewares/express-validator/instructorValidator";
 import {AuthenticationController} from '../controllers/AuthenticationController';

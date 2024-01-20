@@ -57,7 +57,7 @@ let UserService = class UserService {
         return this.userRepository.findFirst(args);
     }
     ;
-    async create(args) {
+    async create(args, transaction) {
         const { firstName, lastName, email, password, mobilePhone, whatsAppNumber, bio, picture, role, refreshToken, instructor } = args.data;
         if (await this.isEmailExist(email)) {
             throw new APIError_1.default('This email already exists', HTTPStatusCode_1.default.BadRequest);
@@ -99,10 +99,10 @@ let UserService = class UserService {
             },
             select: args.select,
             include: args.include
-        });
+        }, transaction);
     }
     ;
-    async update(args) {
+    async update(args, transaction) {
         var _a, _b;
         const { id, firstName, lastName, email, isEmailVerified, password, passwordUpdatedTime, resetPasswordCode, bio, picture, mobilePhone, whatsAppNumber, refreshToken, isOnline, isActive, isBlocked, isDeleted, roleId, personalLinks } = args.data;
         if (resetPasswordCode && resetPasswordCode.code && !resetPasswordCode.isVerified) {
@@ -215,11 +215,11 @@ let UserService = class UserService {
             },
             select: args.select,
             include: args.include
-        });
+        }, transaction);
     }
     ;
-    delete(id) {
-        return this.userRepository.delete(id);
+    delete(id, transaction) {
+        return this.userRepository.delete(id, transaction);
     }
     ;
 };

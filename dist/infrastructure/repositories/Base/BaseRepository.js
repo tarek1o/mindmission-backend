@@ -18,7 +18,8 @@ const db_1 = __importDefault(require("../../../domain/db"));
 let BaseRepository = class BaseRepository {
     constructor(modelName) {
         this.modelName = modelName;
-        this.prismaModel = db_1.default[this.modelName.toLowerCase()[0] + this.modelName.slice(1)];
+        this.modelName = this.modelName.toLowerCase()[0] + this.modelName.slice(1);
+        this.prismaModel = db_1.default[this.modelName];
     }
     count(args) {
         return this.prismaModel.count(args);
@@ -29,14 +30,17 @@ let BaseRepository = class BaseRepository {
     findUnique(args) {
         return this.prismaModel.findUnique(args);
     }
-    create(args) {
-        return this.prismaModel.create(args);
+    create(args, transaction) {
+        const prismaModel = transaction ? transaction[this.modelName] : this.prismaModel;
+        return prismaModel.create(args);
     }
-    update(args) {
-        return this.prismaModel.update(args);
+    update(args, transaction) {
+        const prismaModel = transaction ? transaction[this.modelName] : this.prismaModel;
+        return prismaModel.update(args);
     }
-    delete(id) {
-        return this.prismaModel.delete({
+    delete(id, transaction) {
+        const prismaModel = transaction ? transaction[this.modelName] : this.prismaModel;
+        return prismaModel.delete({
             where: {
                 id,
             }

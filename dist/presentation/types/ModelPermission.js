@@ -11,6 +11,7 @@ exports.AllowedModels = {
     Courses: 'course',
     Wishlists: 'wishlist',
     Payments: 'payment',
+    Enrollments: 'enrollment',
     Ratings: 'rating',
     Sections: 'section',
     Lessons: 'lesson',

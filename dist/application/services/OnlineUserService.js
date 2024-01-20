@@ -32,9 +32,9 @@ let OnlineUserService = class OnlineUserService {
         return this.onlineUserRepository.findUnique(args);
     }
     ;
-    async create(args) {
+    async create(args, transaction) {
         const { socketId, userId } = args.data;
-        return Transaction_1.Transaction.transact(async () => {
+        return Transaction_1.Transaction.transact(async (prismTransaction) => {
             const createdOnlineUser = await this.onlineUserRepository.upsert({
                 where: {
                     socketId,
@@ -51,7 +51,7 @@ let OnlineUserService = class OnlineUserService {
                 update: {},
                 select: args.select,
                 include: args.include
-            });
+            }, prismTransaction);
             const onlineUserDevices = await this.onlineUserRepository.count({
                 where: {
                     userId
@@ -66,14 +66,14 @@ let OnlineUserService = class OnlineUserService {
                     select: {
                         id: true
                     }
-                });
+                }, prismTransaction);
             }
             return createdOnlineUser;
-        });
+        }, transaction);
     }
     ;
-    async delete(socketId) {
-        return Transaction_1.Transaction.transact(async () => {
+    async delete(socketId, transaction) {
+        return Transaction_1.Transaction.transact(async (prismTransaction) => {
             const deletedOnlineUser = await this.onlineUserRepository.delete({
                 where: {
                     socketId,
@@ -82,7 +82,7 @@ let OnlineUserService = class OnlineUserService {
                     id: true,
                     userId: true,
                 }
-            });
+            }, prismTransaction);
             const onlineUserDevices = await this.onlineUserRepository.count({
                 where: {
                     userId: deletedOnlineUser.userId
@@ -97,10 +97,10 @@ let OnlineUserService = class OnlineUserService {
                     select: {
                         id: true
                     }
-                });
+                }, prismTransaction);
             }
             return deletedOnlineUser;
-        });
+        }, transaction);
     }
     ;
 };

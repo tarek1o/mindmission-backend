@@ -43,9 +43,6 @@ exports.updateVideoValidation = [
     (0, express_validator_1.body)("input.time")
         .optional()
         .isInt({ min: 1 }).withMessage("Time must be an integer number more than or equal to 1"),
-    (0, express_validator_1.body)("input.lessonId")
-        .optional()
-        .isInt({ min: 1 }).withMessage("LessonId must be an integer number more than or equal to 1"),
     ErrorExpressValidatorHandler_1.default.catchExpressValidatorErrors
 ];
 //# sourceMappingURL=videoValidator.js.map

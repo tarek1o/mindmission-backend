@@ -2,6 +2,7 @@ import { Prisma, OnlineUser } from "@prisma/client";
 import { injectable } from "inversify";
 import { IOnlineUserRepository } from "../../application/interfaces/IRepositories/IOnlineUserRepository";
 import prisma from "../../domain/db";
+import { TransactionType } from "../../application/types/TransactionType";
 
 @injectable()
 export class OnlineUserRepository implements IOnlineUserRepository {
@@ -27,11 +28,11 @@ export class OnlineUserRepository implements IOnlineUserRepository {
     return prisma.onlineUser.findFirst(args);
   }
 
-  upsert(args: Prisma.OnlineUserUpsertArgs): Promise<OnlineUser> {
-    return prisma.onlineUser.upsert(args);
+  upsert(args: Prisma.OnlineUserUpsertArgs, transaction?: TransactionType): Promise<OnlineUser> {
+    return (transaction || prisma).onlineUser.upsert(args);
   }
 
-  delete(args: Prisma.OnlineUserDeleteArgs): Promise<OnlineUser> {
-    return prisma.onlineUser.delete(args);
+  delete(args: Prisma.OnlineUserDeleteArgs, transaction?: TransactionType): Promise<OnlineUser> {
+    return (transaction || prisma).onlineUser.delete(args);
   }
 }

@@ -1,6 +1,6 @@
-import { Student, Course } from "@prisma/client";
+import { Student, Course, Enrollment } from "@prisma/client";
 
 export interface ExtendedStudent extends Student {
-  enrolledCourses?: Course[]
+  enrollmentCourses?: Enrollment[]
   wishlistCourses?: Course[]
 }

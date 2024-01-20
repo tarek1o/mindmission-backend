@@ -12,9 +12,9 @@ export const addArticleValidation = [
     .notEmpty().withMessage("Article content is required")
     .isString().withMessage("Article Content must be string"),
 
-  body("input.readingTime")
-    .notEmpty().withMessage("Reading Time is required")
-    .isInt({min: 1}).withMessage("Reading Time must be a positive integer number"),
+  body("input.time")
+    .notEmpty().withMessage("Time is required")
+    .isInt({min: 1}).withMessage("Time must be a positive integer number"),
 
   body("input.lessonId")
     .notEmpty().withMessage("LessonId is required")
@@ -34,13 +34,9 @@ export const updateArticleValidation = [
     .optional()
     .isString().withMessage("Article Content must be string"),
     
-  body("input.readingTime")
+  body("input.time")
     .optional()
-    .isInt({min: 1}).withMessage("Reading Time must be a positive integer number"),
-
-  body("input.lessonId")
-    .optional()
-    .isInt({min: 1}).withMessage("LessonId must be an integer number more than or equal to 1"),
+    .isInt({min: 1}).withMessage("Time must be a positive integer number"),
 
   ErrorExpressValidatorHandler.catchExpressValidatorErrors
 ];

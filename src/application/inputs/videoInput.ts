@@ -12,5 +12,4 @@ export type UpdateVideo = {
   description?: string; 
   url?: string;
   time?: number;
-  lessonId?: number;
 };

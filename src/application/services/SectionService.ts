@@ -3,14 +3,14 @@ import {inject, injectable } from "inversify"
 import slugify from "slugify"
 import { ISectionService } from "../interfaces/IServices/ISectionService"
 import { ISectionRepository } from "../interfaces/IRepositories/ISectionRepository"
-import { ILessonService } from "../interfaces/IServices/ILessonService"
 import { CreateSection, UpdateSection } from "../inputs/sectionInput"
+import { TransactionType } from "../types/TransactionType"
 import APIError from "../../presentation/errorHandlers/APIError"
 import HttpStatusCode from "../../presentation/enums/HTTPStatusCode"
 
 @injectable()
 export class SectionService implements ISectionService {
-	constructor(@inject('ISectionRepository') private sectionRepository: ISectionRepository, @inject('ILessonService') private lessonService: ILessonService) {}
+	constructor(@inject('ISectionRepository') private sectionRepository: ISectionRepository) {}
 
 	count(args: Prisma.SectionCountArgs): Promise<number> {
 		return this.sectionRepository.count(args);
@@ -28,7 +28,7 @@ export class SectionService implements ISectionService {
 		return this.sectionRepository.findFirst(args);
 	};
 
-  async create(args: {data: CreateSection, select?: Prisma.SectionSelect, include?: Prisma.SectionInclude}): Promise<Section> {
+  async create(args: {data: CreateSection, select?: Prisma.SectionSelect, include?: Prisma.SectionInclude}, transaction?: TransactionType): Promise<Section> {
 		const {title, description, order, courseId} = args.data;
 		const slug = slugify(title, {lower: true, trim: true});
 		const isOrderExist = await this.findFirst({
@@ -57,23 +57,12 @@ export class SectionService implements ISectionService {
 			},
 			select: args?.select,
 			include: args?.include
-		});
+		}, transaction);
 	}
 
-	async update(args: {data: UpdateSection, select?: Prisma.SectionSelect, include?: Prisma.SectionInclude}): Promise<Section> {
+	async update(args: {data: UpdateSection, select?: Prisma.SectionSelect, include?: Prisma.SectionInclude}, transaction: TransactionType): Promise<Section> {
 		const {id, title, description, lessons} = args.data;
 		const slug = title ? slugify(title.toString(), {lower: true, trim: true}) : undefined;
-		if(lessons) {
-			const count = await this.lessonService.count({
-				where: {
-					sectionId: id
-				},
-			});
-
-			if(count !== lessons.length) {
-				throw new APIError("You should send all section's lessons during update the order of lessons", HttpStatusCode.BadRequest);
-			}
-		};
 		return this.sectionRepository.update({
 			where: {
 				id: id
@@ -97,10 +86,10 @@ export class SectionService implements ISectionService {
 			},
 			select: args?.select,
 			include: args?.include
-		});
+		}, transaction);
 	}
 
-	delete(id: number): Promise<Section> {
-		return this.sectionRepository.delete(id);
+	delete(id: number, transaction: TransactionType): Promise<Section> {
+		return this.sectionRepository.delete(id, transaction);
 	};
 }

@@ -7,6 +7,7 @@ import { IRoleService } from "../interfaces/IServices/IRoleService";
 import { CreateUser, UpdateUser } from "../inputs/userInput";
 import { ExtendedUser } from "../types/ExtendedUser";
 import { ExtendedRole } from "../types/ExtendedRole";
+import { TransactionType } from "../types/TransactionType";
 import APIError from "../../presentation/errorHandlers/APIError";
 import HttpStatusCode from "../../presentation/enums/HTTPStatusCode";
 
@@ -48,7 +49,7 @@ export class UserService implements IUserService {
 		return this.userRepository.findFirst(args);
 	};
 
-	async create(args: {data: CreateUser, select?: Prisma.UserSelect; include?: Prisma.UserInclude}): Promise<ExtendedUser> {
+	async create(args: {data: CreateUser, select?: Prisma.UserSelect; include?: Prisma.UserInclude}, transaction?: TransactionType): Promise<ExtendedUser> {
 		const {firstName, lastName, email, password, mobilePhone, whatsAppNumber, bio, picture, role, refreshToken, instructor} = args.data;
 		if(await this.isEmailExist(email)) {
 			throw new APIError('This email already exists', HttpStatusCode.BadRequest);
@@ -95,10 +96,10 @@ export class UserService implements IUserService {
 			},
 			select: args.select,
 			include: args.include
-		});
+		}, transaction);
 	};
 
-	async update(args: {data: UpdateUser, select?: Prisma.UserSelect, include?: Prisma.UserInclude}): Promise<ExtendedUser> {
+	async update(args: {data: UpdateUser, select?: Prisma.UserSelect, include?: Prisma.UserInclude}, transaction?: TransactionType): Promise<ExtendedUser> {
 		const {id, firstName, lastName, email, isEmailVerified, password, passwordUpdatedTime, resetPasswordCode, bio, picture, mobilePhone, whatsAppNumber, refreshToken, isOnline, isActive, isBlocked, isDeleted, roleId, personalLinks} = args.data
 		if(resetPasswordCode && resetPasswordCode.code && !resetPasswordCode.isVerified) {
 			resetPasswordCode.code = bcrypt.hashSync((args.data.resetPasswordCode as any).code.toString(), 10);
@@ -211,10 +212,10 @@ export class UserService implements IUserService {
 			},
 			select: args.select,
 			include: args.include
-		});
+		}, transaction);
 	};
 
-	delete(id: number): Promise<ExtendedUser> {
-		return this.userRepository.delete(id);
+	delete(id: number, transaction?: TransactionType): Promise<ExtendedUser> {
+		return this.userRepository.delete(id, transaction);
 	};
 }

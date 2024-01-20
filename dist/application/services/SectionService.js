@@ -18,9 +18,8 @@ const slugify_1 = __importDefault(require("slugify"));
 const APIError_1 = __importDefault(require("../../presentation/errorHandlers/APIError"));
 const HTTPStatusCode_1 = __importDefault(require("../../presentation/enums/HTTPStatusCode"));
 let SectionService = class SectionService {
-    constructor(sectionRepository, lessonService) {
+    constructor(sectionRepository) {
         this.sectionRepository = sectionRepository;
-        this.lessonService = lessonService;
     }
     count(args) {
         return this.sectionRepository.count(args);
@@ -38,7 +37,7 @@ let SectionService = class SectionService {
         return this.sectionRepository.findFirst(args);
     }
     ;
-    async create(args) {
+    async create(args, transaction) {
         const { title, description, order, courseId } = args.data;
         const slug = (0, slugify_1.default)(title, { lower: true, trim: true });
         const isOrderExist = await this.findFirst({
@@ -67,22 +66,11 @@ let SectionService = class SectionService {
             },
             select: args === null || args === void 0 ? void 0 : args.select,
             include: args === null || args === void 0 ? void 0 : args.include
-        });
+        }, transaction);
     }
-    async update(args) {
+    async update(args, transaction) {
         const { id, title, description, lessons } = args.data;
         const slug = title ? (0, slugify_1.default)(title.toString(), { lower: true, trim: true }) : undefined;
-        if (lessons) {
-            const count = await this.lessonService.count({
-                where: {
-                    sectionId: id
-                },
-            });
-            if (count !== lessons.length) {
-                throw new APIError_1.default("You should send all section's lessons during update the order of lessons", HTTPStatusCode_1.default.BadRequest);
-            }
-        }
-        ;
         return this.sectionRepository.update({
             where: {
                 id: id
@@ -106,17 +94,16 @@ let SectionService = class SectionService {
             },
             select: args === null || args === void 0 ? void 0 : args.select,
             include: args === null || args === void 0 ? void 0 : args.include
-        });
+        }, transaction);
     }
-    delete(id) {
-        return this.sectionRepository.delete(id);
+    delete(id, transaction) {
+        return this.sectionRepository.delete(id, transaction);
     }
     ;
 };
 exports.SectionService = SectionService;
 exports.SectionService = SectionService = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)('ISectionRepository')),
-    __param(1, (0, inversify_1.inject)('ILessonService'))
+    __param(0, (0, inversify_1.inject)('ISectionRepository'))
 ], SectionService);
 //# sourceMappingURL=SectionService.js.map

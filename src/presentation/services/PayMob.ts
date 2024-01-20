@@ -53,8 +53,8 @@ export abstract class PayMob {
       })
     });
     if(response.status !== HTTPStatusCode.Created) {
-      const message = await response.json();
-      throw new APIError(`PayMob error: ${message.message}, please try again`, HTTPStatusCode.InternalServerError)
+      const error = await response.json();
+      throw new APIError(`PayMob error: ${error.message}, please try again`, HTTPStatusCode.InternalServerError)
     }
     const {id} = await response.json();
     return id;

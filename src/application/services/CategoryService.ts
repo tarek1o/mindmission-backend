@@ -3,9 +3,10 @@ import {inject, injectable } from "inversify"
 import slugify from "slugify"
 import { ICategoryService } from "../interfaces/IServices/ICategoryService"
 import { ICategoryRepository } from "../interfaces/IRepositories/ICategoryRepository"
+import { CreateCategory, UpdateCategory } from "../inputs/categoryInput"
+import { TransactionType } from "../types/TransactionType"
 import APIError from "../../presentation/errorHandlers/APIError"
 import HttpStatusCode from "../../presentation/enums/HTTPStatusCode"
-import { CreateCategory, UpdateCategory } from "../inputs/categoryInput"
 
 @injectable()
 export class CategoryService implements ICategoryService {
@@ -51,7 +52,7 @@ export class CategoryService implements ICategoryService {
 		return this.categoryRepository.findUnique(args);
 	};
 
-	async create(args: {data: CreateCategory, select?: Prisma.CategorySelect, include?: Prisma.CategoryInclude}): Promise<Category> {
+	async create(args: {data: CreateCategory, select?: Prisma.CategorySelect, include?: Prisma.CategoryInclude}, transaction?: TransactionType): Promise<Category> {
 		const {name, type, description, parentId} = args.data;
 		
 		const slug = slugify(name, {trim: true, lower: true});
@@ -84,10 +85,10 @@ export class CategoryService implements ICategoryService {
 			},
 			select: args.select,
 			include: args.include
-		});
+		}, transaction);
 	};
 
-	async update(args: {data: UpdateCategory, select?: Prisma.CategorySelect, include?: Prisma.CategoryInclude}): Promise<Category> {
+	async update(args: {data: UpdateCategory, select?: Prisma.CategorySelect, include?: Prisma.CategoryInclude}, transaction?: TransactionType): Promise<Category> {
 		const {id, name, type, description, parentId} = args.data;
 		let slug = undefined
 		if(name) {
@@ -143,10 +144,10 @@ export class CategoryService implements ICategoryService {
 			},
 			select: args.select,
 			include: args.include
-		});
+		}, transaction);
 	};
 
-	delete(id: number): Promise<Category> {
-		return this.categoryRepository.delete(id);
+	delete(id: number, transaction?: TransactionType): Promise<Category> {
+		return this.categoryRepository.delete(id, transaction);
 	};
 }

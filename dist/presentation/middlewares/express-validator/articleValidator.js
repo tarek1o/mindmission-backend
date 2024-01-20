@@ -15,9 +15,9 @@ exports.addArticleValidation = [
     (0, express_validator_1.body)("input.content")
         .notEmpty().withMessage("Article content is required")
         .isString().withMessage("Article Content must be string"),
-    (0, express_validator_1.body)("input.readingTime")
-        .notEmpty().withMessage("Reading Time is required")
-        .isInt({ min: 1 }).withMessage("Reading Time must be a positive integer number"),
+    (0, express_validator_1.body)("input.time")
+        .notEmpty().withMessage("Time is required")
+        .isInt({ min: 1 }).withMessage("Time must be a positive integer number"),
     (0, express_validator_1.body)("input.lessonId")
         .notEmpty().withMessage("LessonId is required")
         .isInt({ min: 1 }).withMessage("LessonId must be an integer number more than or equal to 1"),
@@ -32,12 +32,9 @@ exports.updateArticleValidation = [
     (0, express_validator_1.body)("input.content")
         .optional()
         .isString().withMessage("Article Content must be string"),
-    (0, express_validator_1.body)("input.readingTime")
+    (0, express_validator_1.body)("input.time")
         .optional()
-        .isInt({ min: 1 }).withMessage("Reading Time must be a positive integer number"),
-    (0, express_validator_1.body)("input.lessonId")
-        .optional()
-        .isInt({ min: 1 }).withMessage("LessonId must be an integer number more than or equal to 1"),
+        .isInt({ min: 1 }).withMessage("Time must be a positive integer number"),
     ErrorExpressValidatorHandler_1.default.catchExpressValidatorErrors
 ];
 //# sourceMappingURL=articleValidator.js.map

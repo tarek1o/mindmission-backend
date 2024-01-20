@@ -3,6 +3,7 @@ import { injectable } from "inversify";
 import { IStudentRepository } from "../../application/interfaces/IRepositories/IStudentRepository";
 import prisma from "../../domain/db";
 import { ExtendedStudent } from "../../application/types/ExtendedStudent";
+import { TransactionType } from "../../application/types/TransactionType";
 
 @injectable()
 export class StudentRepository implements IStudentRepository {
@@ -24,7 +25,7 @@ export class StudentRepository implements IStudentRepository {
     return prisma.student.findFirst(args);
   }
 
-  update(args: Prisma.StudentUpdateArgs): Promise<ExtendedStudent> {
-    return prisma.student.update(args);
+  update(args: Prisma.StudentUpdateArgs, transaction?: TransactionType): Promise<ExtendedStudent> {
+    return (transaction || prisma).student.update(args);
   }
 }

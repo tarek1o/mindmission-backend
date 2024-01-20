@@ -1,5 +1,5 @@
 import express from 'express';
-import container from '../dependencyInjection/DI'
+import container from '../DIContainer/DI'
 import {idValidation} from "../middlewares/express-validator/idValidation";
 import {payValidation} from "../middlewares/express-validator/paymentValidator";
 import {Authorization} from '../middlewares/authorization-validator/AuthorizationValidator';
@@ -24,6 +24,11 @@ paymentRouter.route("/paymob/confirm")
 
 paymentRouter.route("/paypal/confirm")
 	.post(payPalPaymentConfirmation);
+
+paymentRouter.route("/response_pay")
+	.get((request, response, next) => {
+		response.status(200).json({Success: true});
+	});
 
 paymentRouter.route("/delete/:id")
 	.post(idValidation, isAuthenticated, isAuthorized('Payment', 'DELETE'), deletePayment);

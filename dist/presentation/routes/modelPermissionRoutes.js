@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const DI_1 = __importDefault(require("../dependencyInjection/DI"));
+const DI_1 = __importDefault(require("../DIContainer/DI"));
 const ModelPermissionController_1 = require("../controllers/ModelPermissionController");
 const { isAuthenticated, isAuthorized } = DI_1.default.get('Authorization');
 const { getAllModelPermissions } = new ModelPermissionController_1.ModelPermissionController();

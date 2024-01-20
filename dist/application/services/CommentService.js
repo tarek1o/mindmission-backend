@@ -27,7 +27,7 @@ let CommentService = class CommentService {
         return this.commentRepository.findUnique(args);
     }
     ;
-    create(args) {
+    create(args, transaction) {
         const { content, lessonId, parentId, userId } = args.data;
         return this.commentRepository.create({
             data: {
@@ -50,10 +50,10 @@ let CommentService = class CommentService {
             },
             select: args.select,
             include: args.include
-        });
+        }, transaction);
     }
     ;
-    update(args) {
+    update(args, transaction) {
         const { id, content } = args.data;
         return this.commentRepository.update({
             where: {
@@ -64,11 +64,11 @@ let CommentService = class CommentService {
             },
             select: args.select,
             include: args.include
-        });
+        }, transaction);
     }
     ;
-    delete(id) {
-        return this.commentRepository.delete(id);
+    delete(id, transaction) {
+        return this.commentRepository.delete(id, transaction);
     }
     ;
 };

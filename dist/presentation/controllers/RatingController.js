@@ -45,12 +45,23 @@ let RatingController = class RatingController {
             }
             response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The rating is retrieved successfully', [rating]));
         });
+        this.upsertRating = (0, express_async_handler_1.default)(async (request, response, next) => {
+            var _a;
+            const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
+            const rating = await this.ratingService.upsert({
+                data: Object.assign(Object.assign({}, request.body.input), { userId: (_a = request.user) === null || _a === void 0 ? void 0 : _a.id }),
+                select,
+                include
+            });
+            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The rating is recorded successfully', [rating]));
+        });
         this.deleteRating = (0, express_async_handler_1.default)(async (request, response, next) => {
             await this.ratingService.delete(+request.params.id);
             this.logService.log("DELETE", "RATING", { id: +request.params.id }, request.user);
             response.status(HTTPStatusCode_1.default.NoContent).json();
         });
     }
+    ;
 };
 exports.RatingController = RatingController;
 exports.RatingController = RatingController = __decorate([

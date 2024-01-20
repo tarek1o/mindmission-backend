@@ -3,6 +3,7 @@ import { injectable } from "inversify";
 import { IInstructorRepository } from "../../application/interfaces/IRepositories/IInstructorRepository";
 import prisma from "../../domain/db";
 import { ExtendedInstructor } from "../../application/types/ExtendedInstructor";
+import { TransactionType } from "../../application/types/TransactionType";
 
 @injectable()
 export class InstructorRepository implements IInstructorRepository {
@@ -20,7 +21,7 @@ export class InstructorRepository implements IInstructorRepository {
     return prisma.instructor.findUnique(args);
   }
 
-  update(args: Prisma.InstructorUpdateArgs): Promise<ExtendedInstructor> {
-    return prisma.instructor.update(args);
+  update(args: Prisma.InstructorUpdateArgs, transaction?: TransactionType): Promise<ExtendedInstructor> {
+    return (transaction || prisma).instructor.update(args);
   }
 }

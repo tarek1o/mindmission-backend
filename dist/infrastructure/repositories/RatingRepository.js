@@ -26,6 +26,9 @@ let RatingRepository = class RatingRepository {
     findUnique(args) {
         return db_1.default.rating.findUnique(args);
     }
+    upsert(args, transaction) {
+        return (transaction || db_1.default).rating.upsert(args);
+    }
     delete(id) {
         return db_1.default.rating.delete({
             where: {

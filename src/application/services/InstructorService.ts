@@ -4,6 +4,7 @@ import slugify from "slugify";
 import { IInstructorRepository } from "../interfaces/IRepositories/IInstructorRepository";
 import { IInstructorService } from "../interfaces/IServices/IInstructorService";
 import { ExtendedInstructor } from "../types/ExtendedInstructor";
+import { TransactionType } from "../types/TransactionType";
 import { UpdateInstructor } from "../inputs/instructorInput";
 
 @injectable()
@@ -22,7 +23,7 @@ export class InstructorService implements IInstructorService {
 		return this.instructorRepository.findUnique(args);
 	};
 
-	async update(args: {data: UpdateInstructor, select?: Prisma.InstructorSelect, include?: Prisma.InstructorInclude}): Promise<ExtendedInstructor> {
+	async update(args: {data: UpdateInstructor, select?: Prisma.InstructorSelect, include?: Prisma.InstructorInclude}, transaction?: TransactionType): Promise<ExtendedInstructor> {
 		const {id, bref, specialization, skills} = args.data;
 		return this.instructorRepository.update({
 			where: {
@@ -54,7 +55,7 @@ export class InstructorService implements IInstructorService {
 				} : undefined
 			},
 			select: args.select,
-			// include: args.include
-		});
+			include: args.include
+		}, transaction);
 	};
 }

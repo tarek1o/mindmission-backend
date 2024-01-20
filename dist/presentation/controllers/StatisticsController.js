@@ -18,10 +18,11 @@ const express_async_handler_1 = __importDefault(require("express-async-handler")
 const ResponseFormatter_1 = require("../responseFormatter/ResponseFormatter");
 const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
 let StatisticsController = class StatisticsController {
-    constructor(courseService, ratingService, instructorService) {
+    constructor(courseService, ratingService, instructorService, enrollmentService) {
         this.courseService = courseService;
         this.ratingService = ratingService;
         this.instructorService = instructorService;
+        this.enrollmentService = enrollmentService;
         this.getMainStatistics = (0, express_async_handler_1.default)(async (request, response, next) => {
             const promiseResult = await Promise.all([
                 this.getAvailableCoursesCount(),
@@ -54,7 +55,13 @@ let StatisticsController = class StatisticsController {
     }
     ;
     async getSuccessfulLearnsCount() {
-        return 0;
+        return this.enrollmentService.count({
+            where: {
+                progress: {
+                    equals: 100
+                }
+            }
+        });
     }
     ;
     async getRatingAvgForAllCourses() {
@@ -64,7 +71,7 @@ let StatisticsController = class StatisticsController {
                 courseRate: true
             },
         });
-        return (_a = aggregateResult._avg) === null || _a === void 0 ? void 0 : _a.courseRate;
+        return ((_a = aggregateResult._avg) === null || _a === void 0 ? void 0 : _a.courseRate) || 0;
     }
     ;
     async getFiveStarInstructorsCount() {
@@ -87,6 +94,7 @@ exports.StatisticsController = StatisticsController = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)('ICourseService')),
     __param(1, (0, inversify_1.inject)("IRatingService")),
-    __param(2, (0, inversify_1.inject)("IInstructorService"))
+    __param(2, (0, inversify_1.inject)("IInstructorService")),
+    __param(3, (0, inversify_1.inject)("IEnrollmentService"))
 ], StatisticsController);
 //# sourceMappingURL=StatisticsController.js.map

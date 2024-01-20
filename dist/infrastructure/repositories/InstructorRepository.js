@@ -23,8 +23,8 @@ let InstructorRepository = class InstructorRepository {
     findUnique(args) {
         return db_1.default.instructor.findUnique(args);
     }
-    update(args) {
-        return db_1.default.instructor.update(args);
+    update(args, transaction) {
+        return (transaction || db_1.default).instructor.update(args);
     }
 };
 exports.InstructorRepository = InstructorRepository;

@@ -2,6 +2,8 @@ import { Prisma, Rating } from "@prisma/client";
 import { injectable } from "inversify";
 import { IRatingRepository } from "../../application/interfaces/IRepositories/IRatingRepository";
 import prisma from "../../domain/db";
+import { DefaultArgs } from "@prisma/client/runtime/library";
+import { TransactionType } from "../../application/types/TransactionType";
 
 @injectable()
 export class RatingRepository implements IRatingRepository {
@@ -21,6 +23,10 @@ export class RatingRepository implements IRatingRepository {
 
   findUnique(args: Prisma.RatingFindUniqueArgs): Promise<Rating | null> {
     return prisma.rating.findUnique(args);
+  }
+
+  upsert(args: Prisma.RatingUpsertArgs, transaction?: TransactionType | undefined): Promise<Rating> {
+    return (transaction || prisma).rating.upsert(args);
   }
 
   delete(id: number): Promise<Rating> {
