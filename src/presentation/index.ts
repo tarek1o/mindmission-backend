@@ -4,8 +4,8 @@ import compression from 'compression';
 import app from './config/Express';
 import server from "./config/ServerCreator";
 import Logger from "./logger";
-import container from "./DIContainer/DI";
-import { RealTimeManager } from "./services/RealTimeManager";
+// import container from "./DIContainer/DI";
+// import { RealTimeManager } from "./services/RealTimeManager";
 import notFoundRoutes from "./errorHandlers/NotFoundRoutesHandler";
 import GlobalError from "./errorHandlers/GlobalErrorHandler"
 import UnhandledRejection from "./errorHandlers/UnhandledRejectionHandler";
