@@ -29,7 +29,7 @@ export class SectionService implements ISectionService {
 	};
 
   async create(args: {data: CreateSection, select?: Prisma.SectionSelect, include?: Prisma.SectionInclude}, transaction?: TransactionType): Promise<Section> {
-		const {title, description, order, courseId} = args.data;
+		const {title, description, isAvailable, order, courseId} = args.data;
 		const slug = slugify(title, {lower: true, trim: true});
 		const isOrderExist = await this.findFirst({
 			where: {
@@ -48,6 +48,7 @@ export class SectionService implements ISectionService {
 				title,
 				slug,
 				order,
+				isAvailable,
 				description,
 				course: {
 					connect: {
@@ -61,7 +62,7 @@ export class SectionService implements ISectionService {
 	}
 
 	async update(args: {data: UpdateSection, select?: Prisma.SectionSelect, include?: Prisma.SectionInclude}, transaction: TransactionType): Promise<Section> {
-		const {id, title, description, lessons} = args.data;
+		const {id, title, description, isAvailable, lessons} = args.data;
 		const slug = title ? slugify(title.toString(), {lower: true, trim: true}) : undefined;
 		return this.sectionRepository.update({
 			where: {
@@ -71,6 +72,7 @@ export class SectionService implements ISectionService {
 				title: title || undefined,
 				slug: slug || undefined,
 				description:  description || undefined,
+				isAvailable,
 				lessons: lessons ? {
 					update: lessons.map(({id, order}) => {
 						return {

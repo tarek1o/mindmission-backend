@@ -236,6 +236,7 @@ model Section {
   title             String
   slug              String
   description       String?
+  isAvailable       Boolean        @default(true)
   order             Int
   lessons           Lesson[]
   courseId          Int
@@ -250,6 +251,7 @@ model Lesson {
   title              String
   slug               String
   isFree             Boolean        @default(false)
+  isAvailable        Boolean        @default(true)
   attachment         String?
   order              Int            @default(0)
   lessonType         LessonType     @default(UNDEFINED)
