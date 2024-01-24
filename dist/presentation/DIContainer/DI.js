@@ -11,6 +11,8 @@ require("./classes/categoryDI");
 require("./classes/instructorDI");
 require("./classes/studentDI");
 require("./classes/courseDI");
+require("./classes/certificateDI");
+require("./classes/certificateTemplateDI");
 require("./classes/sectionDI");
 require("./classes/lessonDI");
 require("./classes/videoDI");

@@ -20,6 +20,8 @@ import statisticsRoutes from "./routes/statisticsRoutes";
 import couponRoutes from "./routes/couponRoutes";
 import commentRoutes from "./routes/commentRoutes";
 import messageRoutes from "./routes/messageRoutes";
+import certificateRoutes from "./routes/certificateRoutes";
+import certificateTemplateRoutes from "./routes/certificateTemplateRoutes";
 import whatsAppRoute from "./routes/whatsAppRoutes"
 
 export const routeMounting = (app: Application) => {
@@ -44,5 +46,7 @@ export const routeMounting = (app: Application) => {
   app.use(`${process.env.apiVersion}/coupons`, couponRoutes);
   app.use(`${process.env.apiVersion}/comments`, commentRoutes);
   app.use(`${process.env.apiVersion}/messages`, messageRoutes);
+  app.use(`${process.env.apiVersion}/certificates`, certificateRoutes);
+  app.use(`${process.env.apiVersion}/templates/certificates`, certificateTemplateRoutes);
   // app.use(`${process.env.apiVersion}/whatsApp`, whatsAppRoute);
 }

@@ -45,8 +45,8 @@ export class CommentController {
 
 	updateComment = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const updatedLesson = await this.commentService.update({data: {id: +request.params.id, content: request.body.input.content}, select, include});
-		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The comment is updated successfully', [updatedLesson]));
+		const updatedComment = await this.commentService.update({data: {id: +request.params.id, content: request.body.input.content}, select, include});
+		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The comment is updated successfully', [updatedComment]));
 	});
 
 	deleteComment = asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => {

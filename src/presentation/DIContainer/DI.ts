@@ -9,6 +9,8 @@ import './classes/categoryDI';
 import './classes/instructorDI';
 import './classes/studentDI';
 import './classes/courseDI';
+import './classes/certificateDI';
+import './classes/certificateTemplateDI';
 import './classes/sectionDI';
 import './classes/lessonDI';
 import './classes/videoDI';

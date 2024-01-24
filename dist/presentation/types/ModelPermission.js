@@ -20,7 +20,9 @@ exports.AllowedModels = {
     Quizzes: 'quiz',
     Comments: 'comment',
     Coupons: 'coupon',
-    Messages: 'message'
+    Messages: 'message',
+    Certificates: 'certificate',
+    CertificateTemplates: 'certificateTemplate',
 };
 exports.Permissions = {
     Read: 'get',

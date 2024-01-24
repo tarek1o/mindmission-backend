@@ -9,6 +9,8 @@
     "build": "rimraf dist && tsc",
     "ts.check": "tsc --project tsconfig.json",
     "add-build": "git add dist",
+    "compile": "tsc",
+    "compile:watch": "tsc -w",
     "dev": "nodemon src/presentation/index.ts",
     "migrate": "prisma db push",
     "generate": "prisma generate",
