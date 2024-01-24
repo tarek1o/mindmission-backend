@@ -99,7 +99,7 @@ let CertificateService = class CertificateService {
         });
     }
     async generateCertificate(certificate, templateURL) {
-        const generateCertificateURL = process.env.GenerateCertificateURL || '';
+        const generateCertificateURL = process.env.GenerateCertificateURL;
         const response = await fetch(generateCertificateURL, {
             method: 'POST',
             headers: {
