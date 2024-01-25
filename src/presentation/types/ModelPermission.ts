@@ -1,4 +1,4 @@
-export type AllowedModel = "User" | "Role" | "Instructor" | "Student" | "Log" | "Category" | "Course" | "Payment" | "Enrollment" | "Wishlist" | "Rating" | "Section" | "Lesson" | "Video" | "Article" | "Quiz" | "Comment" | "Coupon" | "Message" | "Certificate" | "CertificateTemplate";
+export type AllowedModel = "User" | "Role" | "Instructor" | "Student" | "Log" | "Category" | "Course" | "Payment" | "Enrollment" | "Wishlist" | "Rating" | "Section" | "Lesson" | "Video" | "Article" | "Quiz" | "Comment" | "Coupon" | "Message" | "Note" | "Certificate" | "CertificateTemplate";
 export type AllowedMethod = "GET" | "POST" | "PATCH" | "DELETE";
 
 export const AllowedModels = {
@@ -15,6 +15,7 @@ export const AllowedModels = {
   Ratings: 'rating',
   Sections: 'section',
   Lessons: 'lesson',
+  Notes: "note",
   Videos: 'video',
   Articles: 'article',
   Quizzes: 'quiz',

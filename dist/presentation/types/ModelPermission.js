@@ -15,6 +15,7 @@ exports.AllowedModels = {
     Ratings: 'rating',
     Sections: 'section',
     Lessons: 'lesson',
+    Notes: "note",
     Videos: 'video',
     Articles: 'article',
     Quizzes: 'quiz',

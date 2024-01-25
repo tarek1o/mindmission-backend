@@ -10,6 +10,7 @@ import studentRoutes from "./routes/studentRoutes";
 import courseRoutes from "./routes/courseRoutes";
 import sectionRoutes from "./routes/sectionRoutes";
 import lessonRoutes from "./routes/lessonRoutes";
+import noteRoutes from "./routes/noteRoutes";
 import articleRoutes from "./routes/articleRoutes";
 import videoRoutes from "./routes/videoRoutes";
 import quizRoutes from "./routes/quizRoutes";
@@ -36,6 +37,7 @@ export const routeMounting = (app: Application) => {
   app.use(`${process.env.apiVersion}/courses`, courseRoutes);
   app.use(`${process.env.apiVersion}/sections`, sectionRoutes);
   app.use(`${process.env.apiVersion}/lessons`, lessonRoutes);
+  app.use(`${process.env.apiVersion}/notes`, noteRoutes);
   app.use(`${process.env.apiVersion}/articles`, articleRoutes);
   app.use(`${process.env.apiVersion}/videos`, videoRoutes);
   app.use(`${process.env.apiVersion}/quizzes`, quizRoutes);

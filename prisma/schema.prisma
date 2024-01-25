@@ -97,6 +97,7 @@ model Student {
   ratings             Rating[]
   payments            Payment[]
   certificates        Certificate[]
+  notes               Note[]
   userId              Int                  @unique
   user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt           DateTime             @default(now())
@@ -291,9 +292,23 @@ model Lesson {
   section            Section        @relation(fields: [sectionId], references: [id], onDelete: Cascade)
   comments           Comment[]
   enrollmentCourses  Enrollment[]
+  notes              Note[]
   createdAt          DateTime       @default(now())
   updatedAt          DateTime?      @updatedAt
   @@unique([order, sectionId])
+}
+
+model Note {
+  id                 Int            @id @default(autoincrement())
+  time               Int
+  content            String
+  lessonId           Int
+  lesson             Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  studentId          Int
+  student            Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime?      @updatedAt
+  @@unique([time, lessonId, studentId])
 }
 
 enum LessonType {

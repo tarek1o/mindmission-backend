@@ -24,5 +24,6 @@ import './classes/couponDI';
 import './classes/commentDI';
 import './classes/messageDI';
 import './classes/realTimeManagerDI';
+import './classes/noteDI';
 
 export default container;

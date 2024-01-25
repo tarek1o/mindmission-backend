@@ -15,6 +15,7 @@ const studentRoutes_1 = __importDefault(require("./routes/studentRoutes"));
 const courseRoutes_1 = __importDefault(require("./routes/courseRoutes"));
 const sectionRoutes_1 = __importDefault(require("./routes/sectionRoutes"));
 const lessonRoutes_1 = __importDefault(require("./routes/lessonRoutes"));
+const noteRoutes_1 = __importDefault(require("./routes/noteRoutes"));
 const articleRoutes_1 = __importDefault(require("./routes/articleRoutes"));
 const videoRoutes_1 = __importDefault(require("./routes/videoRoutes"));
 const quizRoutes_1 = __importDefault(require("./routes/quizRoutes"));
@@ -39,6 +40,7 @@ const routeMounting = (app) => {
     app.use(`${process.env.apiVersion}/courses`, courseRoutes_1.default);
     app.use(`${process.env.apiVersion}/sections`, sectionRoutes_1.default);
     app.use(`${process.env.apiVersion}/lessons`, lessonRoutes_1.default);
+    app.use(`${process.env.apiVersion}/notes`, noteRoutes_1.default);
     app.use(`${process.env.apiVersion}/articles`, articleRoutes_1.default);
     app.use(`${process.env.apiVersion}/videos`, videoRoutes_1.default);
     app.use(`${process.env.apiVersion}/quizzes`, quizRoutes_1.default);
