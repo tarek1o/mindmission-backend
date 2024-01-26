@@ -50,7 +50,7 @@ export class UserService implements IUserService {
 	};
 
 	async create(args: {data: CreateUser, select?: Prisma.UserSelect; include?: Prisma.UserInclude}, transaction?: TransactionType): Promise<ExtendedUser> {
-		const {firstName, lastName, email, password, mobilePhone, whatsAppNumber, bio, picture, role, refreshToken, instructor} = args.data;
+		const {firstName, lastName, email, password, mobilePhone, whatsAppNumber, bio, picture, platform, isEmailVerified, role, refreshToken, instructor} = args.data;
 		if(await this.isEmailExist(email)) {
 			throw new APIError('This email already exists', HttpStatusCode.BadRequest);
 		};
@@ -76,6 +76,9 @@ export class UserService implements IUserService {
 				whatsAppNumber,
 				bio,
 				picture,
+				platform,
+				isSignWithSSO: platform ? true : false,
+				isEmailVerified,
 				refreshToken,
 				role: {
 					connect: {

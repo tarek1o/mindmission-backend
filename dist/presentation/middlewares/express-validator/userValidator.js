@@ -12,14 +12,10 @@ const allowedPlatforms = Object.values(client_1.Platform);
 exports.addUserValidation = [
     (0, express_validator_1.body)("input.firstName")
         .notEmpty().withMessage("First Name is required")
-        .isString().withMessage("First Name must be string")
-        .isLength({ min: 3 }).withMessage("Too short first name, 3 characters at least")
-        .isLength({ max: 32 }).withMessage("Too long first name, 32 characters at most"),
+        .isString().withMessage("First Name must be string"),
     (0, express_validator_1.body)("input.lastName")
         .notEmpty().withMessage("Last Name is required")
-        .isString().withMessage("Last Name must be string")
-        .isLength({ min: 3 }).withMessage("Too short last name, 3 characters at least")
-        .isLength({ max: 32 }).withMessage("Too long last name, 32 characters at most"),
+        .isString().withMessage("Last Name must be string"),
     (0, express_validator_1.body)("input.email")
         .notEmpty().withMessage("Email is required")
         .isEmail().withMessage("Invalid email"),
@@ -47,14 +43,10 @@ exports.addUserValidation = [
 exports.updateUserValidation = [
     (0, express_validator_1.body)("input.firstName")
         .optional()
-        .isString().withMessage("First Name must be string")
-        .isLength({ min: 3 }).withMessage("Too short first name, 3 characters at least")
-        .isLength({ max: 32 }).withMessage("Too long first name, 32 characters at most"),
+        .isString().withMessage("First Name must be string"),
     (0, express_validator_1.body)("input.lastName")
         .optional()
-        .isString().withMessage("Last Name must be string")
-        .isLength({ min: 3 }).withMessage("Too short last name, 3 characters at least")
-        .isLength({ max: 32 }).withMessage("Too long last name, 32 characters at most"),
+        .isString().withMessage("Last Name must be string"),
     (0, express_validator_1.body)("input.mobilePhone")
         .optional()
         .isMobilePhone(allowedMobilePhoneCountries).withMessage("Invalid Mobile Phone"),

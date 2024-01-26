@@ -7,6 +7,8 @@ exports.routeMounting = void 0;
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const roleRoutes_1 = __importDefault(require("./routes/roleRoutes"));
 const authenticationRoutes_1 = __importDefault(require("./routes/authenticationRoutes"));
+const ssoGmailRoutes_1 = __importDefault(require("./routes/ssoGmailRoutes"));
+const ssoLinkedinRoutes_1 = __importDefault(require("./routes/ssoLinkedinRoutes"));
 const modelPermissionRoutes_1 = __importDefault(require("./routes/modelPermissionRoutes"));
 const logRoutes_1 = __importDefault(require("./routes/logRoutes"));
 const categoryRoutes_1 = __importDefault(require("./routes/categoryRoutes"));
@@ -30,6 +32,8 @@ const certificateRoutes_1 = __importDefault(require("./routes/certificateRoutes"
 const certificateTemplateRoutes_1 = __importDefault(require("./routes/certificateTemplateRoutes"));
 const routeMounting = (app) => {
     app.use(`${process.env.apiVersion}/auth`, authenticationRoutes_1.default);
+    app.use(`${process.env.apiVersion}/sso/gmail`, ssoGmailRoutes_1.default);
+    app.use(`${process.env.apiVersion}/sso/linkedin`, ssoLinkedinRoutes_1.default);
     app.use(`${process.env.apiVersion}/users`, userRoutes_1.default);
     app.use(`${process.env.apiVersion}/roles`, roleRoutes_1.default);
     app.use(`${process.env.apiVersion}/logs`, logRoutes_1.default);

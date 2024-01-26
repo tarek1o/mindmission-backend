@@ -38,7 +38,7 @@ let AuthenticationController = class AuthenticationController {
             return false;
         };
         this.signup = (0, express_async_handler_1.default)(async (request, response, next) => {
-            const { firstName, lastName, email, password, mobilePhone, whatsAppNumber, bio, picture, specialization, teachingType, videoProAcademy, haveAudience } = request.body.input;
+            const { firstName, lastName, email, password, mobilePhone, whatsAppNumber, bio, picture, platform, isEmailVerified, specialization, teachingType, videoProAcademy, haveAudience } = request.body.input;
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
             const slug = (specialization && teachingType && videoProAcademy && haveAudience) ? 'instructor' : 'student';
             const createdUser = await this.userService.create({
@@ -51,6 +51,8 @@ let AuthenticationController = class AuthenticationController {
                     whatsAppNumber,
                     bio,
                     picture,
+                    platform,
+                    isEmailVerified,
                     refreshToken: JWTGenerator_1.JWTGenerator.generateRefreshToken({ firstName, lastName, email, picture }),
                     role: {
                         slug
@@ -71,7 +73,7 @@ let AuthenticationController = class AuthenticationController {
                 }]));
         });
         this.login = (0, express_async_handler_1.default)(async (request, response, next) => {
-            const { email, password } = request.body.input;
+            const { email } = request.body.input;
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
             const isExist = await this.userService.findFirst({
                 where: {
@@ -86,14 +88,16 @@ let AuthenticationController = class AuthenticationController {
                     password: true,
                     isDeleted: true,
                     isBlocked: true,
+                    isSignWithSSO: true,
+                    platform: true,
                     refreshToken: true
                 },
                 include
             });
-            if (!isExist || isExist.isDeleted || !bcrypt_1.default.compareSync(password, isExist.password)) {
+            if (!isExist || isExist.isDeleted || !this.isCredentialsRight(isExist, request)) {
                 throw new APIError_1.default('Your email or password may be incorrect', HTTPStatusCode_1.default.BadRequest);
             }
-            if (isExist.isBlocked) {
+            if (isExist && isExist.isBlocked) {
                 throw new APIError_1.default('Your are blocked, try to contact with our support team', HTTPStatusCode_1.default.Forbidden);
             }
             let regeneratedRefreshToken;
@@ -263,6 +267,10 @@ let AuthenticationController = class AuthenticationController {
         });
     }
     ;
+    isCredentialsRight(user, request) {
+        const { password, isSignWithSSO, platform } = request.body.input;
+        return (isSignWithSSO && platform && user.isSignWithSSO === isSignWithSSO && user.platform === platform) || bcrypt_1.default.compareSync(password, user.password);
+    }
 };
 exports.AuthenticationController = AuthenticationController;
 exports.AuthenticationController = AuthenticationController = __decorate([

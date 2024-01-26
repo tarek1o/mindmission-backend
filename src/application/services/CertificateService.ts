@@ -64,7 +64,7 @@ export class CertificateService implements ICertificateService {
   };
 
   private async generateCertificateCode(): Promise<string> {
-    const certificateCode = crypto.randomBytes(16).toString('hex').toUpperCase();
+    const certificateCode = crypto.randomUUID();
     const isCodeExist = await this.findUnique({
       where: {
         certificateCode

@@ -38,6 +38,8 @@ model User {
   isActive              Boolean     @default(true)
   isBlocked             Boolean     @default(false)
   isDeleted             Boolean     @default(false)
+  isSignWithSSO         Boolean     @default(false)
+  platform              SSOPlatform?
   roleId                Int
   role                  Role        @relation(fields: [roleId], references: [id], onDelete: Cascade)
   student               Student?    
@@ -79,6 +81,11 @@ enum Platform {
   FACEBOOK
   YOUTUBE
   WEBSITE
+}
+
+enum SSOPlatform {
+  GMAIL
+  LINKEDIN
 }
 
 model Admin {

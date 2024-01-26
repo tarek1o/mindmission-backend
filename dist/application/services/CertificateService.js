@@ -73,7 +73,7 @@ let CertificateService = class CertificateService {
     }
     ;
     async generateCertificateCode() {
-        const certificateCode = crypto_1.default.randomBytes(16).toString('hex').toUpperCase();
+        const certificateCode = crypto_1.default.randomUUID();
         const isCodeExist = await this.findUnique({
             where: {
                 certificateCode

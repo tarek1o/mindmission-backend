@@ -58,7 +58,7 @@ let UserService = class UserService {
     }
     ;
     async create(args, transaction) {
-        const { firstName, lastName, email, password, mobilePhone, whatsAppNumber, bio, picture, role, refreshToken, instructor } = args.data;
+        const { firstName, lastName, email, password, mobilePhone, whatsAppNumber, bio, picture, platform, isEmailVerified, role, refreshToken, instructor } = args.data;
         if (await this.isEmailExist(email)) {
             throw new APIError_1.default('This email already exists', HTTPStatusCode_1.default.BadRequest);
         }
@@ -83,6 +83,9 @@ let UserService = class UserService {
                 whatsAppNumber,
                 bio,
                 picture,
+                platform,
+                isSignWithSSO: platform ? true : false,
+                isEmailVerified,
                 refreshToken,
                 role: {
                     connect: Object.assign({}, role)

@@ -2,6 +2,8 @@ import { Application } from 'express';
 import userRoutes from "./routes/userRoutes";
 import roleRoutes from "./routes/roleRoutes";
 import authenticationRoutes from "./routes/authenticationRoutes";
+import ssoGmailRoutes from "./routes/ssoGmailRoutes";
+import ssoLinkedinRoutes from "./routes/ssoLinkedinRoutes";
 import modelPermissionRoutes from "./routes/modelPermissionRoutes";
 import logRoutes from "./routes/logRoutes";
 import categoryRoutes from "./routes/categoryRoutes";
@@ -27,6 +29,8 @@ import whatsAppRoute from "./routes/whatsAppRoutes"
 
 export const routeMounting = (app: Application) => {
   app.use(`${process.env.apiVersion}/auth`, authenticationRoutes);
+  app.use(`${process.env.apiVersion}/sso/gmail`, ssoGmailRoutes);
+  app.use(`${process.env.apiVersion}/sso/linkedin`, ssoLinkedinRoutes);
   app.use(`${process.env.apiVersion}/users`, userRoutes);
   app.use(`${process.env.apiVersion}/roles`, roleRoutes);
   app.use(`${process.env.apiVersion}/logs`, logRoutes);

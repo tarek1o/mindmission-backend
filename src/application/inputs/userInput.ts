@@ -1,4 +1,4 @@
-import { HaveAudience, Platform, TeachingType, VideoProAcademy } from "@prisma/client";
+import { HaveAudience, Platform, SSOPlatform, TeachingType, VideoProAcademy } from "@prisma/client";
 
 export type CreateUser = {
   firstName: string; 
@@ -9,6 +9,8 @@ export type CreateUser = {
   whatsAppNumber: string;
   bio: string;
   picture: string;
+  platform?: SSOPlatform,
+  isEmailVerified?: boolean
   role: {
     id?: number;
     slug?: string;
