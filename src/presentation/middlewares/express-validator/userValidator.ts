@@ -129,6 +129,14 @@ export const updateUserEmailValidation = [
   ErrorExpressValidatorHandler.catchExpressValidatorErrors
 ];
 
+export const confirmEmailVerificationCodeValidation = [
+  body("input.token")
+    .notEmpty().withMessage("Token is required")
+    .isJWT().withMessage("Invalid token formate"),
+
+  ErrorExpressValidatorHandler.catchExpressValidatorErrors
+]
+
 export const updateUserPasswordValidation = [
   body("input.email")
     .notEmpty().withMessage("Email is required")

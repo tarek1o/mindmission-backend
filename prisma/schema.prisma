@@ -26,6 +26,7 @@ model User {
   lastName              String
   email                 String      @unique
   isEmailVerified       Boolean     @default(false)
+  emailVerificationCode String?
   password              String
   mobilePhone           String?
   whatsAppNumber        String?

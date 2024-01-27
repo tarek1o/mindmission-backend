@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUserPasswordValidation = exports.updateUserEmailValidation = exports.updateUserValidation = exports.addUserValidation = void 0;
+exports.updateUserPasswordValidation = exports.confirmEmailVerificationCodeValidation = exports.updateUserEmailValidation = exports.updateUserValidation = exports.addUserValidation = void 0;
 const express_validator_1 = require("express-validator");
 const ErrorExpressValidatorHandler_1 = __importDefault(require("../../errorHandlers/ErrorExpressValidatorHandler"));
 const client_1 = require("@prisma/client");
@@ -106,6 +106,12 @@ exports.updateUserEmailValidation = [
         .isEmail().withMessage("Invalid new email"),
     (0, express_validator_1.body)("input.password")
         .notEmpty().withMessage("Password is required"),
+    ErrorExpressValidatorHandler_1.default.catchExpressValidatorErrors
+];
+exports.confirmEmailVerificationCodeValidation = [
+    (0, express_validator_1.body)("input.token")
+        .notEmpty().withMessage("Token is required")
+        .isJWT().withMessage("Invalid token formate"),
     ErrorExpressValidatorHandler_1.default.catchExpressValidatorErrors
 ];
 exports.updateUserPasswordValidation = [

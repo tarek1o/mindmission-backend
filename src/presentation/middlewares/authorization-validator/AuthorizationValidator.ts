@@ -1,13 +1,13 @@
 import { Response, NextFunction } from "express";
 import asyncHandler from "express-async-handler";
 import {inject, injectable} from "inversify";
-import { ExtendedRequest } from "../../types/ExtendedRequest";
-import APIError from "../../errorHandlers/APIError";
 import {IUserService} from "../../../application/interfaces/IServices/IUserService";
+import { ExtendedRequest } from "../../types/ExtendedRequest";
 import { AllowedMethod, AllowedModel, AllowedModels } from "../../types/ModelPermission";
-import HttpStatusCode from "../../enums/HTTPStatusCode";
 import { MainRoles } from "../../types/MainRoles";
 import { JWTGenerator } from "../../services/JWTGenerator";
+import APIError from "../../errorHandlers/APIError";
+import HttpStatusCode from "../../enums/HTTPStatusCode";
 
 @injectable()
 export class Authorization { 

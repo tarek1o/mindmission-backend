@@ -15,10 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Authorization = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const inversify_1 = require("inversify");
-const APIError_1 = __importDefault(require("../../errorHandlers/APIError"));
 const ModelPermission_1 = require("../../types/ModelPermission");
-const HTTPStatusCode_1 = __importDefault(require("../../enums/HTTPStatusCode"));
 const JWTGenerator_1 = require("../../services/JWTGenerator");
+const APIError_1 = __importDefault(require("../../errorHandlers/APIError"));
+const HTTPStatusCode_1 = __importDefault(require("../../enums/HTTPStatusCode"));
 let Authorization = class Authorization {
     constructor(userService) {
         this.userService = userService;

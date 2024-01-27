@@ -103,7 +103,7 @@ export class UserService implements IUserService {
 	};
 
 	async update(args: {data: UpdateUser, select?: Prisma.UserSelect, include?: Prisma.UserInclude}, transaction?: TransactionType): Promise<ExtendedUser> {
-		const {id, firstName, lastName, email, isEmailVerified, password, passwordUpdatedTime, resetPasswordCode, bio, picture, mobilePhone, whatsAppNumber, refreshToken, isOnline, isActive, isBlocked, isDeleted, roleId, personalLinks} = args.data
+		const {id, firstName, lastName, email, isEmailVerified, emailVerificationCode, password, passwordUpdatedTime, resetPasswordCode, bio, picture, mobilePhone, whatsAppNumber, refreshToken, isOnline, isActive, isBlocked, isDeleted, roleId, personalLinks} = args.data
 		if(resetPasswordCode && resetPasswordCode.code && !resetPasswordCode.isVerified) {
 			resetPasswordCode.code = bcrypt.hashSync((args.data.resetPasswordCode as any).code.toString(), 10);
 		}
@@ -175,6 +175,7 @@ export class UserService implements IUserService {
 				lastName: lastName || undefined,
 				email: email || undefined,
 				isEmailVerified: isEmailVerified || undefined,
+				emailVerificationCode,
 				password: password ? bcrypt.hashSync(password.toString(), 10) : undefined,
 				resetPasswordCode: resetPasswordCode || undefined,
 				passwordUpdatedTime: passwordUpdatedTime || undefined,

@@ -107,7 +107,7 @@ let UserService = class UserService {
     ;
     async update(args, transaction) {
         var _a, _b;
-        const { id, firstName, lastName, email, isEmailVerified, password, passwordUpdatedTime, resetPasswordCode, bio, picture, mobilePhone, whatsAppNumber, refreshToken, isOnline, isActive, isBlocked, isDeleted, roleId, personalLinks } = args.data;
+        const { id, firstName, lastName, email, isEmailVerified, emailVerificationCode, password, passwordUpdatedTime, resetPasswordCode, bio, picture, mobilePhone, whatsAppNumber, refreshToken, isOnline, isActive, isBlocked, isDeleted, roleId, personalLinks } = args.data;
         if (resetPasswordCode && resetPasswordCode.code && !resetPasswordCode.isVerified) {
             resetPasswordCode.code = bcrypt_1.default.hashSync(args.data.resetPasswordCode.code.toString(), 10);
         }
@@ -178,6 +178,7 @@ let UserService = class UserService {
                 lastName: lastName || undefined,
                 email: email || undefined,
                 isEmailVerified: isEmailVerified || undefined,
+                emailVerificationCode,
                 password: password ? bcrypt_1.default.hashSync(password.toString(), 10) : undefined,
                 resetPasswordCode: resetPasswordCode || undefined,
                 passwordUpdatedTime: passwordUpdatedTime || undefined,

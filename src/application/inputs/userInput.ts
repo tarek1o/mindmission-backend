@@ -30,6 +30,7 @@ export type UpdateUser = {
   lastName?: string;
   email?: string;
   isEmailVerified?: boolean;
+  emailVerificationCode?: string | null;
   password?: string;
   resetPasswordCode?: {code: string; expirationTime: number; isVerified: boolean}
   passwordUpdatedTime?: Date;

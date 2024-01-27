@@ -4,8 +4,10 @@ import asyncHandler from'express-async-handler';
 import bcrypt from 'bcrypt';
 import { IUserService } from "../../application/interfaces/IServices/IUserService";
 import { ILogService } from "../../application/interfaces/IServices/ILogService";
+import { ExtendedUser } from "../../application/types/ExtendedUser";
 import { JWTGenerator } from "../services/JWTGenerator";
 import { RequestManager } from "../services/RequestManager";
+import { SendEmail } from "../services/SendEmail";
 import { UserMapper } from "../mapping/UserMapper";
 import { ExtendedRequest } from "../types/ExtendedRequest";
 import { ResponseFormatter } from "../responseFormatter/ResponseFormatter";
@@ -122,6 +124,112 @@ export class UserController {
 			user: mappedUserResults[0],
 			token: JWTGenerator.generateAccessToken(updatedUser),
 		}]));
+	});
+
+	generateEmailVerificationCode = asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => {
+		if(request.user?.isSignWithSSO) {
+			throw new APIError(`You can't verify your email because you sign with ${request.user.platform?.toLowerCase()}`, HttpStatusCode.Conflict);
+		}
+		if(request.user?.isEmailVerified) {
+			throw new APIError('Your email is already verified', HttpStatusCode.Conflict);
+		}
+		const token = JWTGenerator.generateEmailVerificationToken(request.user as ExtendedUser);
+		await this.userService.update({
+			data: {
+				id: request.user?.id as number,
+				emailVerificationCode: token
+			},
+			select: {
+				id: true,
+			}
+		});
+		const message = `<!DOCTYPE html>
+		<html lang="en">
+		<head>
+				<meta charset="UTF-8">
+				<meta http-equiv="X-UA-Compatible" content="IE=edge">
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<style>
+						body {
+							font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+							background-color: #f8f8f8;
+							margin: 0;
+							padding: 0;
+							display: flex;
+							justify-content: center;
+							align-items: center;
+							height: 100vh;
+						}
+						h2 {
+							color: #333;
+						}
+						p {
+							color: #555;
+							margin-bottom: 20px;
+						}
+						a {
+							display: inline-block;
+							padding: 10px 20px;
+							background-color: #007BFF;
+							color: #fff !important;
+							text-decoration: none;
+							border-radius: 5px;
+						}
+						a:hover {
+							background-color: #0056b3;
+						}
+				</style>
+		</head>
+		<body>
+			<div>
+				<h2>Verify Your Email Address</h2>
+				<p>Thank you for registering with us! To activate your account, please click the button below to verify your email address.</p>
+				<a href="${process.env.Frontend_Verity_Email_Route}?token=${token}">Verify Email Address</a>
+				<p>If you did not register for our service, you can safely ignore this email.</p>
+				<p>
+					<span>Best regards,</span>
+					<br/>
+					<span>${process.env.APP_Name} Team</span>
+				</p>
+			</div>
+		</body>
+		</html>
+		`;			
+		await SendEmail.send({
+			to: request.user?.email as string,
+			subject: 'Email Verification',
+			message
+		});
+		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'Verification link is sent to you on your email, please check your inbox'));
+	});
+
+	confirmEmailVerificationCode = asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => {
+		const {token} = request.body.input;
+		const payload = JWTGenerator.verifyEmailVerificationToken(token);
+		const user = await this.userService.findUnique({
+			where: {
+				id: request.user?.id,
+			},
+			select: {
+				id: true,
+				email: true,
+				emailVerificationCode: true
+			}
+		});
+		if(!user || user.email !== payload.email || user.emailVerificationCode !== token) {
+			throw new APIError('Invalid token, please try to access new verification request and try again.', HttpStatusCode.BadRequest);
+		}
+		!user.isEmailVerified && await this.userService.update({
+			data: {
+				id: user.id,
+				isEmailVerified: true,
+				emailVerificationCode: null
+			},
+			select: {
+				id: true
+			}
+		});
+		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'Your email is verified successfully'));
 	});
 
 	updateUserPassword = asyncHandler(async (request, response, next) => {
