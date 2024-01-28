@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
 import asyncHandler from'express-async-handler';
 import { ExtendedRequest } from "../types/ExtendedRequest";
@@ -12,26 +12,19 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 export class CartController {
 	constructor(@inject('ICartService') private cartService: ICartService) {};
 
-	getAllCarts = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
-		const findOptions = RequestManager.findOptionsWrapper(request);
-		const promiseResult = await Promise.all([
-			this.cartService.findMany(findOptions),
-			this.cartService.count({where: findOptions.where})
-		]);
-		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'All carts are retrieved successfully', promiseResult[0], promiseResult[1], findOptions.skip, findOptions.take));
-	});
-
-	getCartById = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {		
+	getCart = asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => {		
 		const {select, include} = RequestManager.findOptionsWrapper(request);
-		const Cart = await this.cartService.findUnique({
+		const Cart = await this.cartService.findFirst({
 			where: {
-				id: +request.params.id,
+				student: {	
+					userId: request.user?.id
+				}
 			},
 			select,
 			include
 		});
 		if(!Cart) {
-			throw new APIError('This cart does not exist', HttpStatusCode.BadRequest);
+			throw new APIError('The current student has no cart', HttpStatusCode.BadRequest);
 		}
 		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'The cart is retrieved successfully', [Cart]));
 	});

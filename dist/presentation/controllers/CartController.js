@@ -22,25 +22,20 @@ const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
 let CartController = class CartController {
     constructor(cartService) {
         this.cartService = cartService;
-        this.getAllCarts = (0, express_async_handler_1.default)(async (request, response, next) => {
-            const findOptions = RequestManager_1.RequestManager.findOptionsWrapper(request);
-            const promiseResult = await Promise.all([
-                this.cartService.findMany(findOptions),
-                this.cartService.count({ where: findOptions.where })
-            ]);
-            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'All carts are retrieved successfully', promiseResult[0], promiseResult[1], findOptions.skip, findOptions.take));
-        });
-        this.getCartById = (0, express_async_handler_1.default)(async (request, response, next) => {
+        this.getCart = (0, express_async_handler_1.default)(async (request, response, next) => {
+            var _a;
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
-            const Cart = await this.cartService.findUnique({
+            const Cart = await this.cartService.findFirst({
                 where: {
-                    id: +request.params.id,
+                    student: {
+                        userId: (_a = request.user) === null || _a === void 0 ? void 0 : _a.id
+                    }
                 },
                 select,
                 include
             });
             if (!Cart) {
-                throw new APIError_1.default('This cart does not exist', HTTPStatusCode_1.default.BadRequest);
+                throw new APIError_1.default('The current student has no cart', HTTPStatusCode_1.default.BadRequest);
             }
             response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The cart is retrieved successfully', [Cart]));
         });
