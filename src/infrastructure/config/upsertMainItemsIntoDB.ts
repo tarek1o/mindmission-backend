@@ -102,6 +102,10 @@ export const upsertMainItemsIntoDB = async () => {
       permissions: [Permissions.Read, Permissions.Create, Permissions.Update, Permissions.Delete]
     },
     {
+      modelName: AllowedModels.Carts,
+      permissions: [Permissions.Read, Permissions.Create, Permissions.Update, Permissions.Delete]
+    },
+    {
       modelName: AllowedModels.Payments,
       permissions: [Permissions.Read, Permissions.Create]
     },
@@ -154,6 +158,10 @@ export const upsertMainItemsIntoDB = async () => {
     },
     {
       modelName: AllowedModels.Notes,
+      permissions: [Permissions.Read]
+    },
+    {
+      modelName: AllowedModels.Carts,
       permissions: [Permissions.Read]
     },
     {

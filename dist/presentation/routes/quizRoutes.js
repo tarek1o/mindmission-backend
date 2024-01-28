@@ -8,8 +8,10 @@ const DI_1 = __importDefault(require("../DIContainer/DI"));
 const idValidation_1 = require("../middlewares/express-validator/idValidation");
 const quizValidator_1 = require("../middlewares/express-validator/quizValidator");
 const { isAuthenticated, isAuthorized } = DI_1.default.get('Authorization');
-const { getAllQuizzes, getQuizById, createQuiz, updateQuiz, deleteQuiz } = DI_1.default.get('QuizController');
+const { getQuizEnums, getAllQuizzes, getQuizById, createQuiz, updateQuiz, deleteQuiz } = DI_1.default.get('QuizController');
 const quizRouter = express_1.default.Router();
+quizRouter.route("/enums")
+    .post(getQuizEnums);
 quizRouter.route("/get")
     .post(isAuthenticated, isAuthorized('Quiz', 'GET'), getAllQuizzes);
 quizRouter.route("/get/:id")

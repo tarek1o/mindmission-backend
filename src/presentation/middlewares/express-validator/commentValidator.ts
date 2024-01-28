@@ -19,8 +19,8 @@ export const addCommentValidation = [
 
 export const updateCommentValidation = [
   body("input.content")
-  .optional()
-  .isString().withMessage("Content must be string"),
+    .optional()
+    .isString().withMessage("Content must be string"),
 
   ErrorExpressValidatorHandler.catchExpressValidatorErrors
 ];

@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { $Enums } from "@prisma/client";
 import { inject, injectable } from "inversify";
 import asyncHandler from'express-async-handler';
 import {IInstructorService} from "../../application/interfaces/IServices/IInstructorService"
@@ -11,6 +12,10 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 @injectable()
 export class InstructorController {
 	constructor(@inject('IInstructorService') private instructorService: IInstructorService) {};
+
+	getInstructorEnums = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
+    response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'All instructor enums are retrieved successfully', [$Enums.HaveAudience, $Enums.TeachingType, $Enums.VideoProAcademy]));
+  });
 
 	getAllInstructors = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const findOptions = RequestManager.findOptionsWrapper(request);

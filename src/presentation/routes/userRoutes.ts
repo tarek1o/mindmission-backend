@@ -6,9 +6,12 @@ import {addUserValidation, updateUserValidation, updateUserEmailValidation, conf
 import {UserController} from '../controllers/UserController';
 
 const {isAuthenticated, isAuthorized, isCurrentUserRoleInBlackList, isCurrentUserRoleInWhiteList, isParamIdEqualCurrentUserId, restrictedUpdateForAdminOnly} = container.get<Authorization>('Authorization');
-const {getAllUsers, getUserById, createUser, restrictedPropertiesForAdminOnly, updateUser, updateUserEmail, generateEmailVerificationCode, confirmEmailVerificationCode, updateUserPassword, deleteUser } = container.get<UserController>('UserController');
+const {getUserEnums, getAllUsers, getUserById, createUser, restrictedPropertiesForAdminOnly, updateUser, updateUserEmail, generateEmailVerificationCode, confirmEmailVerificationCode, updateUserPassword, deleteUser } = container.get<UserController>('UserController');
 
 const userRouter = express.Router();
+
+userRouter.route("/enums")
+	.post(getUserEnums);
 
 userRouter.route("/get")
 	.post(isAuthenticated, isAuthorized('User', 'GET'), isCurrentUserRoleInBlackList('instructor', 'student'), getAllUsers);

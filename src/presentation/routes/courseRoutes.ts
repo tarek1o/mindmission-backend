@@ -6,9 +6,12 @@ import {addCourseValidation, updateCourseValidation} from "../middlewares/expres
 import { CourseController } from '../controllers/CourseController';
 
 const {isAuthenticated, isAuthorized} = container.get<Authorization>('Authorization');
-const {courseAggregates, getAllCourses, getCourseById, createCourse, updateCourse, deleteCourse} = container.get<CourseController>('CourseController');
+const {getCourseEnums, courseAggregates, getAllCourses, getCourseById, createCourse, updateCourse, deleteCourse} = container.get<CourseController>('CourseController');
 
 const courseRouter = express.Router();
+
+courseRouter.route("/enums")
+	.post(getCourseEnums);
 
 courseRouter.route("/aggregate")
 	.post(isAuthenticated, isAuthorized('Course', 'GET'), courseAggregates);

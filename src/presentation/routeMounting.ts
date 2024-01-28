@@ -16,6 +16,7 @@ import noteRoutes from "./routes/noteRoutes";
 import articleRoutes from "./routes/articleRoutes";
 import videoRoutes from "./routes/videoRoutes";
 import quizRoutes from "./routes/quizRoutes";
+import cartRoutes from "./routes/cartRoutes";
 import paymentRoutes from "./routes/paymentRoutes";
 import enrollmentRoutes from "./routes/enrollmentRoutes";
 import ratingRoutes from "./routes/ratingRoutes";
@@ -25,6 +26,7 @@ import commentRoutes from "./routes/commentRoutes";
 import messageRoutes from "./routes/messageRoutes";
 import certificateRoutes from "./routes/certificateRoutes";
 import certificateTemplateRoutes from "./routes/certificateTemplateRoutes";
+import enumRoutes from "./routes/enumRoutes";
 import whatsAppRoute from "./routes/whatsAppRoutes"
 
 export const routeMounting = (app: Application) => {
@@ -45,6 +47,7 @@ export const routeMounting = (app: Application) => {
   app.use(`${process.env.apiVersion}/articles`, articleRoutes);
   app.use(`${process.env.apiVersion}/videos`, videoRoutes);
   app.use(`${process.env.apiVersion}/quizzes`, quizRoutes);
+  app.use(`${process.env.apiVersion}/carts`, cartRoutes);
   app.use(`${process.env.apiVersion}/payments`, paymentRoutes);
   app.use(`${process.env.apiVersion}/enrollments`, enrollmentRoutes);
   app.use(`${process.env.apiVersion}/ratings`, ratingRoutes);
@@ -54,5 +57,6 @@ export const routeMounting = (app: Application) => {
   app.use(`${process.env.apiVersion}/messages`, messageRoutes);
   app.use(`${process.env.apiVersion}/certificates`, certificateRoutes);
   app.use(`${process.env.apiVersion}/templates/certificates`, certificateTemplateRoutes);
+  app.use(`${process.env.apiVersion}/enums`, enumRoutes);
   // app.use(`${process.env.apiVersion}/whatsApp`, whatsAppRoute);
 }

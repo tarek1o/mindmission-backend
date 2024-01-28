@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
 import asyncHandler from'express-async-handler';
-import { PaymentMethod } from "@prisma/client";
+import { $Enums, PaymentMethod } from "@prisma/client";
 import {IPaymentService} from "../../application/interfaces/IServices/IPaymentService"
 import { IStudentService } from "../../application/interfaces/IServices/IStudentService";
 import { ILogService } from "../../application/interfaces/IServices/ILogService";
@@ -42,6 +42,10 @@ export class PaymentController {
 		const enrolledCourses = updatedPayment?.paymentUnits?.map((unit: any) => unit.courseId);
 		await this.studentService.update({data: {userId: updatedPayment.student.userId, enrolledCourses}});
 	};
+
+	getPaymentEnums = asyncHandler((request: Request, response: Response, next: NextFunction) => {
+    response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'All payment enums are retrieved successfully', [$Enums.PaymentMethod, $Enums.Currency]));
+  });
 
 	getAllPayments = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const findOptions = RequestManager.findOptionsWrapper(request);

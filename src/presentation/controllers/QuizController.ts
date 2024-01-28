@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { $Enums } from "@prisma/client";
 import { inject, injectable } from "inversify";
 import asyncHandler from'express-async-handler';
 import {IQuizService} from "../../application/interfaces/IServices/IQuizService"
@@ -10,6 +11,10 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 @injectable()
 export class QuizController {
 	constructor(@inject('IQuizService') private quizService: IQuizService) {};
+
+	getQuizEnums = asyncHandler((request: Request, response: Response, next: NextFunction) => {
+    response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'All quiz enums are retrieved successfully', [$Enums.QuestionLevel, $Enums.CorrectAnswer]));
+  });
 
 	getAllQuizzes = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const findOptions = RequestManager.findOptionsWrapper(request);

@@ -6,9 +6,12 @@ import {Authorization} from '../middlewares/authorization-validator/Authorizatio
 import { PaymentController } from '../controllers/PaymentController';
 
 const {isAuthenticated, isAuthorized} = container.get<Authorization>('Authorization');
-const {getAllPayments, getPaymentById, createPayment, payMobPaymentConfirmation, payPalPaymentConfirmation, deletePayment} = container.get<PaymentController>('PaymentController');
+const {getPaymentEnums, getAllPayments, getPaymentById, createPayment, payMobPaymentConfirmation, payPalPaymentConfirmation, deletePayment} = container.get<PaymentController>('PaymentController');
 
 const paymentRouter = express.Router();
+
+paymentRouter.route("/enums")
+	.post(getPaymentEnums);
 
 paymentRouter.route("/get")
 	.post(isAuthenticated, isAuthorized('Payment', 'GET'), getAllPayments);

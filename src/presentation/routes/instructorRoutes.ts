@@ -6,9 +6,12 @@ import {Authorization} from '../middlewares/authorization-validator/Authorizatio
 import { InstructorController } from '../controllers/InstructorController';
 
 const {isAuthenticated, isAuthorized, isCurrentUserRoleInBlackList} = container.get<Authorization>('Authorization');
-const {getAllInstructors, getInstructorById, updateInstructor} = container.get<InstructorController>('InstructorController');
+const {getInstructorEnums, getAllInstructors, getInstructorById, updateInstructor} = container.get<InstructorController>('InstructorController');
 
 const instructorRouter = express.Router();
+
+instructorRouter.route("/enums")
+	.post(getInstructorEnums);
 
 instructorRouter.route("/get")
 	.post(isAuthenticated, isAuthorized('Instructor', 'GET'), isCurrentUserRoleInBlackList("instructor", "student"), getAllInstructors);

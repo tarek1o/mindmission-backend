@@ -25,5 +25,7 @@ import './classes/commentDI';
 import './classes/messageDI';
 import './classes/realTimeManagerDI';
 import './classes/noteDI';
+import './classes/enumDI';
+import './classes/cartDI';
 
 export default container;

@@ -6,9 +6,12 @@ import {addQuizValidation, updateQuizValidation} from "../middlewares/express-va
 import { QuizController } from '../controllers/QuizController';
 
 const {isAuthenticated, isAuthorized} = container.get<Authorization>('Authorization');
-const {getAllQuizzes, getQuizById, createQuiz, updateQuiz, deleteQuiz} = container.get<QuizController>('QuizController');
+const {getQuizEnums, getAllQuizzes, getQuizById, createQuiz, updateQuiz, deleteQuiz} = container.get<QuizController>('QuizController');
 
 const quizRouter = express.Router();
+
+quizRouter.route("/enums")
+	.post(getQuizEnums);
 
 quizRouter.route("/get")
 	.post(isAuthenticated, isAuthorized('Quiz', 'GET'), getAllQuizzes);

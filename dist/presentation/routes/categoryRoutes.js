@@ -8,8 +8,10 @@ const DI_1 = __importDefault(require("../DIContainer/DI"));
 const idValidation_1 = require("../middlewares/express-validator/idValidation");
 const categoryValidator_1 = require("../middlewares/express-validator/categoryValidator");
 const { isAuthenticated, isAuthorized } = DI_1.default.get('Authorization');
-const { getAllCategories, getCategoryById, createCategory, updateCategory, deleteCategory } = DI_1.default.get('CategoryController');
+const { getCategoryEnums, getAllCategories, getCategoryById, createCategory, updateCategory, deleteCategory } = DI_1.default.get('CategoryController');
 const categoryRouter = express_1.default.Router();
+categoryRouter.route("/enums")
+    .post(getCategoryEnums);
 categoryRouter.route("/get")
     .post(getAllCategories);
 categoryRouter.route("/get/:id")

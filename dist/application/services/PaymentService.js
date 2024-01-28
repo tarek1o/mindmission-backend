@@ -17,9 +17,9 @@ const inversify_1 = require("inversify");
 const APIError_1 = __importDefault(require("../../presentation/errorHandlers/APIError"));
 const HTTPStatusCode_1 = __importDefault(require("../../presentation/enums/HTTPStatusCode"));
 let PaymentService = class PaymentService {
-    constructor(paymentRepository, courseService, couponService) {
+    constructor(paymentRepository, cartService, couponService) {
         this.paymentRepository = paymentRepository;
-        this.courseService = courseService;
+        this.cartService = cartService;
         this.couponService = couponService;
     }
     async getCouponDiscount(couponCode) {
@@ -49,22 +49,27 @@ let PaymentService = class PaymentService {
     }
     ;
     async create(args, transaction) {
-        const { currency, paymentMethod, paymentUnits, userId, couponCode } = args.data;
-        const courses = await this.courseService.findMany({
+        const { currency, paymentMethod, userId, couponCode } = args.data;
+        const cart = await this.cartService.findFirst({
             where: {
-                id: {
-                    in: paymentUnits
+                student: {
+                    userId
                 }
             },
             select: {
                 id: true,
-                price: true
+                courses: {
+                    select: {
+                        id: true,
+                        price: true
+                    }
+                }
             }
         });
-        if (courses.length !== paymentUnits.length) {
-            throw new APIError_1.default("One of the courses is not exist", HTTPStatusCode_1.default.BadRequest);
+        if (!cart || !cart.courses.length) {
+            throw new APIError_1.default("Your cart is empty", HTTPStatusCode_1.default.BadRequest);
         }
-        const totalPrice = courses.reduce((acc, curr) => {
+        const totalPrice = cart.courses.reduce((acc, curr) => {
             return acc + curr.price;
         }, 0);
         let discount = couponCode ? await this.getCouponDiscount(couponCode) : 0;
@@ -75,7 +80,7 @@ let PaymentService = class PaymentService {
                 totalPrice,
                 discount,
                 paymentUnits: {
-                    create: courses.map(({ id, price }) => {
+                    create: cart.courses.map(({ id, price }) => {
                         return {
                             price,
                             courseId: id,
@@ -137,7 +142,7 @@ exports.PaymentService = PaymentService;
 exports.PaymentService = PaymentService = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)('IPaymentRepository')),
-    __param(1, (0, inversify_1.inject)('ICourseService')),
+    __param(1, (0, inversify_1.inject)('ICartService')),
     __param(2, (0, inversify_1.inject)('ICouponService'))
 ], PaymentService);
 //# sourceMappingURL=PaymentService.js.map

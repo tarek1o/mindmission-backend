@@ -1,10 +1,10 @@
-import { Prisma } from "@prisma/client"
+import { Course, Prisma } from "@prisma/client"
 import {inject, injectable } from "inversify"
 import { IPaymentService } from "../interfaces/IServices/IPaymentService"
 import { IPaymentRepository } from "../interfaces/IRepositories/IPaymentRepository"
 import { CreatePayment, UpdatePayment } from "../inputs/paymentInput"
 import { TransactionType } from "../types/TransactionType"
-import { ICourseService } from "../interfaces/IServices/ICourseService"
+import { ICartService } from "../interfaces/IServices/ICartService";
 import { ICouponService } from "../interfaces/IServices/ICouponService"
 import { ExtendedPayment } from "../types/ExtendedPayment"
 import APIError from "../../presentation/errorHandlers/APIError"
@@ -12,7 +12,7 @@ import HttpStatusCode from "../../presentation/enums/HTTPStatusCode"
 
 @injectable()
 export class PaymentService implements IPaymentService {
-	constructor(@inject('IPaymentRepository') private paymentRepository: IPaymentRepository, @inject('ICourseService') private courseService: ICourseService, @inject('ICouponService') private couponService: ICouponService) {}
+	constructor(@inject('IPaymentRepository') private paymentRepository: IPaymentRepository, @inject('ICartService') private cartService: ICartService, @inject('ICouponService') private couponService: ICouponService) {}
 
 	private async getCouponDiscount(couponCode: string): Promise<number> {
 		const coupon = await this.couponService.findUnique({
@@ -42,22 +42,27 @@ export class PaymentService implements IPaymentService {
 	};
 
   async create(args: {data: CreatePayment, select?: Prisma.PaymentSelect, include?: Prisma.PaymentInclude}, transaction?: TransactionType): Promise<ExtendedPayment> {
-		const {currency, paymentMethod, paymentUnits, userId, couponCode} = args.data;		
-		const courses = await this.courseService.findMany({
+		const {currency, paymentMethod, userId, couponCode} = args.data;		
+		const cart = await this.cartService.findFirst({
 			where: {
-				id: {
-					in: paymentUnits
+				student: {
+					userId
 				}
 			},
 			select: {
 				id: true,
-				price: true
+				courses: {
+					select: {
+						id: true,
+						price: true
+					}
+				}
 			}
-		});
-		if(courses.length !== paymentUnits.length) {
-			throw new APIError("One of the courses is not exist", HttpStatusCode.BadRequest);
+		}) as any;
+		if(!cart || !cart.courses.length) {
+			throw new APIError("Your cart is empty", HttpStatusCode.BadRequest);
 		}
-		const totalPrice = courses.reduce((acc, curr) => {
+		const totalPrice = (cart.courses as Course[]).reduce((acc, curr) => {
 			return acc + curr.price
 		}, 0);
 		let discount = couponCode ? await this.getCouponDiscount(couponCode) : 0;
@@ -68,7 +73,7 @@ export class PaymentService implements IPaymentService {
 				totalPrice,
 				discount,
 				paymentUnits: {
-					create: courses.map(({id, price}) => {
+					create: cart.courses.map(({id, price}: Course) => {
 						return {
 							price,
 							courseId: id,

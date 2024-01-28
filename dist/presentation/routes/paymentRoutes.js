@@ -8,8 +8,10 @@ const DI_1 = __importDefault(require("../DIContainer/DI"));
 const idValidation_1 = require("../middlewares/express-validator/idValidation");
 const paymentValidator_1 = require("../middlewares/express-validator/paymentValidator");
 const { isAuthenticated, isAuthorized } = DI_1.default.get('Authorization');
-const { getAllPayments, getPaymentById, createPayment, payMobPaymentConfirmation, payPalPaymentConfirmation, deletePayment } = DI_1.default.get('PaymentController');
+const { getPaymentEnums, getAllPayments, getPaymentById, createPayment, payMobPaymentConfirmation, payPalPaymentConfirmation, deletePayment } = DI_1.default.get('PaymentController');
 const paymentRouter = express_1.default.Router();
+paymentRouter.route("/enums")
+    .post(getPaymentEnums);
 paymentRouter.route("/get")
     .post(isAuthenticated, isAuthorized('Payment', 'GET'), getAllPayments);
 paymentRouter.route("/get/:id")

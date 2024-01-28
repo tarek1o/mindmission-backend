@@ -8,8 +8,10 @@ const DI_1 = __importDefault(require("../DIContainer/DI"));
 const idValidation_1 = require("../middlewares/express-validator/idValidation");
 const userValidator_1 = require("../middlewares/express-validator/userValidator");
 const { isAuthenticated, isAuthorized, isCurrentUserRoleInBlackList, isCurrentUserRoleInWhiteList, isParamIdEqualCurrentUserId, restrictedUpdateForAdminOnly } = DI_1.default.get('Authorization');
-const { getAllUsers, getUserById, createUser, restrictedPropertiesForAdminOnly, updateUser, updateUserEmail, generateEmailVerificationCode, confirmEmailVerificationCode, updateUserPassword, deleteUser } = DI_1.default.get('UserController');
+const { getUserEnums, getAllUsers, getUserById, createUser, restrictedPropertiesForAdminOnly, updateUser, updateUserEmail, generateEmailVerificationCode, confirmEmailVerificationCode, updateUserPassword, deleteUser } = DI_1.default.get('UserController');
 const userRouter = express_1.default.Router();
+userRouter.route("/enums")
+    .post(getUserEnums);
 userRouter.route("/get")
     .post(isAuthenticated, isAuthorized('User', 'GET'), isCurrentUserRoleInBlackList('instructor', 'student'), getAllUsers);
 userRouter.route("/get/:id")

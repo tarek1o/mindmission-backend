@@ -8,8 +8,10 @@ const DI_1 = __importDefault(require("../DIContainer/DI"));
 const idValidation_1 = require("../middlewares/express-validator/idValidation");
 const courseValidator_1 = require("../middlewares/express-validator/courseValidator");
 const { isAuthenticated, isAuthorized } = DI_1.default.get('Authorization');
-const { courseAggregates, getAllCourses, getCourseById, createCourse, updateCourse, deleteCourse } = DI_1.default.get('CourseController');
+const { getCourseEnums, courseAggregates, getAllCourses, getCourseById, createCourse, updateCourse, deleteCourse } = DI_1.default.get('CourseController');
 const courseRouter = express_1.default.Router();
+courseRouter.route("/enums")
+    .post(getCourseEnums);
 courseRouter.route("/aggregate")
     .post(isAuthenticated, isAuthorized('Course', 'GET'), courseAggregates);
 courseRouter.route("/get")

@@ -86,7 +86,11 @@ export class UserService implements IUserService {
 					}
 				},
 				student: isRoleExist.slug === "student" ? {
-					create: {}
+					create: {
+						cart: {
+							create: {}
+						}
+					}
 				} : undefined,
 				instructor: isRoleExist.slug === "instructor" ? {
 					create: {

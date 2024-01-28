@@ -106,6 +106,7 @@ model Student {
   payments            Payment[]
   certificates        Certificate[]
   notes               Note[]
+  cart                Cart?
   userId              Int                  @unique
   user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt           DateTime             @default(now())
@@ -223,6 +224,7 @@ model Course {
   wishlistStudents   Student[]               @relation("wishlist")
   certificates       Certificate[]
   paymentUnits       PaymentUnit[]
+  carts              Cart[]
   instructorId       Int
   instructor         Instructor              @relation(fields: [instructorId], references: [id], onDelete: Cascade)
   topicId            Int
@@ -240,6 +242,15 @@ enum CourseLevel {
   BEGINNER
   INTERMEDIATE
   ADVANCED
+}
+
+model Cart {
+  id                Int              @id @default(autoincrement())
+  courses           Course[]
+  studentId         Int              @unique
+  student           Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime?        @updatedAt
 }
 
 model Certificate {

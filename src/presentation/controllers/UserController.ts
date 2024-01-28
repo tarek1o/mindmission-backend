@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { $Enums } from "@prisma/client";
 import { inject, injectable } from "inversify";
 import asyncHandler from'express-async-handler';
 import bcrypt from 'bcrypt';
@@ -37,6 +38,10 @@ export class UserController {
 		}
 		return null;
 	};
+
+	getUserEnums = asyncHandler((request: Request, response: Response, next: NextFunction) => {
+    response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'All user enums are retrieved successfully', [$Enums.Platform]));
+  });
 
 	getAllUsers = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const findOptions = RequestManager.findOptionsWrapper(request);

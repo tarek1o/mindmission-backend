@@ -91,7 +91,11 @@ let UserService = class UserService {
                     connect: Object.assign({}, role)
                 },
                 student: isRoleExist.slug === "student" ? {
-                    create: {}
+                    create: {
+                        cart: {
+                            create: {}
+                        }
+                    }
                 } : undefined,
                 instructor: isRoleExist.slug === "instructor" ? {
                     create: Object.assign({}, instructor)

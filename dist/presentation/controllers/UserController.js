@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
+const client_1 = require("@prisma/client");
 const inversify_1 = require("inversify");
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -44,6 +45,9 @@ let UserController = class UserController {
             }
             return null;
         };
+        this.getUserEnums = (0, express_async_handler_1.default)((request, response, next) => {
+            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'All user enums are retrieved successfully', [client_1.$Enums.Platform]));
+        });
         this.getAllUsers = (0, express_async_handler_1.default)(async (request, response, next) => {
             const findOptions = RequestManager_1.RequestManager.findOptionsWrapper(request);
             const promiseResult = await Promise.all([

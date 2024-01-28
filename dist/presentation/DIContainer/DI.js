@@ -27,5 +27,7 @@ require("./classes/commentDI");
 require("./classes/messageDI");
 require("./classes/realTimeManagerDI");
 require("./classes/noteDI");
+require("./classes/enumDI");
+require("./classes/cartDI");
 exports.default = DIContainer_1.container;
 //# sourceMappingURL=DI.js.map

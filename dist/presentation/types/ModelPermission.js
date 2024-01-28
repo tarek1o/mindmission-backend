@@ -24,6 +24,7 @@ exports.AllowedModels = {
     Messages: 'message',
     Certificates: 'certificate',
     CertificateTemplates: 'certificateTemplate',
+    Carts: 'cart',
 };
 exports.Permissions = {
     Read: 'get',

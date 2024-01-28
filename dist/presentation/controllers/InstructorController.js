@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InstructorController = void 0;
+const client_1 = require("@prisma/client");
 const inversify_1 = require("inversify");
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const RequestManager_1 = require("../services/RequestManager");
@@ -22,6 +23,9 @@ const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
 let InstructorController = class InstructorController {
     constructor(instructorService) {
         this.instructorService = instructorService;
+        this.getInstructorEnums = (0, express_async_handler_1.default)(async (request, response, next) => {
+            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'All instructor enums are retrieved successfully', [client_1.$Enums.HaveAudience, client_1.$Enums.TeachingType, client_1.$Enums.VideoProAcademy]));
+        });
         this.getAllInstructors = (0, express_async_handler_1.default)(async (request, response, next) => {
             const findOptions = RequestManager_1.RequestManager.findOptionsWrapper(request);
             const promiseResult = await Promise.all([
