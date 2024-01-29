@@ -8,9 +8,11 @@ const crypto_1 = __importDefault(require("crypto"));
 const client_1 = require("@prisma/client");
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const OAuth_1 = require("../../services/OAuth");
+const APIError_1 = __importDefault(require("../../errorHandlers/APIError"));
+const HTTPStatusCode_1 = __importDefault(require("../../enums/HTTPStatusCode"));
 class Linkedin extends OAuth_1.OAuth {
     constructor() {
-        super('LINKEDIN');
+        super();
         this.signup = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { code, redirectURL } = request.body.input;
             const userData = await this.getData(code, redirectURL);
@@ -33,6 +35,29 @@ class Linkedin extends OAuth_1.OAuth {
             tokenURL: process.env.Linkedin_Token_Url,
             scopeURL: process.env.Linkedin_Scope_URL
         };
+    }
+    ;
+    async getAccessToken(code, redirectURL) {
+        const { clientId, clientSecret, tokenURL } = this.platformInfo;
+        const response = await fetch(tokenURL, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            method: 'POST',
+            body: new URLSearchParams({
+                client_id: clientId,
+                client_secret: clientSecret,
+                code,
+                redirect_uri: redirectURL,
+                grant_type: "authorization_code"
+            }),
+        });
+        if (response.status !== 200) {
+            const error = await response.json();
+            throw new APIError_1.default(`${error.error}, ${error.error_description}`, HTTPStatusCode_1.default.InternalServerError);
+        }
+        const { access_token } = await response.json();
+        return access_token;
     }
     ;
 }
