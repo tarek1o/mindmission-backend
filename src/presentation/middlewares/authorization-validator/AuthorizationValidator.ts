@@ -18,7 +18,7 @@ export class Authorization {
     return (request?.user?.role && roleList.includes(request.user.role.slug as MainRoles)) as boolean;
   };
 
-  private isTokenCreatedBeforePasswordUpdated(decodedPayload: any, passwordUpdatedTime: Date | null): boolean {
+  private isTokenCreatedBeforeUpdatingPassword(decodedPayload: any, passwordUpdatedTime: Date | null): boolean {
     if(passwordUpdatedTime) {
       const passwordUpdatedTimeInSeconds = parseInt(`${passwordUpdatedTime.getTime() / 1000}`, 10);
       if(passwordUpdatedTimeInSeconds > decodedPayload.iat) {
@@ -40,11 +40,8 @@ export class Authorization {
           role: true
         }
       });
-      if(!user || this.isTokenCreatedBeforePasswordUpdated(decodedPayload, user.passwordUpdatedTime)) {
+      if(!user || this.isTokenCreatedBeforeUpdatingPassword(decodedPayload, user.passwordUpdatedTime)) {
         throw new APIError("Unauthorized, try to login again", HttpStatusCode.Unauthorized);
-      }
-      if(user.isBlocked || user.isDeleted) {
-        throw new APIError('Your are blocked, try to contact with our support team', HttpStatusCode.Forbidden);
       }
       request.user = user;
       next();
@@ -52,6 +49,9 @@ export class Authorization {
   });
   
   isAuthorized = (modelName: AllowedModel, method: AllowedMethod) => asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => { 
+    if(request.user?.isBlocked || request.user?.isDeleted) {
+      throw new APIError('Your are blocked, try to contact with our support team', HttpStatusCode.Forbidden);
+    }
     let permission = method.toLowerCase();
     if(request.user?.role?.allowedModels) {
       for(const allowedModel of request.user?.role.allowedModels) {

@@ -38,21 +38,21 @@ let Authorization = class Authorization {
                         role: true
                     }
                 });
-                if (!user || this.isTokenCreatedBeforePasswordUpdated(decodedPayload, user.passwordUpdatedTime)) {
+                if (!user || this.isTokenCreatedBeforeUpdatingPassword(decodedPayload, user.passwordUpdatedTime)) {
                     throw new APIError_1.default("Unauthorized, try to login again", HTTPStatusCode_1.default.Unauthorized);
-                }
-                if (user.isBlocked || user.isDeleted) {
-                    throw new APIError_1.default('Your are blocked, try to contact with our support team', HTTPStatusCode_1.default.Forbidden);
                 }
                 request.user = user;
                 next();
             }
         });
         this.isAuthorized = (modelName, method) => (0, express_async_handler_1.default)(async (request, response, next) => {
-            var _a, _b, _c;
+            var _a, _b, _c, _d, _e;
+            if (((_a = request.user) === null || _a === void 0 ? void 0 : _a.isBlocked) || ((_b = request.user) === null || _b === void 0 ? void 0 : _b.isDeleted)) {
+                throw new APIError_1.default('Your are blocked, try to contact with our support team', HTTPStatusCode_1.default.Forbidden);
+            }
             let permission = method.toLowerCase();
-            if ((_b = (_a = request.user) === null || _a === void 0 ? void 0 : _a.role) === null || _b === void 0 ? void 0 : _b.allowedModels) {
-                for (const allowedModel of (_c = request.user) === null || _c === void 0 ? void 0 : _c.role.allowedModels) {
+            if ((_d = (_c = request.user) === null || _c === void 0 ? void 0 : _c.role) === null || _d === void 0 ? void 0 : _d.allowedModels) {
+                for (const allowedModel of (_e = request.user) === null || _e === void 0 ? void 0 : _e.role.allowedModels) {
                     if (allowedModel.modelName.toLowerCase() === modelName.toLowerCase() && allowedModel.permissions.includes(permission)) {
                         next();
                         return;
@@ -91,7 +91,7 @@ let Authorization = class Authorization {
             next();
         });
     }
-    isTokenCreatedBeforePasswordUpdated(decodedPayload, passwordUpdatedTime) {
+    isTokenCreatedBeforeUpdatingPassword(decodedPayload, passwordUpdatedTime) {
         if (passwordUpdatedTime) {
             const passwordUpdatedTimeInSeconds = parseInt(`${passwordUpdatedTime.getTime() / 1000}`, 10);
             if (passwordUpdatedTimeInSeconds > decodedPayload.iat) {
