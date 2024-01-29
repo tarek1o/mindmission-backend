@@ -24,10 +24,7 @@ let Authorization = class Authorization {
         this.userService = userService;
         this.isCurrentUserRoleInList = (request, roleList) => {
             var _a;
-            if (((_a = request === null || request === void 0 ? void 0 : request.user) === null || _a === void 0 ? void 0 : _a.role) && roleList.includes(request.user.role.slug)) {
-                return true;
-            }
-            return false;
+            return (((_a = request === null || request === void 0 ? void 0 : request.user) === null || _a === void 0 ? void 0 : _a.role) && roleList.includes(request.user.role.slug));
         };
         this.isAuthenticated = (0, express_async_handler_1.default)(async (request, response, next) => {
             if (request.headers.authorization && request.headers.authorization.startsWith("Bearer")) {
@@ -41,22 +38,15 @@ let Authorization = class Authorization {
                         role: true
                     }
                 });
-                if (user) {
-                    if (user === null || user === void 0 ? void 0 : user.passwordUpdatedTime) {
-                        const passwordUpdatedTimeInSeconds = parseInt(`${user.passwordUpdatedTime.getTime() / 1000}`, 10);
-                        if (passwordUpdatedTimeInSeconds > decodedPayload.iat) {
-                            throw new APIError_1.default("Unauthorized, try to login again", HTTPStatusCode_1.default.Unauthorized);
-                        }
-                    }
-                    if (user.isBlocked || user.isDeleted) {
-                        throw new APIError_1.default('Your are blocked, try to contact with our support team', HTTPStatusCode_1.default.Forbidden);
-                    }
-                    request.user = user;
-                    next();
-                    return;
+                if (!user || this.isTokenCreatedBeforePasswordUpdated(decodedPayload, user.passwordUpdatedTime)) {
+                    throw new APIError_1.default("Unauthorized, try to login again", HTTPStatusCode_1.default.Unauthorized);
                 }
+                if (user.isBlocked || user.isDeleted) {
+                    throw new APIError_1.default('Your are blocked, try to contact with our support team', HTTPStatusCode_1.default.Forbidden);
+                }
+                request.user = user;
+                next();
             }
-            throw new APIError_1.default("Unauthorized, try to login again", HTTPStatusCode_1.default.Unauthorized);
         });
         this.isAuthorized = (modelName, method) => (0, express_async_handler_1.default)(async (request, response, next) => {
             var _a, _b, _c;
@@ -73,20 +63,16 @@ let Authorization = class Authorization {
             throw new APIError_1.default(`Not Allowed to ${permission} ${modelName}`, HTTPStatusCode_1.default.Forbidden);
         });
         this.isCurrentUserRoleInWhiteList = (...roleWhiteList) => (0, express_async_handler_1.default)(async (request, response, next) => {
-            if (this.isCurrentUserRoleInList(request, roleWhiteList)) {
-                next();
-            }
-            else {
+            if (!this.isCurrentUserRoleInList(request, roleWhiteList)) {
                 throw new APIError_1.default('Not allow to access this route', HTTPStatusCode_1.default.Forbidden);
             }
+            next();
         });
         this.isCurrentUserRoleInBlackList = (...roleBlackList) => (0, express_async_handler_1.default)(async (request, response, next) => {
             if (this.isCurrentUserRoleInList(request, roleBlackList)) {
                 throw new APIError_1.default('Not allow to access this route', HTTPStatusCode_1.default.Forbidden);
             }
-            else {
-                next();
-            }
+            next();
         });
         this.isParamIdEqualCurrentUserId = (userId = 'id') => (0, express_async_handler_1.default)(async (request, response, next) => {
             if (request.user && +request.params[userId] !== request.user.id && this.isCurrentUserRoleInList(request, ['instructor', 'student'])) {
@@ -105,6 +91,16 @@ let Authorization = class Authorization {
             next();
         });
     }
+    isTokenCreatedBeforePasswordUpdated(decodedPayload, passwordUpdatedTime) {
+        if (passwordUpdatedTime) {
+            const passwordUpdatedTimeInSeconds = parseInt(`${passwordUpdatedTime.getTime() / 1000}`, 10);
+            if (passwordUpdatedTimeInSeconds > decodedPayload.iat) {
+                return true;
+            }
+        }
+        return false;
+    }
+    ;
 };
 exports.Authorization = Authorization;
 exports.Authorization = Authorization = __decorate([
