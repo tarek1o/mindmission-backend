@@ -91,7 +91,7 @@ export class CertificateService implements ICertificateService {
   }
 
   private async generateCertificate(certificate: CertificateInfo, templateURL: string) {
-    const generateCertificateURL = process.env.GenerateCertificateURL as string;
+    const generateCertificateURL = process.env.Generate_Certificate_URL as string;
     const response = await fetch(generateCertificateURL, {
       method: 'POST',
       headers: {

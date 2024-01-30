@@ -5,12 +5,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 const Express_1 = __importDefault(require("./Express"));
+const db_1 = __importDefault(require("../../domain/db"));
 class ServerCreator {
 }
 _a = ServerCreator;
-ServerCreator.PORT = process.env.PORT || 8080;
-ServerCreator.create = (app) => app.listen(_a.PORT, async () => {
-    console.log(`App is running at: ${process.env.baseURL}:${_a.PORT} 🚀`);
+ServerCreator.port = process.env.PORT || 8080;
+ServerCreator.create = (app) => app.listen(_a.port, async () => {
+    await db_1.default.$connect();
+    console.log(`App is running at: http://localhost:${_a.port} 🚀`);
 });
 ;
 const server = ServerCreator.create(Express_1.default);

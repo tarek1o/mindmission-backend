@@ -3,7 +3,7 @@ import prisma from "../../domain/db"
 import { AllowedModels, Permissions } from "../../presentation/types/ModelPermission";
 
 export const upsertMainItemsIntoDB = async () => {
-  const {firstName, lastName, email, password} = process.env;
+  const {Super_Admin_FirstName, Super_Admin_LastName, Super_Admin_Email, Super_Admin_Password} = process.env;
 
   const allowedModelsForInstructor = [
     {
@@ -201,10 +201,10 @@ export const upsertMainItemsIntoDB = async () => {
         allowedModels: allowedModelsForSuperAdmin,
         users: {
           create: {
-            firstName: firstName || "Tarek",
-            lastName: lastName || "Eslam",
-            email: email || "tarekeslam159@gmail.com",
-            password: bcrypt.hashSync(password || "Ta123456789*", 10),
+            firstName: Super_Admin_FirstName || "Tarek",
+            lastName: Super_Admin_LastName || "Eslam",
+            email: Super_Admin_Email || "tarekeslam159@gmail.com",
+            password: bcrypt.hashSync(Super_Admin_Password || "Ta123456789*", 10),
             admin: {
               create: {}
             }

@@ -1,6 +1,6 @@
+import { CorrectAnswer, LessonType, QuestionLevel } from "@prisma/client";
 import slugify from "slugify"
 import prisma from "../domain/db"
-import { CorrectAnswer, LessonType, QuestionLevel } from "@prisma/client";
 
 const courses = [
   {
