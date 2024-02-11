@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node ./dist/presentation/index.js",
-    "build": "tsc",
+    "build": "rm -rf build && tsc",
     "compile": "tsc",
     "compile:watch": "tsc -w",
     "dev": "nodemon src/presentation/index.ts",
