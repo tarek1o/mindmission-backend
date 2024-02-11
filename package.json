@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "generate": "ts-node --transpile-only src/schema.ts",
+    "generate": "ts-node --transpile-only src/presentation/index.ts",
     "migrate:deploy": "prisma migrate deploy",
     "build": "rm -rf dist && prisma migrate deploy && prisma generate && npm run generate && tsc",
     "start": "node dist/presentation/index.js",
