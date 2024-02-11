@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rm -rf dist && tsc",
-    "postinstall": "prisma generate",
+    "build": "rm -rf dist && npx prisma generate && tsc",
     "start": "node dist/presentation/index.js",
     "dev": "nodemon src/presentation/index.ts",
     "compile": "tsc",
