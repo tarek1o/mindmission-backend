@@ -1,10 +1,8 @@
-import {Vimeo} from 'vimeo';
 import asyncHandler from'express-async-handler';
 import APIError from '../errorHandlers/APIError';
 import HttpStatusCode from '../enums/HTTPStatusCode';
 
 export class VideoUploader {
-  private client = new Vimeo(process.env.Vimeo_Client_Id as string, process.env.Vimeo_Client_Secret as string, process.env.Vimeo_Access_Token as string);
 
   upload = asyncHandler(async (request, response, next) => {
     const {size} = request.body.input;
