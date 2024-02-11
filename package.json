@@ -16,7 +16,7 @@
     "reset": "prisma migrate reset"
   },
   "keywords": [],
-  "author": "",
+  "author": "Tarek Eslam <89143141+tarek1o@users.noreply.github.com>",
   "license": "ISC",
   "dependencies": {
     "@microsoft/signalr": "^8.0.0",
@@ -55,5 +55,6 @@
     "prisma": "^5.8.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
-  }
+  },
+  "repository": "https://github.com/Mind-Mission/Backend.git"
 }
