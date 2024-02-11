@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node ./dist/presentation/index.js",
-    "build": "rm -rf build && tsc",
+    "start": "node dist/presentation/index.js",
+    "build": "rm -rf dist && tsc",
     "compile": "tsc",
     "compile:watch": "tsc -w",
     "dev": "nodemon src/presentation/index.ts",
@@ -16,7 +16,7 @@
     "reset": "prisma migrate reset"
   },
   "keywords": [],
-  "author": "",
+  "author": "Tarek Eslam",
   "license": "ISC",
   "dependencies": {
     "@microsoft/signalr": "^8.0.0",
@@ -55,5 +55,6 @@
     "prisma": "^5.8.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
-  }
+  },
+  "repository": "https://github.com/Mind-Mission/Backend.git"
 }
