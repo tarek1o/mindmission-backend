@@ -17,6 +17,9 @@ exports.addSectionValidation = [
         .isString().withMessage("Description must be string")
         .isLength({ min: 10 }).withMessage("Too short description, 5 characters at least")
         .isLength({ max: 1000 }).withMessage("Too long description, 1000 characters at most"),
+    (0, express_validator_1.body)("input.isAvailable")
+        .optional()
+        .isBoolean().withMessage("isAvailable property must be a boolean value"),
     (0, express_validator_1.body)("input.order")
         .notEmpty().withMessage("Order is required")
         .isInt({ min: 1 }).withMessage("Order must be an integer number more than or equal 1"),
@@ -36,6 +39,9 @@ exports.updateSectionValidation = [
         .isString().withMessage("Description must be string")
         .isLength({ min: 10 }).withMessage("Too short description, 5 characters at least")
         .isLength({ max: 1000 }).withMessage("Too long description, 1000 characters at most"),
+    (0, express_validator_1.body)("input.isAvailable")
+        .optional()
+        .isBoolean().withMessage("isAvailable property must be a boolean value"),
     (0, express_validator_1.body)("input.lessons")
         .optional()
         .isArray({ min: 1 }).withMessage("Lessons must be an array of lesson objects")

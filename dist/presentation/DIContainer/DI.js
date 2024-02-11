@@ -11,6 +11,8 @@ require("./classes/categoryDI");
 require("./classes/instructorDI");
 require("./classes/studentDI");
 require("./classes/courseDI");
+require("./classes/certificateDI");
+require("./classes/certificateTemplateDI");
 require("./classes/sectionDI");
 require("./classes/lessonDI");
 require("./classes/videoDI");
@@ -24,5 +26,8 @@ require("./classes/couponDI");
 require("./classes/commentDI");
 require("./classes/messageDI");
 require("./classes/realTimeManagerDI");
+require("./classes/noteDI");
+require("./classes/enumDI");
+require("./classes/cartDI");
 exports.default = DIContainer_1.container;
 //# sourceMappingURL=DI.js.map

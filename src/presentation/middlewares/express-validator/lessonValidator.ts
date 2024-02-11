@@ -12,6 +12,10 @@ export const addLessonValidation = [
     .optional()
     .isBoolean().withMessage("isFree property must be a boolean value"),
 
+  body("input.isAvailable")
+    .optional()
+    .isBoolean().withMessage("isAvailable property must be a boolean value"),
+
   body("input.attachment")
     .optional()
     .isURL().withMessage("Lesson Attachment must be a url formate"),
@@ -37,6 +41,10 @@ export const updateLessonValidation = [
   body("input.isFree")
     .optional()
     .isBoolean().withMessage("isFree property must be a boolean value"),
+
+  body("input.isAvailable")
+    .optional()
+    .isBoolean().withMessage("isAvailable property must be a boolean value"),
 
   body("input.attachment")
     .optional()

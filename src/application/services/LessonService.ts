@@ -91,7 +91,7 @@ export class LessonService implements ILessonService {
 	};
 
 	async create(args: {data: CreateLesson, select?: Prisma.LessonSelect, include?: Prisma.LessonInclude}, transaction?: TransactionType): Promise<Lesson> {
-		const {title, order, attachment, isFree, sectionId} = args.data;
+		const {title, order, attachment, isFree, isAvailable, sectionId} = args.data;
 		const slug = slugify(args.data.title.toString(), {lower: true, trim: true});
 		const isOrderIsFound = await this.lessonRepository.findFirst({
 			where: {
@@ -113,6 +113,7 @@ export class LessonService implements ILessonService {
 				lessonType: LessonType.UNDEFINED,
 				attachment,
 				isFree,
+				isAvailable,
 				section: {
 					connect: {
 						id: sectionId
@@ -125,7 +126,7 @@ export class LessonService implements ILessonService {
 	}
 
 	async update(args: {data: UpdateLesson, select?: Prisma.LessonSelect, include?: Prisma.LessonInclude}, transaction?: TransactionType): Promise<Lesson> {
-		const {id, title, attachment, isFree, lessonType, time} = args.data;
+		const {id, title, attachment, isFree, isAvailable, lessonType, time} = args.data;
 		const slug = title ? slugify(title.toString(), {lower: true, trim: true}) : undefined;
 		return Transaction.transact<Lesson>(async (prismaTransaction) => {
 			(lessonType || time) && await this.updateCourseInfo(id, 'update', prismaTransaction, lessonType, time);
@@ -137,7 +138,8 @@ export class LessonService implements ILessonService {
 					title: title || undefined,
 					slug: slug || undefined,
 					attachment: attachment || undefined,
-					isFree: isFree || undefined,
+					isFree,
+					isAvailable,
 					lessonType: lessonType || undefined,
 					time,	
 				},

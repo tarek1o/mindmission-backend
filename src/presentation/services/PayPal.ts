@@ -13,7 +13,7 @@ export class PayPal {
   private static clientId: string = process.env.PayPal_Client_Id as string;
   private static secretKey: string = process.env.PayPal_Secret_Key as string;
 
-  private static async getAuthToken() {
+  private static async authenticate() {
     const auth = Buffer.from(`${PayPal.clientId}:${PayPal.secretKey}`).toString("base64");
     const response = await fetch(PayPal.tokenURL, {
       method: "POST",
@@ -32,7 +32,7 @@ export class PayPal {
   
   static async createPaymentOrder(paymentId: number, totalPrice: number, currency: Currency, discount: number, orderItems: ExtendedPaymentUnit[]): Promise<string> {
     const exchangeRate = await CurrencyConvertor.convert(currency, "EGP");
-    const accessToken = await PayPal.getAuthToken();    
+    const accessToken = await PayPal.authenticate();    
     const response = await fetch(PayPal.orderURL, {
       headers: {
         "Content-Type": "application/json",
@@ -65,7 +65,7 @@ export class PayPal {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${await PayPal.getAuthToken()}`
+        'Authorization': `Bearer ${await PayPal.authenticate()}`
       },
       body: JSON.stringify({ 
         transmission_id: request.headers['paypal-transmission-id'], 

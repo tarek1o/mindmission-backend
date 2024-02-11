@@ -13,11 +13,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
+const client_1 = require("@prisma/client");
 const inversify_1 = require("inversify");
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const JWTGenerator_1 = require("../services/JWTGenerator");
 const RequestManager_1 = require("../services/RequestManager");
+const SendEmail_1 = require("../services/SendEmail");
 const UserMapper_1 = require("../mapping/UserMapper");
 const ResponseFormatter_1 = require("../responseFormatter/ResponseFormatter");
 const APIError_1 = __importDefault(require("../errorHandlers/APIError"));
@@ -43,6 +45,9 @@ let UserController = class UserController {
             }
             return null;
         };
+        this.getUserEnums = (0, express_async_handler_1.default)((request, response, next) => {
+            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'All user enums are retrieved successfully', [client_1.$Enums.Platform]));
+        });
         this.getAllUsers = (0, express_async_handler_1.default)(async (request, response, next) => {
             const findOptions = RequestManager_1.RequestManager.findOptionsWrapper(request);
             const promiseResult = await Promise.all([
@@ -123,6 +128,112 @@ let UserController = class UserController {
                     user: mappedUserResults[0],
                     token: JWTGenerator_1.JWTGenerator.generateAccessToken(updatedUser),
                 }]));
+        });
+        this.generateEmailVerificationCode = (0, express_async_handler_1.default)(async (request, response, next) => {
+            var _a, _b, _c, _d, _e;
+            if ((_a = request.user) === null || _a === void 0 ? void 0 : _a.isSignWithSSO) {
+                throw new APIError_1.default(`You can't verify your email because you sign with ${(_b = request.user.platform) === null || _b === void 0 ? void 0 : _b.toLowerCase()}`, HTTPStatusCode_1.default.Conflict);
+            }
+            if ((_c = request.user) === null || _c === void 0 ? void 0 : _c.isEmailVerified) {
+                throw new APIError_1.default('Your email is already verified', HTTPStatusCode_1.default.Conflict);
+            }
+            const token = JWTGenerator_1.JWTGenerator.generateEmailVerificationToken(request.user);
+            await this.userService.update({
+                data: {
+                    id: (_d = request.user) === null || _d === void 0 ? void 0 : _d.id,
+                    emailVerificationCode: token
+                },
+                select: {
+                    id: true,
+                }
+            });
+            const message = `<!DOCTYPE html>
+		<html lang="en">
+		<head>
+				<meta charset="UTF-8">
+				<meta http-equiv="X-UA-Compatible" content="IE=edge">
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<style>
+						body {
+							font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+							background-color: #f8f8f8;
+							margin: 0;
+							padding: 0;
+							display: flex;
+							justify-content: center;
+							align-items: center;
+							height: 100vh;
+						}
+						h2 {
+							color: #333;
+						}
+						p {
+							color: #555;
+							margin-bottom: 20px;
+						}
+						a {
+							display: inline-block;
+							padding: 10px 20px;
+							background-color: #007BFF;
+							color: #fff !important;
+							text-decoration: none;
+							border-radius: 5px;
+						}
+						a:hover {
+							background-color: #0056b3;
+						}
+				</style>
+		</head>
+		<body>
+			<div>
+				<h2>Verify Your Email Address</h2>
+				<p>Thank you for registering with us! To activate your account, please click the button below to verify your email address.</p>
+				<a href="${process.env.Frontend_Verity_Email_Route}?token=${token}">Verify Email Address</a>
+				<p>If you did not register for our service, you can safely ignore this email.</p>
+				<p>
+					<span>Best regards,</span>
+					<br/>
+					<span>${process.env.APP_Name} Team</span>
+				</p>
+			</div>
+		</body>
+		</html>
+		`;
+            await SendEmail_1.SendEmail.send({
+                to: (_e = request.user) === null || _e === void 0 ? void 0 : _e.email,
+                subject: 'Email Verification',
+                message
+            });
+            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'Verification link is sent to you on your email, please check your inbox'));
+        });
+        this.confirmEmailVerificationCode = (0, express_async_handler_1.default)(async (request, response, next) => {
+            var _a;
+            const { token } = request.body.input;
+            const payload = JWTGenerator_1.JWTGenerator.verifyEmailVerificationToken(token);
+            const user = await this.userService.findUnique({
+                where: {
+                    id: (_a = request.user) === null || _a === void 0 ? void 0 : _a.id,
+                },
+                select: {
+                    id: true,
+                    email: true,
+                    emailVerificationCode: true
+                }
+            });
+            if (!user || user.email !== payload.email || user.emailVerificationCode !== token) {
+                throw new APIError_1.default('Invalid token, please try to access new verification request and try again.', HTTPStatusCode_1.default.BadRequest);
+            }
+            !user.isEmailVerified && await this.userService.update({
+                data: {
+                    id: user.id,
+                    isEmailVerified: true,
+                    emailVerificationCode: null
+                },
+                select: {
+                    id: true
+                }
+            });
+            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'Your email is verified successfully'));
         });
         this.updateUserPassword = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { email, newPassword, password } = request.body.input;

@@ -15,12 +15,16 @@ exports.AllowedModels = {
     Ratings: 'rating',
     Sections: 'section',
     Lessons: 'lesson',
+    Notes: "note",
     Videos: 'video',
     Articles: 'article',
     Quizzes: 'quiz',
     Comments: 'comment',
     Coupons: 'coupon',
-    Messages: 'message'
+    Messages: 'message',
+    Certificates: 'certificate',
+    CertificateTemplates: 'certificateTemplate',
+    Carts: 'cart',
 };
 exports.Permissions = {
     Read: 'get',

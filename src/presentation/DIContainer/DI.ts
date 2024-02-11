@@ -9,6 +9,8 @@ import './classes/categoryDI';
 import './classes/instructorDI';
 import './classes/studentDI';
 import './classes/courseDI';
+import './classes/certificateDI';
+import './classes/certificateTemplateDI';
 import './classes/sectionDI';
 import './classes/lessonDI';
 import './classes/videoDI';
@@ -22,5 +24,8 @@ import './classes/couponDI';
 import './classes/commentDI';
 import './classes/messageDI';
 import './classes/realTimeManagerDI';
+import './classes/noteDI';
+import './classes/enumDI';
+import './classes/cartDI';
 
 export default container;

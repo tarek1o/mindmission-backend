@@ -58,7 +58,7 @@ let UserService = class UserService {
     }
     ;
     async create(args, transaction) {
-        const { firstName, lastName, email, password, mobilePhone, whatsAppNumber, bio, picture, role, refreshToken, instructor } = args.data;
+        const { firstName, lastName, email, password, mobilePhone, whatsAppNumber, bio, picture, platform, isEmailVerified, role, refreshToken, instructor } = args.data;
         if (await this.isEmailExist(email)) {
             throw new APIError_1.default('This email already exists', HTTPStatusCode_1.default.BadRequest);
         }
@@ -83,12 +83,19 @@ let UserService = class UserService {
                 whatsAppNumber,
                 bio,
                 picture,
+                platform,
+                isSignWithSSO: platform ? true : false,
+                isEmailVerified,
                 refreshToken,
                 role: {
                     connect: Object.assign({}, role)
                 },
                 student: isRoleExist.slug === "student" ? {
-                    create: {}
+                    create: {
+                        cart: {
+                            create: {}
+                        }
+                    }
                 } : undefined,
                 instructor: isRoleExist.slug === "instructor" ? {
                     create: Object.assign({}, instructor)
@@ -104,7 +111,7 @@ let UserService = class UserService {
     ;
     async update(args, transaction) {
         var _a, _b;
-        const { id, firstName, lastName, email, isEmailVerified, password, passwordUpdatedTime, resetPasswordCode, bio, picture, mobilePhone, whatsAppNumber, refreshToken, isOnline, isActive, isBlocked, isDeleted, roleId, personalLinks } = args.data;
+        const { id, firstName, lastName, email, isEmailVerified, emailVerificationCode, password, passwordUpdatedTime, resetPasswordCode, bio, picture, mobilePhone, whatsAppNumber, refreshToken, isOnline, isActive, isBlocked, isDeleted, roleId, personalLinks } = args.data;
         if (resetPasswordCode && resetPasswordCode.code && !resetPasswordCode.isVerified) {
             resetPasswordCode.code = bcrypt_1.default.hashSync(args.data.resetPasswordCode.code.toString(), 10);
         }
@@ -175,6 +182,7 @@ let UserService = class UserService {
                 lastName: lastName || undefined,
                 email: email || undefined,
                 isEmailVerified: isEmailVerified || undefined,
+                emailVerificationCode,
                 password: password ? bcrypt_1.default.hashSync(password.toString(), 10) : undefined,
                 resetPasswordCode: resetPasswordCode || undefined,
                 passwordUpdatedTime: passwordUpdatedTime || undefined,

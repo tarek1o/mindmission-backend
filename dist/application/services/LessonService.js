@@ -92,7 +92,7 @@ let LessonService = class LessonService {
     }
     ;
     async create(args, transaction) {
-        const { title, order, attachment, isFree, sectionId } = args.data;
+        const { title, order, attachment, isFree, isAvailable, sectionId } = args.data;
         const slug = (0, slugify_1.default)(args.data.title.toString(), { lower: true, trim: true });
         const isOrderIsFound = await this.lessonRepository.findFirst({
             where: {
@@ -114,6 +114,7 @@ let LessonService = class LessonService {
                 lessonType: client_1.LessonType.UNDEFINED,
                 attachment,
                 isFree,
+                isAvailable,
                 section: {
                     connect: {
                         id: sectionId
@@ -125,7 +126,7 @@ let LessonService = class LessonService {
         }, transaction);
     }
     async update(args, transaction) {
-        const { id, title, attachment, isFree, lessonType, time } = args.data;
+        const { id, title, attachment, isFree, isAvailable, lessonType, time } = args.data;
         const slug = title ? (0, slugify_1.default)(title.toString(), { lower: true, trim: true }) : undefined;
         return Transaction_1.Transaction.transact(async (prismaTransaction) => {
             (lessonType || time) && await this.updateCourseInfo(id, 'update', prismaTransaction, lessonType, time);
@@ -137,7 +138,8 @@ let LessonService = class LessonService {
                     title: title || undefined,
                     slug: slug || undefined,
                     attachment: attachment || undefined,
-                    isFree: isFree || undefined,
+                    isFree,
+                    isAvailable,
                     lessonType: lessonType || undefined,
                     time,
                 },

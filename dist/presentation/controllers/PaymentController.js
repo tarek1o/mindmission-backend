@@ -27,6 +27,9 @@ let PaymentController = class PaymentController {
         this.paymentService = paymentService;
         this.studentService = studentService;
         this.logService = logService;
+        this.getPaymentEnums = (0, express_async_handler_1.default)((request, response, next) => {
+            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'All payment enums are retrieved successfully', [client_1.$Enums.PaymentMethod, client_1.$Enums.Currency]));
+        });
         this.getAllPayments = (0, express_async_handler_1.default)(async (request, response, next) => {
             const findOptions = RequestManager_1.RequestManager.findOptionsWrapper(request);
             const promiseResult = await Promise.all([

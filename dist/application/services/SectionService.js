@@ -38,7 +38,7 @@ let SectionService = class SectionService {
     }
     ;
     async create(args, transaction) {
-        const { title, description, order, courseId } = args.data;
+        const { title, description, isAvailable, order, courseId } = args.data;
         const slug = (0, slugify_1.default)(title, { lower: true, trim: true });
         const isOrderExist = await this.findFirst({
             where: {
@@ -57,6 +57,7 @@ let SectionService = class SectionService {
                 title,
                 slug,
                 order,
+                isAvailable,
                 description,
                 course: {
                     connect: {
@@ -69,7 +70,7 @@ let SectionService = class SectionService {
         }, transaction);
     }
     async update(args, transaction) {
-        const { id, title, description, lessons } = args.data;
+        const { id, title, description, isAvailable, lessons } = args.data;
         const slug = title ? (0, slugify_1.default)(title.toString(), { lower: true, trim: true }) : undefined;
         return this.sectionRepository.update({
             where: {
@@ -79,6 +80,7 @@ let SectionService = class SectionService {
                 title: title || undefined,
                 slug: slug || undefined,
                 description: description || undefined,
+                isAvailable,
                 lessons: lessons ? {
                     update: lessons.map(({ id, order }) => {
                         return {

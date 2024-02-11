@@ -8,7 +8,7 @@ const HTTPStatusCode_1 = __importDefault(require("../enums/HTTPStatusCode"));
 const APIError_1 = __importDefault(require("../errorHandlers/APIError"));
 const CurrencyConvertor_1 = __importDefault(require("./CurrencyConvertor"));
 class PayPal {
-    static async getAuthToken() {
+    static async authenticate() {
         const auth = Buffer.from(`${PayPal.clientId}:${PayPal.secretKey}`).toString("base64");
         const response = await fetch(PayPal.tokenURL, {
             method: "POST",
@@ -27,7 +27,7 @@ class PayPal {
     ;
     static async createPaymentOrder(paymentId, totalPrice, currency, discount, orderItems) {
         const exchangeRate = await CurrencyConvertor_1.default.convert(currency, "EGP");
-        const accessToken = await PayPal.getAuthToken();
+        const accessToken = await PayPal.authenticate();
         const response = await fetch(PayPal.orderURL, {
             headers: {
                 "Content-Type": "application/json",
@@ -60,7 +60,7 @@ class PayPal {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${await PayPal.getAuthToken()}`
+                'Authorization': `Bearer ${await PayPal.authenticate()}`
             },
             body: JSON.stringify({
                 transmission_id: request.headers['paypal-transmission-id'],

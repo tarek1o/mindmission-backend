@@ -24,10 +24,6 @@ export class OnlineUserRepository implements IOnlineUserRepository {
     return prisma.onlineUser.findUnique(args);
   }
 
-  findFirst(args: Prisma.OnlineUserFindFirstArgs): Promise<OnlineUser | null> {
-    return prisma.onlineUser.findFirst(args);
-  }
-
   upsert(args: Prisma.OnlineUserUpsertArgs, transaction?: TransactionType): Promise<OnlineUser> {
     return (transaction || prisma).onlineUser.upsert(args);
   }

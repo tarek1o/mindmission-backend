@@ -4,10 +4,10 @@ import APIError from '../errorHandlers/APIError';
 import HttpStatusCode from '../enums/HTTPStatusCode';
 
 export abstract class SendEmail {
-  private static host = process.env.host;
+  private static host = process.env.Email_Host;
   private static secure = true;
-  private static sender = process.env.auth_user;
-  private static password = process.env.auth_pass;
+  private static sender = process.env.Email_Auth_User;
+  private static password = process.env.Email_Auth_Pass;
 
   static send = async (emailContent: EmailContent) => {
     try {

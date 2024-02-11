@@ -6,9 +6,12 @@ import {addCategoryValidation, updateCategoryValidation} from "../middlewares/ex
 import { CategoryController } from '../controllers/CategoryController';
 
 const {isAuthenticated, isAuthorized} = container.get<Authorization>('Authorization');
-const {getAllCategories, getCategoryById, createCategory, updateCategory, deleteCategory} = container.get<CategoryController>('CategoryController');
+const {getCategoryEnums, getAllCategories, getCategoryById, createCategory, updateCategory, deleteCategory} = container.get<CategoryController>('CategoryController');
 
 const categoryRouter = express.Router();
+
+categoryRouter.route("/enums")
+	.post(getCategoryEnums);
 
 categoryRouter.route("/get")
 	.post(getAllCategories);

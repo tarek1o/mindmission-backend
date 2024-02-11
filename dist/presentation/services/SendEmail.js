@@ -12,10 +12,10 @@ class SendEmail {
 }
 exports.SendEmail = SendEmail;
 _a = SendEmail;
-SendEmail.host = process.env.host;
+SendEmail.host = process.env.Email_Host;
 SendEmail.secure = true;
-SendEmail.sender = process.env.auth_user;
-SendEmail.password = process.env.auth_pass;
+SendEmail.sender = process.env.Email_Auth_User;
+SendEmail.password = process.env.Email_Auth_Pass;
 SendEmail.send = async (emailContent) => {
     try {
         const transporter = nodemailer_1.default.createTransport({

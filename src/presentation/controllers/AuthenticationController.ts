@@ -28,8 +28,13 @@ export class AuthenticationController {
     return false;
   };
 
+  private isCredentialsRight(user: ExtendedUser, request: Request): boolean {
+    const {password, isSignWithSSO, platform} = request.body.input;
+    return (isSignWithSSO && platform && user.isSignWithSSO === isSignWithSSO && user.platform === platform) || bcrypt.compareSync(password, user.password);
+  }
+
   signup = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
-    const {firstName, lastName, email, password, mobilePhone, whatsAppNumber, bio, picture, specialization, teachingType, videoProAcademy, haveAudience} = request.body.input;
+    const {firstName, lastName, email, password, mobilePhone, whatsAppNumber, bio, picture, platform, isEmailVerified, specialization, teachingType, videoProAcademy, haveAudience} = request.body.input;
 		const {select, include} = RequestManager.findOptionsWrapper(request);
     const slug = (specialization && teachingType && videoProAcademy && haveAudience) ? 'instructor' : 'student';
     const createdUser = await this.userService.create({
@@ -42,6 +47,8 @@ export class AuthenticationController {
         whatsAppNumber,
         bio,
         picture,
+        platform,
+        isEmailVerified,
         refreshToken: JWTGenerator.generateRefreshToken({firstName, lastName, email, picture} as ExtendedUser),
         role: {
           slug
@@ -63,7 +70,7 @@ export class AuthenticationController {
   })
 
   login = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
-    const {email, password} = request.body.input;
+    const {email} = request.body.input;
 		const {select, include} = RequestManager.findOptionsWrapper(request);
     const isExist = await this.userService.findFirst({
       where: {
@@ -78,16 +85,20 @@ export class AuthenticationController {
         password: true,
         isDeleted: true,
         isBlocked: true,
+        isSignWithSSO: true,
+        platform: true,
         refreshToken: true
       },
       include
     });
-    if(!isExist || isExist.isDeleted || !bcrypt.compareSync(password, isExist.password)) {
+    if(!isExist || isExist.isDeleted || !this.isCredentialsRight(isExist, request)) {
       throw new APIError('Your email or password may be incorrect', HttpStatusCode.BadRequest);
     }
-    if(isExist.isBlocked) {
+    
+    if(isExist && isExist.isBlocked) {
       throw new APIError('Your are blocked, try to contact with our support team', HttpStatusCode.Forbidden);
     }
+
     let regeneratedRefreshToken;
     if(!isExist.refreshToken || (isExist.refreshToken && this.isRefreshTokenExpiredSoon(isExist.refreshToken))) {
       regeneratedRefreshToken = JWTGenerator.generateRefreshToken(isExist);

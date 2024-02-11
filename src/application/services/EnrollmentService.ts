@@ -1,16 +1,17 @@
 import { Prisma, Enrollment } from "@prisma/client";
 import { inject, injectable } from "inversify";
 import { ExtendedEnrollment } from "../types/ExtendedEnrollment";
-import { CreateEnrollment, UpdateEnrollment } from "../inputs/enrollmentInput";
+import { UpdateEnrollment } from "../inputs/enrollmentInput";
 import {IEnrollmentRepository} from "../interfaces/IRepositories/IEnrollmentRepository";
 import {IEnrollmentService} from "../interfaces/IServices/IEnrollmentService";
 import { IStudentService } from "../interfaces/IServices/IStudentService";
+import { ICertificateService } from "../interfaces/IServices/ICertificateService";
 import { TransactionType } from "../types/TransactionType";
 import { Transaction } from "../../infrastructure/services/Transaction";
 
 @injectable()
 export class EnrollmentService implements IEnrollmentService {
-	constructor(@inject('IEnrollmentRepository') private enrollmentRepository: IEnrollmentRepository, @inject('IStudentService') private studentService: IStudentService) {}
+	constructor(@inject('IEnrollmentRepository') private enrollmentRepository: IEnrollmentRepository, @inject('IStudentService') private studentService: IStudentService, @inject('ICertificateService') private certificateService: ICertificateService) {}
 
   private async getStudentId(userId: number): Promise<number> {
     const student = await this.studentService.findUnique({
@@ -29,6 +30,18 @@ export class EnrollmentService implements IEnrollmentService {
     const progress = +((totalTimeForCompletedLessons / courseHours) * 100).toFixed();
     return progress > 100 ? 100 : progress;
   };
+
+  private async createStudentCertificate(studentId: number, courseId: number, transaction: TransactionType) {
+    await this.certificateService.create({
+      data: {
+        studentId,
+        courseId,
+      },
+      select: {
+        id: true,
+      }
+    }, transaction);
+  }
 
 	count(args: Prisma.EnrollmentCountArgs): Promise<number> {
 		return this.enrollmentRepository.count(args);
@@ -68,7 +81,8 @@ export class EnrollmentService implements IEnrollmentService {
           id: true,
           course: {
             select: {
-              hours: true
+              hours: true,
+              hasCertificate: true
             }
           },
           completedLessons: {
@@ -79,6 +93,7 @@ export class EnrollmentService implements IEnrollmentService {
         },
       }, prismaTransaction);
       const progress = this.calcCurrentProgress(enrollment.course?.hours as number, enrollment.completedLessons as any);
+      (progress === 100) && enrollment.course?.hasCertificate && await this.createStudentCertificate(studentId, courseId, prismaTransaction);
       return this.enrollmentRepository.update({
         where: {
           id: enrollment.id

@@ -9,15 +9,11 @@ const allowedPlatforms = Object.values(Platform);
 export const addUserValidation = [
   body("input.firstName")
     .notEmpty().withMessage("First Name is required")
-    .isString().withMessage("First Name must be string")
-    .isLength({min: 3}).withMessage("Too short first name, 3 characters at least")
-    .isLength({max: 32}).withMessage("Too long first name, 32 characters at most"),
+    .isString().withMessage("First Name must be string"),
 
   body("input.lastName")
     .notEmpty().withMessage("Last Name is required")
-    .isString().withMessage("Last Name must be string")
-    .isLength({min: 3}).withMessage("Too short last name, 3 characters at least")
-    .isLength({max: 32}).withMessage("Too long last name, 32 characters at most"),
+    .isString().withMessage("Last Name must be string"),
 
   body("input.email")
     .notEmpty().withMessage("Email is required")
@@ -54,15 +50,11 @@ export const addUserValidation = [
 export const updateUserValidation = [
   body("input.firstName")
     .optional()
-    .isString().withMessage("First Name must be string")
-    .isLength({min: 3}).withMessage("Too short first name, 3 characters at least")
-    .isLength({max: 32}).withMessage("Too long first name, 32 characters at most"),
+    .isString().withMessage("First Name must be string"),
 
   body("input.lastName")
     .optional()
-    .isString().withMessage("Last Name must be string")
-    .isLength({min: 3}).withMessage("Too short last name, 3 characters at least")
-    .isLength({max: 32}).withMessage("Too long last name, 32 characters at most"),
+    .isString().withMessage("Last Name must be string"),
 
   body("input.mobilePhone")
 		.optional()
@@ -136,6 +128,14 @@ export const updateUserEmailValidation = [
 
   ErrorExpressValidatorHandler.catchExpressValidatorErrors
 ];
+
+export const confirmEmailVerificationCodeValidation = [
+  body("input.token")
+    .notEmpty().withMessage("Token is required")
+    .isJWT().withMessage("Invalid token formate"),
+
+  ErrorExpressValidatorHandler.catchExpressValidatorErrors
+]
 
 export const updateUserPasswordValidation = [
   body("input.email")

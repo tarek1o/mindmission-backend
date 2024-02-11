@@ -8,5 +8,4 @@ export class MessageRepository extends BaseRepository<Message> implements IMessa
   constructor() {
     super("Message");
   }
-
 }

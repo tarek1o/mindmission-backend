@@ -26,6 +26,7 @@ model User {
   lastName              String
   email                 String      @unique
   isEmailVerified       Boolean     @default(false)
+  emailVerificationCode String?
   password              String
   mobilePhone           String?
   whatsAppNumber        String?
@@ -38,6 +39,8 @@ model User {
   isActive              Boolean     @default(true)
   isBlocked             Boolean     @default(false)
   isDeleted             Boolean     @default(false)
+  isSignWithSSO         Boolean     @default(false)
+  platform              SSOPlatform?
   roleId                Int
   role                  Role        @relation(fields: [roleId], references: [id], onDelete: Cascade)
   student               Student?    
@@ -81,6 +84,11 @@ enum Platform {
   WEBSITE
 }
 
+enum SSOPlatform {
+  GMAIL
+  LINKEDIN
+}
+
 model Admin {
   id              Int            @id @default(autoincrement())
   coupons         Coupon[]
@@ -96,6 +104,9 @@ model Student {
   wishlistCourses     Course[]             @relation("wishlist")
   ratings             Rating[]
   payments            Payment[]
+  certificates        Certificate[]
+  notes               Note[]
+  cart                Cart?
   userId              Int                  @unique
   user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt           DateTime             @default(now())
@@ -211,7 +222,9 @@ model Course {
   ratings            Rating[]       
   enrollmentCourses  Enrollment[]
   wishlistStudents   Student[]               @relation("wishlist")
+  certificates       Certificate[]
   paymentUnits       PaymentUnit[]
+  carts              Cart[]
   instructorId       Int
   instructor         Instructor              @relation(fields: [instructorId], references: [id], onDelete: Cascade)
   topicId            Int
@@ -231,11 +244,47 @@ enum CourseLevel {
   ADVANCED
 }
 
+model Cart {
+  id                Int              @id @default(autoincrement())
+  courses           Course[]
+  studentId         Int              @unique
+  student           Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime?        @updatedAt
+}
+
+model Certificate {
+  id                Int              @id @default(autoincrement())
+  studentName       String
+  courseTitle       String
+  courseHours       Int
+  instructorName    String
+  certificateCode   String           @unique
+  pdfUrl            String?
+  imgUrl            String?
+  studentId         Int     
+  student           Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  courseId          Int
+  course            Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime?        @updatedAt
+  @@unique([studentId, courseId])
+}
+
+model CertificateTemplate {
+  id            Int              @id @default(autoincrement())
+  templateURL   String
+  isDefault     Boolean          @default(false)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime?        @updatedAt
+}
+
 model Section {
   id                Int            @id @default(autoincrement())
   title             String
   slug              String
   description       String?
+  isAvailable       Boolean        @default(true)
   order             Int
   lessons           Lesson[]
   courseId          Int
@@ -250,6 +299,7 @@ model Lesson {
   title              String
   slug               String
   isFree             Boolean        @default(false)
+  isAvailable        Boolean        @default(true)
   attachment         String?
   order              Int            @default(0)
   lessonType         LessonType     @default(UNDEFINED)
@@ -261,9 +311,23 @@ model Lesson {
   section            Section        @relation(fields: [sectionId], references: [id], onDelete: Cascade)
   comments           Comment[]
   enrollmentCourses  Enrollment[]
+  notes              Note[]
   createdAt          DateTime       @default(now())
   updatedAt          DateTime?      @updatedAt
   @@unique([order, sectionId])
+}
+
+model Note {
+  id                 Int            @id @default(autoincrement())
+  time               Int
+  content            String
+  lessonId           Int
+  lesson             Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  studentId          Int
+  student            Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime?      @updatedAt
+  @@unique([time, lessonId, studentId])
 }
 
 enum LessonType {
@@ -462,4 +526,6 @@ enum LogModel {
   MESSAGE
   COMMENT
   ENROLLMENT
+  CERTIFICATE
+  CERTIFICATE_TEMPLATE
 }

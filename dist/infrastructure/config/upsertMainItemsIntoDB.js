@@ -8,7 +8,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const db_1 = __importDefault(require("../../domain/db"));
 const ModelPermission_1 = require("../../presentation/types/ModelPermission");
 const upsertMainItemsIntoDB = async () => {
-    const { firstName, lastName, email, password } = process.env;
+    const { Super_Admin_FirstName, Super_Admin_LastName, Super_Admin_Email, Super_Admin_Password } = process.env;
     const allowedModelsForInstructor = [
         {
             modelName: ModelPermission_1.AllowedModels.Users,
@@ -93,11 +93,19 @@ const upsertMainItemsIntoDB = async () => {
             permissions: [ModelPermission_1.Permissions.Read]
         },
         {
+            modelName: ModelPermission_1.AllowedModels.Notes,
+            permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
+        },
+        {
             modelName: ModelPermission_1.AllowedModels.Comments,
             permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
         },
         {
             modelName: ModelPermission_1.AllowedModels.Wishlists,
+            permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
+        },
+        {
+            modelName: ModelPermission_1.AllowedModels.Carts,
             permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
         },
         {
@@ -151,6 +159,14 @@ const upsertMainItemsIntoDB = async () => {
             permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
         },
         {
+            modelName: ModelPermission_1.AllowedModels.Notes,
+            permissions: [ModelPermission_1.Permissions.Read]
+        },
+        {
+            modelName: ModelPermission_1.AllowedModels.Carts,
+            permissions: [ModelPermission_1.Permissions.Read]
+        },
+        {
             modelName: ModelPermission_1.AllowedModels.Enrollments,
             permissions: [ModelPermission_1.Permissions.Read, ModelPermission_1.Permissions.Create, ModelPermission_1.Permissions.Update, ModelPermission_1.Permissions.Delete]
         },
@@ -186,10 +202,10 @@ const upsertMainItemsIntoDB = async () => {
                 allowedModels: allowedModelsForSuperAdmin,
                 users: {
                     create: {
-                        firstName: firstName || "Tarek",
-                        lastName: lastName || "Eslam",
-                        email: email || "tarekeslam159@gmail.com",
-                        password: bcrypt_1.default.hashSync(password || "Ta123456789*", 10),
+                        firstName: Super_Admin_FirstName || "Tarek",
+                        lastName: Super_Admin_LastName || "Eslam",
+                        email: Super_Admin_Email || "tarekeslam159@gmail.com",
+                        password: bcrypt_1.default.hashSync(Super_Admin_Password || "Ta123456789*", 10),
                         admin: {
                             create: {}
                         }

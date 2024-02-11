@@ -23,18 +23,6 @@ export const payValidation = [
       return true;
     }),
   
-  body("input.paymentUnits")
-    .notEmpty().withMessage('Payment Units are required')
-    .isArray().withMessage('Payment Units must be an array of integer numbers')
-    .custom(paymentUnits => {
-      for(const unit of paymentUnits) {
-        if (!Number.isInteger(unit) || unit < 1) {
-          throw new Error("Payment Units must be an array of positive integer numbers")
-        }
-      }
-      return true;
-    }),
-  
   body("input.couponCode")
     .optional()
     .isString().withMessage('Coupon code must be a string'),

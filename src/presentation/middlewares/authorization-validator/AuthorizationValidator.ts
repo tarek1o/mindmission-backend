@@ -1,13 +1,13 @@
 import { Response, NextFunction } from "express";
 import asyncHandler from "express-async-handler";
 import {inject, injectable} from "inversify";
-import { ExtendedRequest } from "../../types/ExtendedRequest";
-import APIError from "../../errorHandlers/APIError";
 import {IUserService} from "../../../application/interfaces/IServices/IUserService";
+import { ExtendedRequest } from "../../types/ExtendedRequest";
 import { AllowedMethod, AllowedModel, AllowedModels } from "../../types/ModelPermission";
-import HttpStatusCode from "../../enums/HTTPStatusCode";
 import { MainRoles } from "../../types/MainRoles";
 import { JWTGenerator } from "../../services/JWTGenerator";
+import APIError from "../../errorHandlers/APIError";
+import HttpStatusCode from "../../enums/HTTPStatusCode";
 
 @injectable()
 export class Authorization { 
@@ -15,11 +15,18 @@ export class Authorization {
   constructor(@inject('IUserService') private userService: IUserService) {}
 
   private isCurrentUserRoleInList = (request: ExtendedRequest, roleList: MainRoles[]): boolean => {
-    if(request?.user?.role && roleList.includes(request.user.role.slug as MainRoles)) {
-      return true
+    return (request?.user?.role && roleList.includes(request.user.role.slug as MainRoles)) as boolean;
+  };
+
+  private isTokenCreatedBeforeUpdatingPassword(decodedPayload: any, passwordUpdatedTime: Date | null): boolean {
+    if(passwordUpdatedTime) {
+      const passwordUpdatedTimeInSeconds = parseInt(`${passwordUpdatedTime.getTime() / 1000}`, 10);
+      if(passwordUpdatedTimeInSeconds > decodedPayload.iat) {
+        return true;
+      }
     }
     return false;
-  }
+  };
 
   isAuthenticated = asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => { 
     if(request.headers.authorization && request.headers.authorization.startsWith("Bearer")) {
@@ -33,26 +40,18 @@ export class Authorization {
           role: true
         }
       });
-
-      if(user) {
-        if(user?.passwordUpdatedTime) {
-          const passwordUpdatedTimeInSeconds = parseInt(`${user.passwordUpdatedTime.getTime() / 1000}`, 10);
-          if(passwordUpdatedTimeInSeconds > decodedPayload.iat) {
-            throw new APIError("Unauthorized, try to login again", HttpStatusCode.Unauthorized);
-          }
-        }
-        if(user.isBlocked || user.isDeleted) {
-          throw new APIError('Your are blocked, try to contact with our support team', HttpStatusCode.Forbidden);
-        }
-        request.user = user;
-        next();
-        return;
+      if(!user || this.isTokenCreatedBeforeUpdatingPassword(decodedPayload, user.passwordUpdatedTime)) {
+        throw new APIError("Unauthorized, try to login again", HttpStatusCode.Unauthorized);
       }
+      request.user = user;
+      next();
     }
-    throw new APIError("Unauthorized, try to login again", HttpStatusCode.Unauthorized);
   });
   
   isAuthorized = (modelName: AllowedModel, method: AllowedMethod) => asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => { 
+    if(request.user?.isBlocked || request.user?.isDeleted) {
+      throw new APIError('Your are blocked, try to contact with our support team', HttpStatusCode.Forbidden);
+    }
     let permission = method.toLowerCase();
     if(request.user?.role?.allowedModels) {
       for(const allowedModel of request.user?.role.allowedModels) {
@@ -67,21 +66,17 @@ export class Authorization {
   });
   
   isCurrentUserRoleInWhiteList = (...roleWhiteList: MainRoles[]) => asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => { 
-    if(this.isCurrentUserRoleInList(request, roleWhiteList)) {
-      next();
-    }
-    else {
+    if(!this.isCurrentUserRoleInList(request, roleWhiteList)) {
       throw new APIError('Not allow to access this route', HttpStatusCode.Forbidden);
     }
+    next();
   });
 
   isCurrentUserRoleInBlackList = (...roleBlackList: MainRoles[]) => asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => { 
     if(this.isCurrentUserRoleInList(request, roleBlackList)) {
       throw new APIError('Not allow to access this route', HttpStatusCode.Forbidden);
     }
-    else {
-      next();
-    }
+    next();
   });
   
   isParamIdEqualCurrentUserId = (userId = 'id') => asyncHandler(async (request: ExtendedRequest, response: Response, next: NextFunction) => { 

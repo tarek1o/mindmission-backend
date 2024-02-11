@@ -53,8 +53,8 @@ let CommentController = class CommentController {
         });
         this.updateComment = (0, express_async_handler_1.default)(async (request, response, next) => {
             const { select, include } = RequestManager_1.RequestManager.findOptionsWrapper(request);
-            const updatedLesson = await this.commentService.update({ data: { id: +request.params.id, content: request.body.input.content }, select, include });
-            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The comment is updated successfully', [updatedLesson]));
+            const updatedComment = await this.commentService.update({ data: { id: +request.params.id, content: request.body.input.content }, select, include });
+            response.status(HTTPStatusCode_1.default.OK).json(ResponseFormatter_1.ResponseFormatter.formate(true, 'The comment is updated successfully', [updatedComment]));
         });
         this.deleteComment = (0, express_async_handler_1.default)(async (request, response, next) => {
             const deletedComment = await this.commentService.delete(+request.params.id);

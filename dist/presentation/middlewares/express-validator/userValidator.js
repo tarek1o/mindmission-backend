@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUserPasswordValidation = exports.updateUserEmailValidation = exports.updateUserValidation = exports.addUserValidation = void 0;
+exports.updateUserPasswordValidation = exports.confirmEmailVerificationCodeValidation = exports.updateUserEmailValidation = exports.updateUserValidation = exports.addUserValidation = void 0;
 const express_validator_1 = require("express-validator");
 const ErrorExpressValidatorHandler_1 = __importDefault(require("../../errorHandlers/ErrorExpressValidatorHandler"));
 const client_1 = require("@prisma/client");
@@ -12,14 +12,10 @@ const allowedPlatforms = Object.values(client_1.Platform);
 exports.addUserValidation = [
     (0, express_validator_1.body)("input.firstName")
         .notEmpty().withMessage("First Name is required")
-        .isString().withMessage("First Name must be string")
-        .isLength({ min: 3 }).withMessage("Too short first name, 3 characters at least")
-        .isLength({ max: 32 }).withMessage("Too long first name, 32 characters at most"),
+        .isString().withMessage("First Name must be string"),
     (0, express_validator_1.body)("input.lastName")
         .notEmpty().withMessage("Last Name is required")
-        .isString().withMessage("Last Name must be string")
-        .isLength({ min: 3 }).withMessage("Too short last name, 3 characters at least")
-        .isLength({ max: 32 }).withMessage("Too long last name, 32 characters at most"),
+        .isString().withMessage("Last Name must be string"),
     (0, express_validator_1.body)("input.email")
         .notEmpty().withMessage("Email is required")
         .isEmail().withMessage("Invalid email"),
@@ -47,14 +43,10 @@ exports.addUserValidation = [
 exports.updateUserValidation = [
     (0, express_validator_1.body)("input.firstName")
         .optional()
-        .isString().withMessage("First Name must be string")
-        .isLength({ min: 3 }).withMessage("Too short first name, 3 characters at least")
-        .isLength({ max: 32 }).withMessage("Too long first name, 32 characters at most"),
+        .isString().withMessage("First Name must be string"),
     (0, express_validator_1.body)("input.lastName")
         .optional()
-        .isString().withMessage("Last Name must be string")
-        .isLength({ min: 3 }).withMessage("Too short last name, 3 characters at least")
-        .isLength({ max: 32 }).withMessage("Too long last name, 32 characters at most"),
+        .isString().withMessage("Last Name must be string"),
     (0, express_validator_1.body)("input.mobilePhone")
         .optional()
         .isMobilePhone(allowedMobilePhoneCountries).withMessage("Invalid Mobile Phone"),
@@ -114,6 +106,12 @@ exports.updateUserEmailValidation = [
         .isEmail().withMessage("Invalid new email"),
     (0, express_validator_1.body)("input.password")
         .notEmpty().withMessage("Password is required"),
+    ErrorExpressValidatorHandler_1.default.catchExpressValidatorErrors
+];
+exports.confirmEmailVerificationCodeValidation = [
+    (0, express_validator_1.body)("input.token")
+        .notEmpty().withMessage("Token is required")
+        .isJWT().withMessage("Invalid token formate"),
     ErrorExpressValidatorHandler_1.default.catchExpressValidatorErrors
 ];
 exports.updateUserPasswordValidation = [

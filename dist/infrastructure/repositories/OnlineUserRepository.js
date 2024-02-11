@@ -26,9 +26,6 @@ let OnlineUserRepository = class OnlineUserRepository {
     findUnique(args) {
         return db_1.default.onlineUser.findUnique(args);
     }
-    findFirst(args) {
-        return db_1.default.onlineUser.findFirst(args);
-    }
     upsert(args, transaction) {
         return (transaction || db_1.default).onlineUser.upsert(args);
     }

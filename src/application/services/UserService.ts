@@ -50,7 +50,7 @@ export class UserService implements IUserService {
 	};
 
 	async create(args: {data: CreateUser, select?: Prisma.UserSelect; include?: Prisma.UserInclude}, transaction?: TransactionType): Promise<ExtendedUser> {
-		const {firstName, lastName, email, password, mobilePhone, whatsAppNumber, bio, picture, role, refreshToken, instructor} = args.data;
+		const {firstName, lastName, email, password, mobilePhone, whatsAppNumber, bio, picture, platform, isEmailVerified, role, refreshToken, instructor} = args.data;
 		if(await this.isEmailExist(email)) {
 			throw new APIError('This email already exists', HttpStatusCode.BadRequest);
 		};
@@ -76,6 +76,9 @@ export class UserService implements IUserService {
 				whatsAppNumber,
 				bio,
 				picture,
+				platform,
+				isSignWithSSO: platform ? true : false,
+				isEmailVerified,
 				refreshToken,
 				role: {
 					connect: {
@@ -83,7 +86,11 @@ export class UserService implements IUserService {
 					}
 				},
 				student: isRoleExist.slug === "student" ? {
-					create: {}
+					create: {
+						cart: {
+							create: {}
+						}
+					}
 				} : undefined,
 				instructor: isRoleExist.slug === "instructor" ? {
 					create: {
@@ -100,7 +107,7 @@ export class UserService implements IUserService {
 	};
 
 	async update(args: {data: UpdateUser, select?: Prisma.UserSelect, include?: Prisma.UserInclude}, transaction?: TransactionType): Promise<ExtendedUser> {
-		const {id, firstName, lastName, email, isEmailVerified, password, passwordUpdatedTime, resetPasswordCode, bio, picture, mobilePhone, whatsAppNumber, refreshToken, isOnline, isActive, isBlocked, isDeleted, roleId, personalLinks} = args.data
+		const {id, firstName, lastName, email, isEmailVerified, emailVerificationCode, password, passwordUpdatedTime, resetPasswordCode, bio, picture, mobilePhone, whatsAppNumber, refreshToken, isOnline, isActive, isBlocked, isDeleted, roleId, personalLinks} = args.data
 		if(resetPasswordCode && resetPasswordCode.code && !resetPasswordCode.isVerified) {
 			resetPasswordCode.code = bcrypt.hashSync((args.data.resetPasswordCode as any).code.toString(), 10);
 		}
@@ -172,6 +179,7 @@ export class UserService implements IUserService {
 				lastName: lastName || undefined,
 				email: email || undefined,
 				isEmailVerified: isEmailVerified || undefined,
+				emailVerificationCode,
 				password: password ? bcrypt.hashSync(password.toString(), 10) : undefined,
 				resetPasswordCode: resetPasswordCode || undefined,
 				passwordUpdatedTime: passwordUpdatedTime || undefined,

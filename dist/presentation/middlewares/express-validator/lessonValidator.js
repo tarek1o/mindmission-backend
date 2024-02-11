@@ -15,6 +15,9 @@ exports.addLessonValidation = [
     (0, express_validator_1.body)("input.isFree")
         .optional()
         .isBoolean().withMessage("isFree property must be a boolean value"),
+    (0, express_validator_1.body)("input.isAvailable")
+        .optional()
+        .isBoolean().withMessage("isAvailable property must be a boolean value"),
     (0, express_validator_1.body)("input.attachment")
         .optional()
         .isURL().withMessage("Lesson Attachment must be a url formate"),
@@ -35,6 +38,9 @@ exports.updateLessonValidation = [
     (0, express_validator_1.body)("input.isFree")
         .optional()
         .isBoolean().withMessage("isFree property must be a boolean value"),
+    (0, express_validator_1.body)("input.isAvailable")
+        .optional()
+        .isBoolean().withMessage("isAvailable property must be a boolean value"),
     (0, express_validator_1.body)("input.attachment")
         .optional()
         .isURL().withMessage("Lesson Attachment must be a url formate"),

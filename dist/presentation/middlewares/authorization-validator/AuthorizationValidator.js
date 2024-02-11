@@ -15,19 +15,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Authorization = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const inversify_1 = require("inversify");
-const APIError_1 = __importDefault(require("../../errorHandlers/APIError"));
 const ModelPermission_1 = require("../../types/ModelPermission");
-const HTTPStatusCode_1 = __importDefault(require("../../enums/HTTPStatusCode"));
 const JWTGenerator_1 = require("../../services/JWTGenerator");
+const APIError_1 = __importDefault(require("../../errorHandlers/APIError"));
+const HTTPStatusCode_1 = __importDefault(require("../../enums/HTTPStatusCode"));
 let Authorization = class Authorization {
     constructor(userService) {
         this.userService = userService;
         this.isCurrentUserRoleInList = (request, roleList) => {
             var _a;
-            if (((_a = request === null || request === void 0 ? void 0 : request.user) === null || _a === void 0 ? void 0 : _a.role) && roleList.includes(request.user.role.slug)) {
-                return true;
-            }
-            return false;
+            return (((_a = request === null || request === void 0 ? void 0 : request.user) === null || _a === void 0 ? void 0 : _a.role) && roleList.includes(request.user.role.slug));
         };
         this.isAuthenticated = (0, express_async_handler_1.default)(async (request, response, next) => {
             if (request.headers.authorization && request.headers.authorization.startsWith("Bearer")) {
@@ -41,28 +38,21 @@ let Authorization = class Authorization {
                         role: true
                     }
                 });
-                if (user) {
-                    if (user === null || user === void 0 ? void 0 : user.passwordUpdatedTime) {
-                        const passwordUpdatedTimeInSeconds = parseInt(`${user.passwordUpdatedTime.getTime() / 1000}`, 10);
-                        if (passwordUpdatedTimeInSeconds > decodedPayload.iat) {
-                            throw new APIError_1.default("Unauthorized, try to login again", HTTPStatusCode_1.default.Unauthorized);
-                        }
-                    }
-                    if (user.isBlocked || user.isDeleted) {
-                        throw new APIError_1.default('Your are blocked, try to contact with our support team', HTTPStatusCode_1.default.Forbidden);
-                    }
-                    request.user = user;
-                    next();
-                    return;
+                if (!user || this.isTokenCreatedBeforeUpdatingPassword(decodedPayload, user.passwordUpdatedTime)) {
+                    throw new APIError_1.default("Unauthorized, try to login again", HTTPStatusCode_1.default.Unauthorized);
                 }
+                request.user = user;
+                next();
             }
-            throw new APIError_1.default("Unauthorized, try to login again", HTTPStatusCode_1.default.Unauthorized);
         });
         this.isAuthorized = (modelName, method) => (0, express_async_handler_1.default)(async (request, response, next) => {
-            var _a, _b, _c;
+            var _a, _b, _c, _d, _e;
+            if (((_a = request.user) === null || _a === void 0 ? void 0 : _a.isBlocked) || ((_b = request.user) === null || _b === void 0 ? void 0 : _b.isDeleted)) {
+                throw new APIError_1.default('Your are blocked, try to contact with our support team', HTTPStatusCode_1.default.Forbidden);
+            }
             let permission = method.toLowerCase();
-            if ((_b = (_a = request.user) === null || _a === void 0 ? void 0 : _a.role) === null || _b === void 0 ? void 0 : _b.allowedModels) {
-                for (const allowedModel of (_c = request.user) === null || _c === void 0 ? void 0 : _c.role.allowedModels) {
+            if ((_d = (_c = request.user) === null || _c === void 0 ? void 0 : _c.role) === null || _d === void 0 ? void 0 : _d.allowedModels) {
+                for (const allowedModel of (_e = request.user) === null || _e === void 0 ? void 0 : _e.role.allowedModels) {
                     if (allowedModel.modelName.toLowerCase() === modelName.toLowerCase() && allowedModel.permissions.includes(permission)) {
                         next();
                         return;
@@ -73,20 +63,16 @@ let Authorization = class Authorization {
             throw new APIError_1.default(`Not Allowed to ${permission} ${modelName}`, HTTPStatusCode_1.default.Forbidden);
         });
         this.isCurrentUserRoleInWhiteList = (...roleWhiteList) => (0, express_async_handler_1.default)(async (request, response, next) => {
-            if (this.isCurrentUserRoleInList(request, roleWhiteList)) {
-                next();
-            }
-            else {
+            if (!this.isCurrentUserRoleInList(request, roleWhiteList)) {
                 throw new APIError_1.default('Not allow to access this route', HTTPStatusCode_1.default.Forbidden);
             }
+            next();
         });
         this.isCurrentUserRoleInBlackList = (...roleBlackList) => (0, express_async_handler_1.default)(async (request, response, next) => {
             if (this.isCurrentUserRoleInList(request, roleBlackList)) {
                 throw new APIError_1.default('Not allow to access this route', HTTPStatusCode_1.default.Forbidden);
             }
-            else {
-                next();
-            }
+            next();
         });
         this.isParamIdEqualCurrentUserId = (userId = 'id') => (0, express_async_handler_1.default)(async (request, response, next) => {
             if (request.user && +request.params[userId] !== request.user.id && this.isCurrentUserRoleInList(request, ['instructor', 'student'])) {
@@ -105,6 +91,16 @@ let Authorization = class Authorization {
             next();
         });
     }
+    isTokenCreatedBeforeUpdatingPassword(decodedPayload, passwordUpdatedTime) {
+        if (passwordUpdatedTime) {
+            const passwordUpdatedTimeInSeconds = parseInt(`${passwordUpdatedTime.getTime() / 1000}`, 10);
+            if (passwordUpdatedTimeInSeconds > decodedPayload.iat) {
+                return true;
+            }
+        }
+        return false;
+    }
+    ;
 };
 exports.Authorization = Authorization;
 exports.Authorization = Authorization = __decorate([

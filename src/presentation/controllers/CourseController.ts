@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { $Enums } from "@prisma/client";
 import { inject, injectable } from "inversify";
 import asyncHandler from'express-async-handler';
 import { ICourseService } from "../../application/interfaces/IServices/ICourseService";
@@ -12,6 +13,10 @@ import HttpStatusCode from '../enums/HTTPStatusCode';
 @injectable()
 export class CourseController {
 	constructor(@inject('ICourseService') private courseService: ICourseService, @inject('ILogService') private logService: ILogService) {};
+
+	getCourseEnums = asyncHandler((request: Request, response: Response, next: NextFunction) => {
+		response.status(HttpStatusCode.OK).json(ResponseFormatter.formate(true, 'All course enums are retrieved successfully', [$Enums.Language, $Enums.CourseLevel]));
+	})
 
 	courseAggregates = asyncHandler(async (request: Request, response: Response, next: NextFunction) => {
 		const {where, skip, take, orderBy} = RequestManager.findOptionsWrapper(request);

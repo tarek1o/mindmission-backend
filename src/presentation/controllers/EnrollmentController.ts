@@ -59,7 +59,7 @@ export class EnrollmentController {
 				}
 			}
 		});
-		this.logService.log('ADD', 'ENROLLMENT', student || {}, request.user);
+		this.logService.log('ADD', 'ENROLLMENT', student, request.user);
 		response.status(HttpStatusCode.Created).json(ResponseFormatter.formate(true, 'The student has been enrolled in the courses successfully.', student.enrollmentCourses));
 	});
 

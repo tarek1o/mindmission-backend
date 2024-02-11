@@ -13,6 +13,10 @@ export const addSectionValidation = [
     .isString().withMessage("Description must be string")
     .isLength({min: 10}).withMessage("Too short description, 5 characters at least")
     .isLength({max: 1000}).withMessage("Too long description, 1000 characters at most"),
+
+  body("input.isAvailable")
+    .optional()
+    .isBoolean().withMessage("isAvailable property must be a boolean value"),
   
   body("input.order")
     .notEmpty().withMessage("Order is required")
@@ -37,6 +41,10 @@ export const updateSectionValidation = [
     .isString().withMessage("Description must be string")
     .isLength({min: 10}).withMessage("Too short description, 5 characters at least")
     .isLength({max: 1000}).withMessage("Too long description, 1000 characters at most"),
+
+  body("input.isAvailable")
+    .optional()
+    .isBoolean().withMessage("isAvailable property must be a boolean value"),
   
   body("input.lessons")
     .optional()
