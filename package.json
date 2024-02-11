@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node ./dist/presentation/index.js",
-    "build": "rm -rf build && tsc",
+    "start": "node dist/presentation/index.js",
+    "build": "rm -rf dist && tsc",
     "compile": "tsc",
     "compile:watch": "tsc -w",
     "dev": "nodemon src/presentation/index.ts",
@@ -16,7 +16,7 @@
     "reset": "prisma migrate reset"
   },
   "keywords": [],
-  "author": "Tarek Eslam <89143141+tarek1o@users.noreply.github.com>",
+  "author": "Tarek Eslam",
   "license": "ISC",
   "dependencies": {
     "@microsoft/signalr": "^8.0.0",
