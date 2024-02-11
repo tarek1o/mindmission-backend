@@ -17,11 +17,6 @@
     "studio": "prisma studio",
     "reset": "prisma migrate reset"
   },
-  "pre-commit": [
-    "ts.check",
-    "build",
-    "add-build"
-  ],
   "keywords": [],
   "author": "",
   "license": "ISC",
