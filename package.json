@@ -4,14 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "generate": "ts-node --transpile-only ./src/presentation/index.js",
-    "migrate:deploy": "prisma migrate deploy",
-    "build": "prisma migrate deploy && prisma generate && npm run generate && tsc",
+    "build": "rm -rf dist && tsc",
     "start": "node dist/presentation/index.js",
     "dev": "nodemon src/presentation/index.ts",
+    "postinstall": "prisma generate",
     "compile": "tsc",
     "compile:watch": "tsc -w",
     "migrate": "prisma db push",
+    "generate": "prisma generate",
     "studio": "prisma studio",
     "reset": "prisma migrate reset"
   },
